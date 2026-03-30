@@ -11,11 +11,11 @@ description: |
   并给它们都添加执行权限。
 hints:
   - level: 1
-    text: "find -exec command {} \; 对每个结果执行命令"
+    text: "find -exec command {} \\; 对每个结果执行命令"
   - level: 2
-    text: "find /path -name '*.sh' -exec chmod +x {} \;"
+    text: "find /path -name '*.sh' -exec chmod +x {} \\;"
   - level: 3
-    text: "find /home/lab/scripts -name '*.sh' -exec chmod +x {} \;"
+    text: "find /home/lab/scripts -name '*.sh' -exec chmod +x {} \\;"
 verify:
   - type: command_output
     command: "stat -c %a /home/lab/scripts/deploy.sh"
