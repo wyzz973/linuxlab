@@ -1,0 +1,52 @@
+id: tips-vimrc-config
+title: "Vim 配置 - .vimrc 基础设置"
+difficulty: 2
+category: vim
+subcategory: practical-tips
+tags: [":set", vimrc, config]
+description: |
+  Vim 的配置可以通过 .vimrc 文件持久化：
+  - set number：显示行号
+  - set tabstop=4：Tab 宽度为 4
+  - set expandtab：Tab 转空格
+  - syntax on：语法高亮
+  - set autoindent：自动缩进
+
+  请打开 challenge.txt，按照注释要求填写正确的 Vim 配置选项。
+  完成后保存退出（:wq）。
+setup_files:
+  - path: challenge.txt
+    content: |
+      " Show line numbers
+      FILL_1
+      " Use 4 spaces for tabs
+      FILL_2
+      FILL_3
+      " Enable syntax highlighting
+      FILL_4
+      " Enable auto indentation
+      FILL_5
+      " Show matching brackets
+      FILL_6
+verify:
+  - type: file_content
+    path: challenge.txt
+    expect: |
+      " Show line numbers
+      set number
+      " Use 4 spaces for tabs
+      set tabstop=4
+      set expandtab
+      " Enable syntax highlighting
+      syntax on
+      " Enable auto indentation
+      set autoindent
+      " Show matching brackets
+      set showmatch
+hints:
+  - level: 1
+    text: "每个 FILL 对应一条 Vim 配置命令"
+  - level: 2
+    text: "行号用 set number，Tab 用 set tabstop=4 和 set expandtab"
+  - level: 3
+    text: "FILL_1=set number, FILL_2=set tabstop=4, FILL_3=set expandtab, FILL_4=syntax on, FILL_5=set autoindent, FILL_6=set showmatch"

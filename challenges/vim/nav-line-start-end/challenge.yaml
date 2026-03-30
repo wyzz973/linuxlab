@@ -1,0 +1,39 @@
+id: nav-line-start-end
+title: "行首行尾跳转 - 0/$/^"
+difficulty: 1
+category: vim
+subcategory: navigation
+tags: ["0", "$", "^"]
+description: |
+  Vim 中快速跳转到行首和行尾：
+  - 0：跳到行首（第一列）
+  - ^：跳到行首第一个非空字符
+  - $：跳到行尾
+
+  请打开 challenge.txt，在每行末尾添加分号 ";"。
+  使用 $ 跳到行尾，用 a 在行尾追加。
+  完成后保存退出（:wq）。
+setup_files:
+  - path: challenge.txt
+    content: |
+      int x = 10
+      int y = 20
+      int z = x + y
+      printf("%d", z)
+      return 0
+verify:
+  - type: file_content
+    path: challenge.txt
+    expect: |
+      int x = 10;
+      int y = 20;
+      int z = x + y;
+      printf("%d", z);
+      return 0;
+hints:
+  - level: 1
+    text: "使用 $ 跳到行尾，然后用 a 在光标后插入"
+  - level: 2
+    text: "在第一行按 A 在行尾进入插入模式，输入 ; 后按 Esc，然后 j 移到下一行重复"
+  - level: 3
+    text: "最高效方式：A;<Esc> 在第一行添加分号，然后按 j. 重复（. 重复上次操作）"

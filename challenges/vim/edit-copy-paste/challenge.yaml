@@ -1,0 +1,40 @@
+id: edit-copy-paste
+title: "复制粘贴 - yy/yw/p/P"
+difficulty: 1
+category: vim
+subcategory: editing
+tags: [yy, yw, p, P, nyy]
+description: |
+  Vim 中的复制粘贴：
+  - yy：复制当前行  nyy：复制 n 行
+  - yw：复制一个单词  y$：复制到行尾
+  - p：粘贴到光标后/下方  P：粘贴到光标前/上方
+
+  请打开 challenge.txt，将第 2 行（"  border: 1px solid #333;"）
+  复制并粘贴到第 4 行之后（即在 "}" 之前再加一行 border 声明）。
+  完成后保存退出（:wq）。
+setup_files:
+  - path: challenge.txt
+    content: |
+      .header {
+        border: 1px solid #333;
+        color: #fff;
+        background: #000;
+      }
+verify:
+  - type: file_content
+    path: challenge.txt
+    expect: |
+      .header {
+        border: 1px solid #333;
+        color: #fff;
+        background: #000;
+        border: 1px solid #333;
+      }
+hints:
+  - level: 1
+    text: "先用 yy 复制 border 那一行，再移到目标位置用 p 粘贴"
+  - level: 2
+    text: "j 到第 2 行，yy 复制，3j 或 jjj 到第 4 行，p 粘贴到下方"
+  - level: 3
+    text: "j 到第2行，yy 复制整行，然后 :4<Enter> 到第4行，p 粘贴到下方，:wq 保存"

@@ -1,0 +1,37 @@
+id: nav-bracket-match
+title: "括号匹配 - % 跳转"
+difficulty: 2
+category: vim
+subcategory: navigation
+tags: ["%"]
+description: |
+  Vim 中按 % 可以在匹配的括号间跳转（支持 ()、[]、{}）。
+
+  请打开 challenge.txt，这是一段有错误括号的代码。
+  第 3 行的函数调用 "process(data]" 中的 ] 应该是 )。
+  请修复这个括号错误。
+  完成后保存退出（:wq）。
+setup_files:
+  - path: challenge.txt
+    content: |
+      function main() {
+          let data = [1, 2, 3];
+          let result = process(data];
+          console.log(result);
+      }
+verify:
+  - type: file_content
+    path: challenge.txt
+    expect: |
+      function main() {
+          let data = [1, 2, 3];
+          let result = process(data);
+          console.log(result);
+      }
+hints:
+  - level: 1
+    text: "使用 % 在括号间跳转，可以快速发现不匹配的括号"
+  - level: 2
+    text: "跳到第 3 行，找到错误的 ]，用 r) 替换为正确的 )"
+  - level: 3
+    text: ":3<Enter> 跳到第3行，f] 跳到错误的方括号，r) 替换为圆括号，:wq 保存"

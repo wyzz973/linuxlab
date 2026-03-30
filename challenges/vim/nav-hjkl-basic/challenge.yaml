@@ -1,0 +1,37 @@
+id: nav-hjkl-basic
+title: "基础移动 - hjkl 导航"
+difficulty: 1
+category: vim
+subcategory: navigation
+tags: [h, j, k, l]
+description: |
+  Vim 使用 h/j/k/l 键代替方向键进行光标移动：
+  - h：左移  j：下移  k：上移  l：右移
+
+  请打开 challenge.txt，将第 3 行的 "FIXME" 替换为 "DONE"。
+  使用 hjkl 导航到目标位置，然后进行修改。
+  完成后保存退出（:wq）。
+setup_files:
+  - path: challenge.txt
+    content: |
+      # Task List
+      - [x] Setup project structure
+      - [ ] FIXME: Implement login feature
+      - [x] Write unit tests
+      - [x] Deploy to staging
+verify:
+  - type: file_content
+    path: challenge.txt
+    expect: |
+      # Task List
+      - [x] Setup project structure
+      - [ ] DONE: Implement login feature
+      - [x] Write unit tests
+      - [x] Deploy to staging
+hints:
+  - level: 1
+    text: "使用 j 向下移动到第 3 行，然后用 l 移动到 FIXME 位置"
+  - level: 2
+    text: "移动到 FIXME 后，按 cw 删除单词并进入插入模式，输入 DONE"
+  - level: 3
+    text: "按 2j 下移两行，用 /FIXME 搜索定位，按 cw 输入 DONE，按 Esc 后 :wq 保存"

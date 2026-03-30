@@ -1,0 +1,44 @@
+id: search-basic
+title: "基本搜索 - /pattern 和 n/N"
+difficulty: 1
+category: vim
+subcategory: search-replace
+tags: ["/", n, N, "?"]
+description: |
+  Vim 中的搜索功能：
+  - /pattern：向下搜索  ?pattern：向上搜索
+  - n：重复上次搜索（同方向）
+  - N：反方向重复搜索
+  - *：搜索光标下的单词
+
+  请打开 challenge.txt，找到 "BUG" 并将其改为 "FIX"（文件中只有一处）。
+  使用 / 搜索来快速定位。
+  完成后保存退出（:wq）。
+setup_files:
+  - path: challenge.txt
+    content: |
+      2024-03-01 Deploy v2.1.0
+      2024-03-05 Update dependencies
+      2024-03-10 Optimize query cache
+      2024-03-12 Add rate limiting
+      2024-03-15 BUG: Fix memory leak
+      2024-03-18 Update documentation
+      2024-03-20 Performance testing
+verify:
+  - type: file_content
+    path: challenge.txt
+    expect: |
+      2024-03-01 Deploy v2.1.0
+      2024-03-05 Update dependencies
+      2024-03-10 Optimize query cache
+      2024-03-12 Add rate limiting
+      2024-03-15 FIX: Fix memory leak
+      2024-03-18 Update documentation
+      2024-03-20 Performance testing
+hints:
+  - level: 1
+    text: "使用 /BUG 搜索定位到 BUG 的位置"
+  - level: 2
+    text: "/BUG<Enter> 跳转到 BUG，然后 cw 修改为 FIX"
+  - level: 3
+    text: "/BUG<Enter> 搜索定位，cw FIX<Esc>，:wq 保存"

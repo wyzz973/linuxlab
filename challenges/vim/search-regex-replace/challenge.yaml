@@ -1,0 +1,39 @@
+id: search-regex-replace
+title: "正则替换 - 使用捕获组"
+difficulty: 4
+category: vim
+subcategory: search-replace
+tags: [":%s", regex, "\\(\\)", "\\1"]
+description: |
+  Vim 支持正则表达式替换，可以使用捕获组：
+  - \(\)：定义捕获组
+  - \1, \2：引用捕获组
+  - \d：匹配数字（Vim 中用 [0-9] 或 \d）
+
+  请打开 challenge.txt，将日期格式从 "YYYY/MM/DD" 改为 "DD-MM-YYYY"。
+  例如：2024/03/15 → 15-03-2024
+  完成后保存退出（:wq）。
+setup_files:
+  - path: challenge.txt
+    content: |
+      event1: 2024/01/15, Conference
+      event2: 2024/03/22, Workshop
+      event3: 2024/06/10, Meetup
+      event4: 2024/09/05, Hackathon
+      event5: 2024/12/31, New Year
+verify:
+  - type: file_content
+    path: challenge.txt
+    expect: |
+      event1: 15-01-2024, Conference
+      event2: 22-03-2024, Workshop
+      event3: 10-06-2024, Meetup
+      event4: 05-09-2024, Hackathon
+      event5: 31-12-2024, New Year
+hints:
+  - level: 1
+    text: "使用正则替换的捕获组来重新排列日期部分"
+  - level: 2
+    text: ":%s/\\(\\d\\{4}\\)\\/\\(\\d\\{2}\\)\\/\\(\\d\\{2}\\)/\\3-\\2-\\1/g"
+  - level: 3
+    text: "在 Vim 命令行输入：:%s/\\(\\d\\{4}\\)\\/\\(\\d\\{2}\\)\\/\\(\\d\\{2}\\)/\\3-\\2-\\1/g<Enter>，:wq"

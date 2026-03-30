@@ -1,0 +1,37 @@
+id: nav-char-find
+title: "行内字符查找 - f/F/t/T"
+difficulty: 2
+category: vim
+subcategory: navigation
+tags: [f, F, t, T]
+description: |
+  Vim 中在当前行内快速查找字符：
+  - f{char}：向前跳到字符 char
+  - F{char}：向后跳到字符 char
+  - t{char}：向前跳到字符 char 前一格
+  - T{char}：向后跳到字符 char 后一格
+  - ; 重复上次查找，, 反向重复
+
+  请打开 challenge.txt，将每行中用引号括起来的值由单引号改为双引号。
+  例如：name = 'Alice' → name = "Alice"
+  完成后保存退出（:wq）。
+setup_files:
+  - path: challenge.txt
+    content: |
+      name = 'Alice'
+      city = 'Beijing'
+      role = 'admin'
+verify:
+  - type: file_content
+    path: challenge.txt
+    expect: |
+      name = "Alice"
+      city = "Beijing"
+      role = "admin"
+hints:
+  - level: 1
+    text: "使用 f' 快速跳到单引号位置，然后 r\" 替换字符"
+  - level: 2
+    text: "在每行上按 f' 跳到第一个单引号，r\" 替换，; 跳到下一个单引号，r\" 再替换"
+  - level: 3
+    text: "最高效：:%s/'/\"/g 全局替换。手动方式：f'r\";r\" 替换一行，j0 下移重复"

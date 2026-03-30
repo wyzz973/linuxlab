@@ -1,0 +1,41 @@
+id: macro-record-play
+title: "录制宏 - qa...q 和 @a"
+difficulty: 3
+category: vim
+subcategory: macros
+tags: [q, "@", macro]
+description: |
+  Vim 宏可以录制一系列操作并重放：
+  - qa：开始录制宏到寄存器 a
+  - q：停止录制
+  - @a：回放宏 a
+  - @@：重复上次宏回放
+
+  请打开 challenge.txt，将每行的 CSV 格式改为 key=value 格式：
+  name,Alice → name=Alice
+  使用宏录制对一行的修改，然后重放到其他行。
+  完成后保存退出（:wq）。
+setup_files:
+  - path: challenge.txt
+    content: |
+      name,Alice
+      age,30
+      city,Shanghai
+      role,engineer
+      team,backend
+verify:
+  - type: file_content
+    path: challenge.txt
+    expect: |
+      name=Alice
+      age=30
+      city=Shanghai
+      role=engineer
+      team=backend
+hints:
+  - level: 1
+    text: "录制一个宏：qa 开始，f, 找到逗号，r= 替换为等号，j0 到下一行，q 结束"
+  - level: 2
+    text: "qa f,r= j0 q 录制宏，然后 4@a 重放 4 次"
+  - level: 3
+    text: "也可以直接 :%s/,/=/g 全局替换。宏方式：qa f,r= j0 q，然后 4@a"

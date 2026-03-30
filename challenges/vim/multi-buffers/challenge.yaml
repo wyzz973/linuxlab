@@ -1,0 +1,44 @@
+id: multi-buffers
+title: "缓冲区管理 - :ls/:bn/:bp"
+difficulty: 3
+category: vim
+subcategory: multi-window
+tags: [":ls", ":bn", ":bp", ":bd", ":b"]
+description: |
+  Vim 缓冲区（Buffer）管理：
+  - :ls 或 :buffers：列出所有缓冲区
+  - :bn：下一个缓冲区  :bp：上一个缓冲区
+  - :b N：切换到第 N 个缓冲区
+  - :bd：关闭当前缓冲区
+
+  请打开 challenge.txt，将其中的 TODO 项逐一标记为 DONE。
+  文件中有三个 TODO 项需要全部修改。
+  完成后保存退出（:wq）。
+setup_files:
+  - path: challenge.txt
+    content: |
+      ## Sprint 14 Tasks
+      
+      - [TODO] Migrate database schema
+      - [DONE] Update API endpoints
+      - [TODO] Add input validation
+      - [DONE] Fix CSS layout issue
+      - [TODO] Write integration tests
+verify:
+  - type: file_content
+    path: challenge.txt
+    expect: |
+      ## Sprint 14 Tasks
+      
+      - [DONE] Migrate database schema
+      - [DONE] Update API endpoints
+      - [DONE] Add input validation
+      - [DONE] Fix CSS layout issue
+      - [DONE] Write integration tests
+hints:
+  - level: 1
+    text: "当编辑多文件时，:ls 查看缓冲区列表，:bn/:bp 切换"
+  - level: 2
+    text: "这里只需编辑一个文件，用 :%s/TODO/DONE/g 全局替换"
+  - level: 3
+    text: ":%s/TODO/DONE/g<Enter> 全局替换，:wq 保存"

@@ -1,0 +1,41 @@
+id: edit-visual-mode
+title: "可视模式选择 - v/V"
+difficulty: 2
+category: vim
+subcategory: editing
+tags: [v, V, Ctrl-v, d, y]
+description: |
+  Vim 的可视模式用于选择文本：
+  - v：字符级选择
+  - V：整行选择
+  - Ctrl-v：块选择（列选择）
+  选择后可以用 d 删除、y 复制、> 缩进等操作。
+
+  请打开 challenge.txt，删除第 3-5 行（三行 console.log 调试语句）。
+  使用 V（行可视模式）选择后删除。
+  完成后保存退出（:wq）。
+setup_files:
+  - path: challenge.txt
+    content: |
+      function calculate(a, b) {
+          let sum = a + b;
+          console.log("a =", a);
+          console.log("b =", b);
+          console.log("sum =", sum);
+          return sum;
+      }
+verify:
+  - type: file_content
+    path: challenge.txt
+    expect: |
+      function calculate(a, b) {
+          let sum = a + b;
+          return sum;
+      }
+hints:
+  - level: 1
+    text: "使用 V 进入行选择模式，j 扩展选择范围，d 删除"
+  - level: 2
+    text: "移到第 3 行，按 V 进入行选择，按 2j 选择3行，按 d 删除"
+  - level: 3
+    text: ":3<Enter> 到第3行，V2jd 选择并删除3行，:wq 保存。或直接 :3,5d"

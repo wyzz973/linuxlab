@@ -1,0 +1,39 @@
+id: edit-indent
+title: "代码缩进 - >>/<</="
+difficulty: 2
+category: vim
+subcategory: editing
+tags: [">>", "<<", "=", ">i{"]
+description: |
+  Vim 中调整缩进：
+  - >>：当前行右缩进  <<：当前行左缩进
+  - n>>：缩进 n 行
+  - =：自动缩进  gg=G：全文自动缩进
+
+  请打开 challenge.txt，修复缩进问题。
+  if 块内的两行代码需要各增加 4 个空格的缩进。
+  完成后保存退出（:wq）。
+setup_files:
+  - path: challenge.txt
+    content: |
+      def process():
+          if ready:
+      result = compute()
+      save(result)
+          return True
+verify:
+  - type: file_content
+    path: challenge.txt
+    expect: |
+      def process():
+          if ready:
+              result = compute()
+              save(result)
+          return True
+hints:
+  - level: 1
+    text: "使用 >> 增加缩进，可以对多行操作"
+  - level: 2
+    text: "移到 result 那行，按 2>> 对两行增加缩进"
+  - level: 3
+    text: ":3<Enter> 到第3行，2>> 缩进两行（可能需要按两次 2>> 达到正确缩进），:wq 保存"

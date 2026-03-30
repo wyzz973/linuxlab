@@ -1,0 +1,45 @@
+id: macro-recursive
+title: "复杂宏 - 多步骤转换"
+difficulty: 5
+category: vim
+subcategory: macros
+tags: [q, "@", macro, recursive]
+description: |
+  高级宏技巧：
+  - 递归宏：qaq（清空a）然后 qa...@aq（宏中调用自身）
+  - 多步骤宏：录制包含搜索、修改、移动的复杂序列
+  - 条件停止：宏在操作失败时自动停止
+
+  请打开 challenge.txt，将 Markdown 无序列表转换为有序列表。
+  将每行开头的 "- " 改为递增的数字编号 "1. "、"2. "、...
+  完成后保存退出（:wq）。
+setup_files:
+  - path: challenge.txt
+    content: |
+      - Install dependencies
+      - Configure database
+      - Run migrations
+      - Start development server
+      - Run test suite
+      - Deploy to staging
+      - Run smoke tests
+      - Deploy to production
+verify:
+  - type: file_content
+    path: challenge.txt
+    expect: |
+      1. Install dependencies
+      2. Configure database
+      3. Run migrations
+      4. Start development server
+      5. Run test suite
+      6. Deploy to staging
+      7. Run smoke tests
+      8. Deploy to production
+hints:
+  - level: 1
+    text: "这需要一个能递增数字的宏，或者用 Vim 的行号功能"
+  - level: 2
+    text: "可以用 :let i=1 | g/^- /s//\\=i.'. '/ | let i=i+1 实现递增编号"
+  - level: 3
+    text: "在 Vim 中执行：:let i=1 | %s/^- /\\=i.'. '/ | let i=i+1（注意这需要逐行替换，用 :let i=0 | g/^/let i+=1 | s/^- /\\=i.'. '/）"

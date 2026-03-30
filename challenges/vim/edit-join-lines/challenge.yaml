@@ -1,0 +1,33 @@
+id: edit-join-lines
+title: "合并行 - J 命令"
+difficulty: 2
+category: vim
+subcategory: editing
+tags: [J, gJ]
+description: |
+  Vim 中合并行：
+  - J：将下一行合并到当前行末尾（加空格）
+  - gJ：合并行但不加空格
+  - 3J：合并当前行和下面 2 行
+
+  请打开 challenge.txt，将被拆分成多行的 SQL 查询合并为一行。
+  完成后保存退出（:wq）。
+setup_files:
+  - path: challenge.txt
+    content: |
+      SELECT name, email, age
+      FROM users
+      WHERE active = true
+      ORDER BY name;
+verify:
+  - type: file_content
+    path: challenge.txt
+    expect: |
+      SELECT name, email, age FROM users WHERE active = true ORDER BY name;
+hints:
+  - level: 1
+    text: "使用 J 将下一行合并到当前行，多次按 J"
+  - level: 2
+    text: "在第一行按 3J 合并4行（当前行+后面3行）为一行"
+  - level: 3
+    text: "gg 到第一行，4J 合并所有4行为一行，:wq 保存"

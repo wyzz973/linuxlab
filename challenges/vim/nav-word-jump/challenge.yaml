@@ -1,0 +1,36 @@
+id: nav-word-jump
+title: "单词跳转 - w/b/e 导航"
+difficulty: 1
+category: vim
+subcategory: navigation
+tags: [w, b, e, W, B, E]
+description: |
+  Vim 中可以按单词跳转：
+  - w：跳到下一个单词开头  b：跳到上一个单词开头  e：跳到当前单词末尾
+  - W/B/E：以空格分隔的大单词跳转
+
+  请打开 challenge.txt，将变量名 "old_name" 全部替换为 "new_name"（共 3 处）。
+  练习使用 w/b 在单词间快速跳转定位。
+  完成后保存退出（:wq）。
+setup_files:
+  - path: challenge.txt
+    content: |
+      def calculate_total(old_name):
+          tax = old_name * 0.1
+          discount = old_name * 0.05
+          return old_name - discount + tax
+verify:
+  - type: file_content
+    path: challenge.txt
+    expect: |
+      def calculate_total(new_name):
+          tax = new_name * 0.1
+          discount = new_name * 0.05
+          return new_name - discount + tax
+hints:
+  - level: 1
+    text: "使用 w 向前跳转单词，定位到 old_name 后用 cw 修改"
+  - level: 2
+    text: "可以用 /old_name 搜索定位，然后用 cw 替换为 new_name，再按 n 跳到下一个"
+  - level: 3
+    text: "最高效的方式：:%s/old_name/new_name/g 一次性全部替换"

@@ -1,0 +1,41 @@
+id: multi-split-vertical
+title: "垂直分屏 - :vsplit"
+difficulty: 3
+category: vim
+subcategory: multi-window
+tags: [":vsplit", ":vsp", Ctrl-w]
+description: |
+  Vim 垂直分屏：
+  - :vsplit 或 :vsp：垂直分屏
+  - :vsplit filename：在新窗口打开文件
+  - Ctrl-w h/l：在左右窗口间切换
+  - Ctrl-w v：新建垂直分屏
+
+  请打开 challenge.txt（一个 CSS 文件），参考 colors.txt 中的颜色值，
+  将 CSS 中的颜色占位符替换为实际颜色值。
+  完成后保存退出（:wq）。
+setup_files:
+  - path: challenge.txt
+    content: |
+      .primary { color: PRIMARY_COLOR; }
+      .danger { color: DANGER_COLOR; }
+      .success { color: SUCCESS_COLOR; }
+  - path: colors.txt
+    content: |
+      PRIMARY_COLOR = #3498db
+      DANGER_COLOR = #e74c3c
+      SUCCESS_COLOR = #2ecc71
+verify:
+  - type: file_content
+    path: challenge.txt
+    expect: |
+      .primary { color: #3498db; }
+      .danger { color: #e74c3c; }
+      .success { color: #2ecc71; }
+hints:
+  - level: 1
+    text: "用 :vsplit colors.txt 并排查看颜色值"
+  - level: 2
+    text: "在 colors.txt 窗口查看颜色值，切回 challenge.txt 用 cw 替换占位符"
+  - level: 3
+    text: "直接用替换命令：:%s/PRIMARY_COLOR/#3498db/g 等逐个替换"

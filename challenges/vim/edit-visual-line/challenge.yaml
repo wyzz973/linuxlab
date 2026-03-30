@@ -1,0 +1,37 @@
+id: edit-visual-line
+title: "可视模式操作 - 选择后大写转换"
+difficulty: 3
+category: vim
+subcategory: editing
+tags: [v, U, u, "~"]
+description: |
+  在可视模式下选择文本后可以进行各种操作：
+  - U：选中文本转大写
+  - u：选中文本转小写
+  - ~：选中文本大小写切换
+  - gU{motion}：不进入可视模式直接转大写
+
+  请打开 challenge.txt，将所有环境变量名（等号左边的部分）转为大写。
+  完成后保存退出（:wq）。
+setup_files:
+  - path: challenge.txt
+    content: |
+      database_host=localhost
+      database_port=5432
+      app_secret=mykey123
+      log_level=info
+verify:
+  - type: file_content
+    path: challenge.txt
+    expect: |
+      DATABASE_HOST=localhost
+      DATABASE_PORT=5432
+      APP_SECRET=mykey123
+      LOG_LEVEL=info
+hints:
+  - level: 1
+    text: "使用 v 选择等号前的变量名，然后 U 转大写"
+  - level: 2
+    text: "在每行按 vt=U 选择到等号前并转大写"
+  - level: 3
+    text: "最高效：:%s/\\([a-z_]*\\)=/\\U\\1=/g 用正则替换。手动方式：0vt=U 在每行操作"

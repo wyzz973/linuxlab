@@ -1,0 +1,45 @@
+id: search-range-replace
+title: "范围替换 - :n1,n2s/old/new/g"
+difficulty: 2
+category: vim
+subcategory: search-replace
+tags: [":s", range]
+description: |
+  Vim 支持在指定行范围内替换：
+  - :3,7s/old/new/g：只在第 3-7 行替换
+  - :.,$s/old/new/g：从当前行到文件末尾替换
+  - :.,+5s/old/new/g：从当前行往下 5 行范围替换
+
+  请打开 challenge.txt，只将 [production] 部分（第 5-8 行）的 "enabled = no" 改为 "enabled = yes"，
+  不要修改 [staging] 部分。
+  完成后保存退出（:wq）。
+setup_files:
+  - path: challenge.txt
+    content: |
+      [staging]
+      cache_enabled = no
+      debug_enabled = no
+      log_enabled = no
+      [production]
+      cache_enabled = no
+      debug_enabled = no
+      log_enabled = no
+verify:
+  - type: file_content
+    path: challenge.txt
+    expect: |
+      [staging]
+      cache_enabled = no
+      debug_enabled = no
+      log_enabled = no
+      [production]
+      cache_enabled = yes
+      debug_enabled = yes
+      log_enabled = yes
+hints:
+  - level: 1
+    text: "使用范围替换，只对 production 部分的行操作"
+  - level: 2
+    text: ":5,8s/no/yes/g 只替换第 5-8 行中的 no 为 yes"
+  - level: 3
+    text: ":5,8s/= no/= yes/g<Enter> 精确替换范围内的值，:wq 保存"

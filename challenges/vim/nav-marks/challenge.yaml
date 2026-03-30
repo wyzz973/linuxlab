@@ -1,0 +1,53 @@
+id: nav-marks
+title: "标记与跳转 - m/'/`"
+difficulty: 3
+category: vim
+subcategory: navigation
+tags: [m, "'", "`"]
+description: |
+  Vim 中可以设置标记（mark）来快速跳转：
+  - ma：在当前位置设置标记 a
+  - 'a：跳转到标记 a 所在行
+  - `a：跳转到标记 a 的精确位置
+
+  请打开 challenge.txt，完成以下任务：
+  1. 将第 1 行的 "TODO" 改为 "DONE"
+  2. 将第 8 行的 "TODO" 也改为 "DONE"
+  练习用标记在两个位置间快速跳转。
+  完成后保存退出（:wq）。
+setup_files:
+  - path: challenge.txt
+    content: |
+      # TODO: Add error handling
+      def connect_db(host, port):
+          conn = create_connection(host, port)
+          if conn is None:
+              raise ConnectionError("Failed")
+          return conn
+      
+      # TODO: Add retry logic
+      def fetch_data(conn, query):
+          cursor = conn.execute(query)
+          return cursor.fetchall()
+verify:
+  - type: file_content
+    path: challenge.txt
+    expect: |
+      # DONE: Add error handling
+      def connect_db(host, port):
+          conn = create_connection(host, port)
+          if conn is None:
+              raise ConnectionError("Failed")
+          return conn
+      
+      # DONE: Add retry logic
+      def fetch_data(conn, query):
+          cursor = conn.execute(query)
+          return cursor.fetchall()
+hints:
+  - level: 1
+    text: "使用 ma 在第一个 TODO 处设标记，修改后用 'a 跳回"
+  - level: 2
+    text: "先 /TODO 找到第一个，cw 改为 DONE，然后 n 找下一个 TODO 继续修改"
+  - level: 3
+    text: "/TODO<Enter> 定位，cw DONE<Esc>，n 跳到下一个 TODO，. 重复修改，:wq 保存"

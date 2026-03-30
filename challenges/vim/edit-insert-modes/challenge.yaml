@@ -1,0 +1,38 @@
+id: edit-insert-modes
+title: "插入模式 - i/I/a/A/o/O"
+difficulty: 1
+category: vim
+subcategory: editing
+tags: [i, I, a, A, o, O]
+description: |
+  Vim 有多种进入插入模式的方式：
+  - i：在光标前插入  I：在行首插入
+  - a：在光标后插入  A：在行尾插入
+  - o：在下方新开一行  O：在上方新开一行
+
+  请打开 challenge.txt，在 "server:" 和 "database:" 之间添加一行 "  port: 3000"。
+  使用 o 在当前行下方新开一行并输入内容。
+  完成后保存退出（:wq）。
+setup_files:
+  - path: challenge.txt
+    content: |
+      server:
+        host: localhost
+      database:
+        name: mydb
+verify:
+  - type: file_content
+    path: challenge.txt
+    expect: |
+      server:
+        host: localhost
+        port: 3000
+      database:
+        name: mydb
+hints:
+  - level: 1
+    text: "先移动到 host: localhost 那一行，然后用 o 在下方新开一行"
+  - level: 2
+    text: "j 到第 2 行（host: localhost），按 o 新开一行，输入 '  port: 3000'"
+  - level: 3
+    text: "j 移到第2行，o 新开一行，输入两个空格和 port: 3000，Esc 后 :wq"

@@ -1,0 +1,41 @@
+id: macro-batch-execute
+title: "批量执行宏 - n@a 和 :normal"
+difficulty: 4
+category: vim
+subcategory: macros
+tags: ["@", ":normal", macro]
+description: |
+  Vim 宏可以批量执行：
+  - 10@a：执行宏 a 共 10 次
+  - :%normal @a：对每一行执行宏 a
+  - :5,10normal @a：对第 5-10 行执行宏
+
+  请打开 challenge.txt，将每行的数据格式化为 JSON 对象属性格式。
+  例如：name Alice → "name": "Alice",
+  完成后保存退出（:wq）。
+setup_files:
+  - path: challenge.txt
+    content: |
+      name Alice
+      age 30
+      city Shanghai
+      role engineer
+      level senior
+      team backend
+verify:
+  - type: file_content
+    path: challenge.txt
+    expect: |
+      "name": "Alice",
+      "age": "30",
+      "city": "Shanghai",
+      "role": "engineer",
+      "level": "senior",
+      "team": "backend",
+hints:
+  - level: 1
+    text: "录制宏：在行首加引号，在空格处改为\": \"，在行尾加引号和逗号"
+  - level: 2
+    text: "宏步骤：I\"<Esc> f<Space> s\": \"<Esc> A\",<Esc> j0"
+  - level: 3
+    text: "或用替换：:%s/\\(\\S\\+\\) \\(.*\\)/\"\\1\": \"\\2\",/g"

@@ -1,0 +1,47 @@
+id: search-global-command
+title: "全局命令 - :g/pattern/cmd"
+difficulty: 4
+category: vim
+subcategory: search-replace
+tags: [":g", ":g/d", ":g/m", ":v"]
+description: |
+  Vim 的全局命令对匹配的行执行操作：
+  - :g/pattern/d：删除匹配行
+  - :g/pattern/m$：将匹配行移到文件末尾
+  - :v/pattern/d：删除不匹配的行（反向）
+  - :g/pattern/normal A;：在匹配行末尾追加分号
+
+  请打开 challenge.txt，删除所有空行和只包含空格的行。
+  完成后保存退出（:wq）。
+setup_files:
+  - path: challenge.txt
+    content: |
+      server {
+      
+          listen 80;
+      
+          server_name example.com;
+         
+          location / {
+              proxy_pass http://backend;
+          }
+      
+      }
+verify:
+  - type: file_content
+    path: challenge.txt
+    expect: |
+      server {
+          listen 80;
+          server_name example.com;
+          location / {
+              proxy_pass http://backend;
+          }
+      }
+hints:
+  - level: 1
+    text: "使用 :g 全局命令匹配空行并删除"
+  - level: 2
+    text: ":g/^\\s*$/d 删除所有空行和只有空格的行"
+  - level: 3
+    text: "输入 :g/^\\s*$/d<Enter>，然后 :wq 保存退出"

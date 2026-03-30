@@ -1,0 +1,56 @@
+id: tips-external-commands
+title: "外部命令 - :!cmd 和 :r !cmd"
+difficulty: 3
+category: vim
+subcategory: practical-tips
+tags: [":!", ":r", ":w !"]
+description: |
+  Vim 可以与外部 Shell 命令交互：
+  - :!command：暂时执行 Shell 命令
+  - :r !command：将命令输出插入到光标下方
+  - :w !command：将文件内容作为命令输入
+  - :n,m !command：对 n-m 行执行外部命令
+
+  请打开 challenge.txt，使用 :r 命令将 data.txt 的内容读入到
+  "## Data" 标记行之后。
+  完成后保存退出（:wq）。
+setup_files:
+  - path: challenge.txt
+    content: |
+      # Report
+      
+      ## Summary
+      This is the monthly report.
+      
+      ## Data
+      
+      ## Conclusion
+      Data looks good.
+  - path: data.txt
+    content: |
+      Revenue: $10,000
+      Expenses: $7,500
+      Profit: $2,500
+verify:
+  - type: file_content
+    path: challenge.txt
+    expect: |
+      # Report
+      
+      ## Summary
+      This is the monthly report.
+      
+      ## Data
+      Revenue: $10,000
+      Expenses: $7,500
+      Profit: $2,500
+      
+      ## Conclusion
+      Data looks good.
+hints:
+  - level: 1
+    text: "使用 :r filename 可以将文件内容读入当前位置"
+  - level: 2
+    text: "移到 ## Data 行，用 :r data.txt 在下方插入文件内容"
+  - level: 3
+    text: "/## Data<Enter> 定位，:r data.txt<Enter> 读入文件，:wq 保存"

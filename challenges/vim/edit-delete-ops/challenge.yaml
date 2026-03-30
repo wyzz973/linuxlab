@@ -1,0 +1,41 @@
+id: edit-delete-ops
+title: "删除操作 - x/dd/D"
+difficulty: 1
+category: vim
+subcategory: editing
+tags: [x, dd, D, d$, d0]
+description: |
+  Vim 中的删除命令：
+  - x：删除光标处字符  X：删除光标前字符
+  - dd：删除整行  ndd：删除 n 行
+  - D 或 d$：删除到行尾
+  - d0：删除到行首
+
+  请打开 challenge.txt，删除所有注释行（以 # 开头的行）。
+  文件中有 3 行注释需要删除。
+  完成后保存退出（:wq）。
+setup_files:
+  - path: challenge.txt
+    content: |
+      # This is a comment
+      name=production
+      # Debug mode
+      debug=false
+      port=8080
+      # End of config
+      log_level=warn
+verify:
+  - type: file_content
+    path: challenge.txt
+    expect: |
+      name=production
+      debug=false
+      port=8080
+      log_level=warn
+hints:
+  - level: 1
+    text: "使用 dd 删除整行，先移到注释行再删除"
+  - level: 2
+    text: "移到第一行按 dd 删除，然后移到下一个注释行重复"
+  - level: 3
+    text: "最高效方式：:g/^#/d 删除所有以 # 开头的行"

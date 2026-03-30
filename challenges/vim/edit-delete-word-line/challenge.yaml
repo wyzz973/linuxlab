@@ -1,0 +1,35 @@
+id: edit-delete-word-line
+title: "删除单词和部分行 - dw/d$/d0"
+difficulty: 2
+category: vim
+subcategory: editing
+tags: [dw, d$, d0, D]
+description: |
+  Vim 中组合删除命令：
+  - dw：删除一个单词  d2w：删除两个单词
+  - d$（或 D）：删除到行尾
+  - d0：删除到行首
+  - dt{char}：删除到字符 char 之前
+
+  请打开 challenge.txt，删除每行注释部分（// 及其后面的内容），保留代码部分。
+  完成后保存退出（:wq）。
+setup_files:
+  - path: challenge.txt
+    content: |
+      int count = 0; // initialize counter
+      count += 1; // increment by one
+      printf("%d", count); // print result
+verify:
+  - type: file_content
+    path: challenge.txt
+    expect: |
+      int count = 0;
+      count += 1;
+      printf("%d", count);
+hints:
+  - level: 1
+    text: "使用 f/ 找到 //，然后用 D 删除到行尾"
+  - level: 2
+    text: "在每行上：f/ 跳到第一个 /，然后按 h 后退一格（删掉空格），再 D 删除到行尾"
+  - level: 3
+    text: "最高效方式：:%s/ \\/\\/.*$// 用替换删除注释。手动：f 跳到空格，D 删除"

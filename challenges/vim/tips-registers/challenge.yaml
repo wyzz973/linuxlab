@@ -1,0 +1,46 @@
+id: tips-registers
+title: "寄存器 - \"a/\"+ 复制粘贴"
+difficulty: 4
+category: vim
+subcategory: practical-tips
+tags: ["\"", register, "\"a", "\"+"]
+description: |
+  Vim 的命名寄存器让你保存多个复制内容：
+  - "ayy：将当前行复制到寄存器 a
+  - "ap：从寄存器 a 粘贴
+  - "Ayy：追加内容到寄存器 a
+  - :reg：查看所有寄存器内容
+  - "+：系统剪贴板寄存器
+
+  请打开 challenge.txt，将注释中标记的 [COPY] 行重新排列：
+  将标记为 [1]、[2]、[3] 的行按顺序放到文件末尾的 OUTPUT 区域。
+  完成后保存退出（:wq）。
+setup_files:
+  - path: challenge.txt
+    content: |
+      # Source data (do not modify above lines)
+      alpha [2]
+      beta [3]
+      gamma [1]
+      
+      # OUTPUT (paste in order below):
+verify:
+  - type: file_content
+    path: challenge.txt
+    expect: |
+      # Source data (do not modify above lines)
+      alpha [2]
+      beta [3]
+      gamma [1]
+      
+      # OUTPUT (paste in order below):
+      gamma [1]
+      alpha [2]
+      beta [3]
+hints:
+  - level: 1
+    text: "使用命名寄存器分别复制三行，然后按顺序粘贴"
+  - level: 2
+    text: "\"ayy 复制 gamma 行到寄存器 a，\"byy 复制 alpha 到 b，\"cyy 复制 beta 到 c，然后在末尾 \"ap \"bp \"cp"
+  - level: 3
+    text: "更简单的方式：yy 复制 gamma 行，G 到末尾，p 粘贴；回去复制 alpha 行，G p；再复制 beta 行，G p"

@@ -1,0 +1,52 @@
+id: multi-split-horizontal
+title: "水平分屏 - :split"
+difficulty: 3
+category: vim
+subcategory: multi-window
+tags: [":split", Ctrl-w, ":sp"]
+description: |
+  Vim 支持分屏编辑：
+  - :split 或 :sp：水平分屏
+  - :split filename：在新窗口打开文件
+  - Ctrl-w j/k：在上下窗口间切换
+  - Ctrl-w =：均分窗口大小
+
+  请打开 challenge.txt，将 header.html 的内容复制到 challenge.txt 中
+  对应的 <!-- HEADER --> 注释位置。
+  使用分屏同时查看两个文件。
+  完成后保存退出（:wq）。
+setup_files:
+  - path: challenge.txt
+    content: |
+      <!DOCTYPE html>
+      <html>
+      <!-- HEADER -->
+      <body>
+          <p>Hello World</p>
+      </body>
+      </html>
+  - path: header.html
+    content: |
+      <head>
+          <title>My Page</title>
+      </head>
+verify:
+  - type: file_content
+    path: challenge.txt
+    expect: |
+      <!DOCTYPE html>
+      <html>
+      <head>
+          <title>My Page</title>
+      </head>
+      <body>
+          <p>Hello World</p>
+      </body>
+      </html>
+hints:
+  - level: 1
+    text: "用 :split header.html 打开分屏查看 header 内容"
+  - level: 2
+    text: "在 header.html 窗口复制内容，切回 challenge.txt 粘贴替换注释行"
+  - level: 3
+    text: "直接在 challenge.txt 中操作：定位到注释行，cc 删除后输入 header 内容。或 :3d 后 :2r header.html"

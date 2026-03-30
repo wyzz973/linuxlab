@@ -1,0 +1,39 @@
+id: edit-block-insert
+title: "列编辑 - Ctrl-v 块操作"
+difficulty: 3
+category: vim
+subcategory: editing
+tags: [Ctrl-v, I, A, d]
+description: |
+  Vim 的块可视模式（Ctrl-v）支持列编辑：
+  - Ctrl-v 选择列区域后按 I：在选中列前插入文本
+  - Ctrl-v 选择列区域后按 A：在选中列后追加文本
+  - Ctrl-v 选择后按 d：删除选中列
+
+  请打开 challenge.txt，在每行开头添加 "// " 注释符号。
+  使用 Ctrl-v 块选择后 I 插入。
+  完成后保存退出（:wq）。
+setup_files:
+  - path: challenge.txt
+    content: |
+      int x = 10;
+      int y = 20;
+      int z = 30;
+      int w = 40;
+      int v = 50;
+verify:
+  - type: file_content
+    path: challenge.txt
+    expect: |
+      // int x = 10;
+      // int y = 20;
+      // int z = 30;
+      // int w = 40;
+      // int v = 50;
+hints:
+  - level: 1
+    text: "使用 Ctrl-v 进入块选择模式，选中所有行的第一列"
+  - level: 2
+    text: "gg 到第一行，Ctrl-v 进入块选择，4j 选中所有行，I 输入 '// '，Esc"
+  - level: 3
+    text: "gg Ctrl-v 4j I// <Esc>（注意 // 后有空格），:wq 保存。或 :%s/^/\\/\\/ /"

@@ -1,0 +1,45 @@
+id: multi-tabs
+title: "标签页 - :tabnew/gt/gT"
+difficulty: 3
+category: vim
+subcategory: multi-window
+tags: [":tabnew", ":tabe", gt, gT, ":tabclose"]
+description: |
+  Vim 标签页管理：
+  - :tabnew filename：在新标签页打开文件
+  - gt：切换到下一个标签页  gT：上一个标签页
+  - :tabclose：关闭当前标签页
+  - :tabs：列出所有标签页
+
+  请打开 challenge.txt（主配置文件），根据 db.conf 中的数据库配置，
+  修正 challenge.txt 中的数据库连接字符串。
+  完成后保存退出（:wq）。
+setup_files:
+  - path: challenge.txt
+    content: |
+      [app]
+      name = MyApp
+      db_connection = postgres://user:pass@localhost:5432/olddb
+      cache_ttl = 3600
+  - path: db.conf
+    content: |
+      DB_USER=admin
+      DB_PASS=secret123
+      DB_HOST=db.production.com
+      DB_PORT=5432
+      DB_NAME=appdb
+verify:
+  - type: file_content
+    path: challenge.txt
+    expect: |
+      [app]
+      name = MyApp
+      db_connection = postgres://admin:secret123@db.production.com:5432/appdb
+      cache_ttl = 3600
+hints:
+  - level: 1
+    text: "用 :tabnew db.conf 在新标签页打开数据库配置查看连接信息"
+  - level: 2
+    text: "查看 db.conf 中的值，用 gt 切回 challenge.txt，修改连接字符串"
+  - level: 3
+    text: "用替换命令：:s/user:pass@localhost:5432\\/olddb/admin:secret123@db.production.com:5432\\/appdb/"

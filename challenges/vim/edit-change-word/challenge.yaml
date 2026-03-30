@@ -1,0 +1,47 @@
+id: edit-change-word
+title: "修改操作 - cw/cc/C"
+difficulty: 2
+category: vim
+subcategory: editing
+tags: [cw, cc, C, c$]
+description: |
+  Vim 中的修改命令（删除并进入插入模式）：
+  - cw：修改一个单词  c2w：修改两个单词
+  - cc：修改整行
+  - C 或 c$：修改到行尾
+
+  请打开 challenge.txt，将所有函数名从 camelCase 改为 snake_case：
+  - getUserName → get_user_name
+  - setPassword → set_password
+  - isLoggedIn → is_logged_in
+  完成后保存退出（:wq）。
+setup_files:
+  - path: challenge.txt
+    content: |
+      def getUserName(user):
+          return user.name
+      
+      def setPassword(user, pwd):
+          user.password = pwd
+      
+      def isLoggedIn(user):
+          return user.active
+verify:
+  - type: file_content
+    path: challenge.txt
+    expect: |
+      def get_user_name(user):
+          return user.name
+      
+      def set_password(user, pwd):
+          user.password = pwd
+      
+      def is_logged_in(user):
+          return user.active
+hints:
+  - level: 1
+    text: "使用 cw 修改单词，将驼峰命名改为下划线命名"
+  - level: 2
+    text: "定位到函数名，cw 删除并输入新的 snake_case 名称"
+  - level: 3
+    text: "用搜索替换最高效：:%s/getUserName/get_user_name/g 等，逐个替换三个函数名"

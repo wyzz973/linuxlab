@@ -1,0 +1,35 @@
+id: edit-undo-redo
+title: "撤销与重做 - u/Ctrl-r"
+difficulty: 1
+category: vim
+subcategory: editing
+tags: [u, Ctrl-r]
+description: |
+  Vim 中的撤销和重做：
+  - u：撤销上一步操作（可多次按）
+  - Ctrl-r：重做被撤销的操作
+  - U：撤销当前行的所有修改
+
+  请打开 challenge.txt，只将第 2 行的 "error" 改为 "warning"，
+  其他行保持不变。如果不小心改错了，记得用 u 撤销。
+  完成后保存退出（:wq）。
+setup_files:
+  - path: challenge.txt
+    content: |
+      level=info
+      level=error
+      level=debug
+verify:
+  - type: file_content
+    path: challenge.txt
+    expect: |
+      level=info
+      level=warning
+      level=debug
+hints:
+  - level: 1
+    text: "如果不小心改错了行，按 u 撤销"
+  - level: 2
+    text: "移到第 2 行，用 /error 定位，cw 改为 warning"
+  - level: 3
+    text: ":2<Enter> 到第2行，f= 跳到等号，w 到 error，cw 输入 warning，Esc :wq"

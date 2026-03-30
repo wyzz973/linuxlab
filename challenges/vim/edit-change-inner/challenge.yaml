@@ -1,0 +1,36 @@
+id: edit-change-inner
+title: "文本对象操作 - ci/ca/di/da"
+difficulty: 3
+category: vim
+subcategory: editing
+tags: [ci, ca, di, da, "ci{", "ci\"", "ci("]
+description: |
+  Vim 的文本对象让你操作括号/引号内的内容：
+  - ci"：修改双引号内的内容  ca"：修改包含引号的内容
+  - ci(：修改小括号内的内容  ci{：修改大括号内的内容
+  - di"：删除引号内的内容  da(：删除包含括号的内容
+
+  请打开 challenge.txt，将所有字符串的值替换为指定新值：
+  - "hello world" → "goodbye world"
+  - "localhost" → "production.server.com"
+  完成后保存退出（:wq）。
+setup_files:
+  - path: challenge.txt
+    content: |
+      message = "hello world"
+      server = "localhost"
+      greeting = print(message)
+verify:
+  - type: file_content
+    path: challenge.txt
+    expect: |
+      message = "goodbye world"
+      server = "production.server.com"
+      greeting = print(message)
+hints:
+  - level: 1
+    text: "光标在引号内或引号上时，ci\" 可以删除引号内容并进入插入模式"
+  - level: 2
+    text: "在第 1 行引号内按 ci\" 输入 goodbye world，在第 2 行按 ci\" 输入 production.server.com"
+  - level: 3
+    text: "/hello<Enter> 定位，ci\" 输入 goodbye world，Esc，/localhost<Enter>，ci\" 输入 production.server.com，Esc :wq"

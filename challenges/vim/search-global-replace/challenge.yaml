@@ -1,0 +1,39 @@
+id: search-global-replace
+title: "全局替换 - :%s/old/new/g"
+difficulty: 2
+category: vim
+subcategory: search-replace
+tags: [":%s", "/g"]
+description: |
+  Vim 中的全局替换命令：
+  - :%s/old/new/g：全文替换所有 old 为 new
+  - :%s/old/new/gc：替换前逐个确认
+  - :s/old/new/g：只替换当前行
+
+  请打开 challenge.txt，将所有的 "http://" 替换为 "https://"。
+  使用全局替换命令一次性完成。
+  完成后保存退出（:wq）。
+setup_files:
+  - path: challenge.txt
+    content: |
+      api_url = "http://api.example.com/v1"
+      cdn_url = "http://cdn.example.com/assets"
+      auth_url = "http://auth.example.com/login"
+      docs_url = "http://docs.example.com/api"
+      webhook = "http://hooks.example.com/notify"
+verify:
+  - type: file_content
+    path: challenge.txt
+    expect: |
+      api_url = "https://api.example.com/v1"
+      cdn_url = "https://cdn.example.com/assets"
+      auth_url = "https://auth.example.com/login"
+      docs_url = "https://docs.example.com/api"
+      webhook = "https://hooks.example.com/notify"
+hints:
+  - level: 1
+    text: "使用 :%s 命令进行全局替换"
+  - level: 2
+    text: ":%s/http:\\/\\//https:\\/\\//g 注意转义斜杠"
+  - level: 3
+    text: "可以用不同的分隔符避免转义：:%s#http://#https://#g，:wq 保存"

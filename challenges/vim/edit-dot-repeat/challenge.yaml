@@ -1,0 +1,37 @@
+id: edit-dot-repeat
+title: "重复操作 - . 命令"
+difficulty: 2
+category: vim
+subcategory: editing
+tags: ["."]
+description: |
+  Vim 中的 . 命令重复上一次修改操作，是最强大的效率工具之一。
+  例如：cw 修改一个单词后，按 n 找到下一个同样的词，按 . 重复修改。
+
+  请打开 challenge.txt，将所有 "var" 声明改为 "let" 声明。
+  使用 . 命令高效地重复修改。
+  完成后保存退出（:wq）。
+setup_files:
+  - path: challenge.txt
+    content: |
+      var name = "Alice";
+      var age = 30;
+      var city = "Shanghai";
+      var role = "engineer";
+      var level = "senior";
+verify:
+  - type: file_content
+    path: challenge.txt
+    expect: |
+      let name = "Alice";
+      let age = 30;
+      let city = "Shanghai";
+      let role = "engineer";
+      let level = "senior";
+hints:
+  - level: 1
+    text: ". 命令可以重复上一次修改，先改一个 var 为 let，再用 . 重复"
+  - level: 2
+    text: "先 cw 把第一个 var 改为 let，然后 j0 到下一行开头，. 重复修改"
+  - level: 3
+    text: "cw let<Esc> 改第一个，然后 j0. 重复4次。或更高效：:%s/var/let/g"

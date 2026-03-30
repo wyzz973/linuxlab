@@ -1,0 +1,61 @@
+id: nav-page-scroll
+title: "翻页与段落跳转 - Ctrl-f/b 和 {/}"
+difficulty: 2
+category: vim
+subcategory: navigation
+tags: [Ctrl-f, Ctrl-b, Ctrl-d, Ctrl-u, "{", "}"]
+description: |
+  Vim 中翻页和段落导航：
+  - Ctrl-f：向下翻一页  Ctrl-b：向上翻一页
+  - Ctrl-d：向下翻半页  Ctrl-u：向上翻半页
+  - }：跳到下一个空行（段落末尾）
+  - {：跳到上一个空行（段落开头）
+
+  请打开 challenge.txt，这是一个较长的日志文件。
+  找到最后一个段落中的 "ERROR" 并将其改为 "FIXED"。
+  练习使用翻页和段落跳转快速定位。
+  完成后保存退出（:wq）。
+setup_files:
+  - path: challenge.txt
+    content: |
+      [2024-01-15 10:00:01] INFO: Server started
+      [2024-01-15 10:00:02] INFO: Loading config
+      [2024-01-15 10:00:03] INFO: Config loaded
+      
+      [2024-01-15 10:05:01] INFO: User login: alice
+      [2024-01-15 10:05:02] INFO: Session created
+      [2024-01-15 10:05:03] INFO: Dashboard loaded
+      
+      [2024-01-15 10:10:01] WARN: High memory usage
+      [2024-01-15 10:10:02] WARN: Cache cleared
+      [2024-01-15 10:10:03] INFO: Memory recovered
+      
+      [2024-01-15 10:15:01] INFO: Backup started
+      [2024-01-15 10:15:02] ERROR: Disk write failed
+      [2024-01-15 10:15:03] INFO: Retry scheduled
+verify:
+  - type: file_content
+    path: challenge.txt
+    expect: |
+      [2024-01-15 10:00:01] INFO: Server started
+      [2024-01-15 10:00:02] INFO: Loading config
+      [2024-01-15 10:00:03] INFO: Config loaded
+      
+      [2024-01-15 10:05:01] INFO: User login: alice
+      [2024-01-15 10:05:02] INFO: Session created
+      [2024-01-15 10:05:03] INFO: Dashboard loaded
+      
+      [2024-01-15 10:10:01] WARN: High memory usage
+      [2024-01-15 10:10:02] WARN: Cache cleared
+      [2024-01-15 10:10:03] INFO: Memory recovered
+      
+      [2024-01-15 10:15:01] INFO: Backup started
+      [2024-01-15 10:15:02] FIXED: Disk write failed
+      [2024-01-15 10:15:03] INFO: Retry scheduled
+hints:
+  - level: 1
+    text: "使用 } 在段落间跳转，快速到达文件末尾区域"
+  - level: 2
+    text: "G 跳到文件末尾，然后 ?ERROR 向上搜索 ERROR"
+  - level: 3
+    text: "G 跳到最后，?ERROR<Enter> 搜索，cw 输入 FIXED，Esc 后 :wq"
