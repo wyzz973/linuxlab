@@ -1,0 +1,22 @@
+id: ls-recursive
+title: "递归列出目录内容 - ls -R"
+difficulty: 1
+category: linux-basics
+subcategory: file-operations
+tags: [ls]
+description: |
+  ls -R 可以递归列出目录下所有子目录的内容。
+  
+  请递归列出 /home/lab/project 目录的完整文件结构，
+  保存到 /tmp/result.txt
+hints:
+  - level: 1
+    text: "ls -R 递归列出所有内容"
+  - level: 2
+    text: "ls -R /home/lab/project"
+  - level: 3
+    text: "ls -R /home/lab/project > /tmp/result.txt"
+verify:
+  - type: file_content
+    path: /tmp/result.txt
+    expect: "main.py"

@@ -1,0 +1,24 @@
+id: less-search
+title: "使用 grep 在大文件中搜索（模拟 less 搜索）"
+difficulty: 2
+category: linux-basics
+subcategory: file-viewing
+tags: [grep, less]
+description: |
+  在实际工作中，我们经常需要在大文件中搜索特定内容。
+  less 可以交互式搜索（按/），而 grep 可以在脚本中搜索。
+  
+  /home/lab/large_log.txt 是一个大日志文件。
+  请找出所有包含 "CRITICAL" 的行，同时显示匹配行的前后各 2 行上下文，
+  保存到 /tmp/result.txt
+hints:
+  - level: 1
+    text: "grep -C N 显示匹配行的前后 N 行上下文"
+  - level: 2
+    text: "grep -C 2 'CRITICAL' 文件"
+  - level: 3
+    text: "grep -C 2 'CRITICAL' /home/lab/large_log.txt > /tmp/result.txt"
+verify:
+  - type: file_content
+    path: /tmp/result.txt
+    expect: "CRITICAL"

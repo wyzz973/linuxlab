@@ -1,0 +1,22 @@
+id: sed-inplace
+title: "sed 原地编辑文件"
+difficulty: 3
+category: linux-basics
+subcategory: pipes-redirects
+tags: [sed]
+description: |
+  sed -i 可以直接修改原文件（而不仅仅是输出到标准输出）。
+  
+  /home/lab/nginx.conf 中端口配置为 80。
+  请使用 sed -i 直接修改文件，将端口 80 改为 8443。
+hints:
+  - level: 1
+    text: "sed -i 直接修改文件内容"
+  - level: 2
+    text: "sed -i 's/旧/新/g' 文件"
+  - level: 3
+    text: "sed -i 's/80/8443/g' /home/lab/nginx.conf"
+verify:
+  - type: file_content
+    path: /home/lab/nginx.conf
+    expect: "8443"

@@ -1,0 +1,22 @@
+id: sudo-config
+title: "sudo 权限配置"
+difficulty: 4
+category: linux-basics
+subcategory: user-management
+tags: [sudo, visudo]
+description: |
+  sudo 允许普通用户以 root 权限执行命令。
+  
+  请将用户 operator 添加到 sudo 组（或 wheel 组），
+  使其可以使用 sudo 执行命令。
+hints:
+  - level: 1
+    text: "可以通过将用户加入 sudo 组来授权"
+  - level: 2
+    text: "usermod -aG sudo 用户名"
+  - level: 3
+    text: "usermod -aG sudo operator"
+verify:
+  - type: command_output
+    command: "groups operator"
+    expect: "sudo"

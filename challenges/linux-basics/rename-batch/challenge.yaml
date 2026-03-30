@@ -1,0 +1,21 @@
+id: rename-batch
+title: "批量重命名文件"
+difficulty: 3
+category: linux-basics
+subcategory: file-operations
+tags: [mv, rename, for]
+description: |
+  在实际工作中经常需要批量重命名文件。
+  
+  /home/lab/images 目录下有一些文件名格式为 IMG_001.JPG, IMG_002.JPG 等。
+  请将所有文件的扩展名从大写 .JPG 改为小写 .jpg。
+hints:
+  - level: 1
+    text: "可以使用 for 循环配合 mv 命令"
+  - level: 2
+    text: "for f in *.JPG; do mv $f ${f%.JPG}.jpg; done"
+  - level: 3
+    text: "cd /home/lab/images && for f in *.JPG; do mv \"$f\" \"${f%.JPG}.jpg\"; done"
+verify:
+  - type: file_exists
+    path: /home/lab/images/IMG_001.jpg

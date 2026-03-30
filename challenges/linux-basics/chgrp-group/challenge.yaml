@@ -1,0 +1,21 @@
+id: chgrp-group
+title: "修改文件所属组 - chgrp"
+difficulty: 2
+category: linux-basics
+subcategory: permissions
+tags: [chgrp]
+description: |
+  chgrp 命令专门用于修改文件的所属组。
+  
+  请将 /home/lab/project 目录及其所有文件的所属组改为 developers。
+hints:
+  - level: 1
+    text: "chgrp -R 递归修改组"
+  - level: 2
+    text: "chgrp -R 组名 目录"
+  - level: 3
+    text: "chgrp -R developers /home/lab/project"
+verify:
+  - type: command_output
+    command: "stat -c %G /home/lab/project/src/main.py"
+    expect: "developers"

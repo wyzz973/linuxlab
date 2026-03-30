@@ -1,0 +1,22 @@
+id: rmdir-empty
+title: "删除空目录 - rmdir"
+difficulty: 1
+category: linux-basics
+subcategory: file-operations
+tags: [rmdir]
+description: |
+  rmdir 命令用于删除空目录。与 rm -r 不同，rmdir 只能删除空目录。
+  
+  /home/lab/cleanup 下有几个目录，有的是空的，有的不是。
+  请使用 rmdir 删除所有空目录：empty1, empty2, empty3
+  保留非空目录 important（它里面有文件）。
+hints:
+  - level: 1
+    text: "rmdir 只能删除空目录，非空目录会报错"
+  - level: 2
+    text: "rmdir 可以一次指定多个目录"
+  - level: 3
+    text: "rmdir /home/lab/cleanup/empty1 /home/lab/cleanup/empty2 /home/lab/cleanup/empty3"
+verify:
+  - type: file_exists
+    path: /home/lab/cleanup/important/data.txt

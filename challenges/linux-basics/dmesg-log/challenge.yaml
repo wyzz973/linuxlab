@@ -1,0 +1,21 @@
+id: dmesg-log
+title: "查看系统日志 - dmesg & journalctl"
+difficulty: 2
+category: linux-basics
+subcategory: system-info
+tags: [dmesg, journalctl]
+description: |
+  系统日志记录了内核和系统事件。
+  
+  请使用 dmesg 查看内核日志的最后 20 行，
+  保存到 /tmp/result.txt
+hints:
+  - level: 1
+    text: "dmesg 显示内核日志，可以配合 tail 使用"
+  - level: 2
+    text: "dmesg | tail -20 或 dmesg --level=err"
+  - level: 3
+    text: "dmesg | tail -20 > /tmp/result.txt"
+verify:
+  - type: file_exists
+    path: /tmp/result.txt

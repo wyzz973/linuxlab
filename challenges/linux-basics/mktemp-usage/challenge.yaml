@@ -1,0 +1,22 @@
+id: mktemp-usage
+title: "创建临时文件和目录 - mktemp"
+difficulty: 2
+category: linux-basics
+subcategory: file-operations
+tags: [mktemp]
+description: |
+  mktemp 命令可以安全地创建唯一的临时文件或目录。
+  
+  请完成以下任务：
+  1. 使用 mktemp 创建一个临时文件，将其路径保存到 /tmp/tempfile_path.txt
+  2. 使用 mktemp -d 创建一个临时目录，将其路径保存到 /tmp/tempdir_path.txt
+hints:
+  - level: 1
+    text: "mktemp 创建临时文件，mktemp -d 创建临时目录"
+  - level: 2
+    text: "将 mktemp 的输出保存到文件中"
+  - level: 3
+    text: "mktemp > /tmp/tempfile_path.txt && mktemp -d > /tmp/tempdir_path.txt"
+verify:
+  - type: file_exists
+    path: /tmp/tempfile_path.txt

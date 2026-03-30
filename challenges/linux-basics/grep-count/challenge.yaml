@@ -1,0 +1,23 @@
+id: grep-count
+title: "统计匹配次数 - grep -c"
+difficulty: 2
+category: linux-basics
+subcategory: pipes-redirects
+tags: [grep]
+description: |
+  grep -c 可以统计匹配的行数，-i 忽略大小写。
+  
+  /home/lab/survey.txt 包含用户反馈。
+  请统计出包含 "error" 或 "Error" 或 "ERROR"（忽略大小写）的行数，
+  将数字保存到 /tmp/result.txt
+hints:
+  - level: 1
+    text: "grep -i 忽略大小写，-c 统计行数"
+  - level: 2
+    text: "grep -ic 'error' 文件"
+  - level: 3
+    text: "grep -ic 'error' /home/lab/survey.txt > /tmp/result.txt"
+verify:
+  - type: file_content
+    path: /tmp/result.txt
+    expect: "5"

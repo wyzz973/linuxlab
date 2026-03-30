@@ -1,0 +1,23 @@
+id: rm-recursive
+title: "递归删除目录 - rm -rf"
+difficulty: 2
+category: linux-basics
+subcategory: file-operations
+tags: [rm]
+description: |
+  rm -rf 是删除整个目录树的命令，使用时要非常小心！
+  
+  /home/lab/old_project 是一个废弃的项目目录。
+  请删除整个 old_project 目录及其所有内容，
+  但不要删除 /home/lab/current_project 目录。
+hints:
+  - level: 1
+    text: "rm -r 递归删除，-f 强制不提示"
+  - level: 2
+    text: "rm -rf 目录名（要非常小心指定正确的目录！）"
+  - level: 3
+    text: "rm -rf /home/lab/old_project"
+verify:
+  - type: exit_code
+    command: "test -d /home/lab/old_project"
+    expect: 1

@@ -1,0 +1,23 @@
+id: process-tree
+title: "查看进程树 - pstree"
+difficulty: 1
+category: linux-basics
+subcategory: process-management
+tags: [pstree, ps]
+description: |
+  pstree 以树状结构显示进程之间的父子关系。
+  
+  请以树状格式显示所有进程，包括 PID，
+  保存到 /tmp/result.txt
+  
+  如果系统没有 pstree，使用 ps --forest 替代。
+hints:
+  - level: 1
+    text: "pstree -p 显示带 PID 的进程树"
+  - level: 2
+    text: "pstree -p 或 ps auxf"
+  - level: 3
+    text: "pstree -p > /tmp/result.txt 2>/dev/null || ps auxf > /tmp/result.txt"
+verify:
+  - type: file_exists
+    path: /tmp/result.txt

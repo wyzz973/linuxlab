@@ -1,0 +1,23 @@
+id: awk-sum
+title: "awk 统计计算 - 求和与平均"
+difficulty: 4
+category: linux-basics
+subcategory: pipes-redirects
+tags: [awk]
+description: |
+  awk 可以方便地进行数据统计。
+  
+  /home/lab/transactions.txt 记录了交易金额（每行一个数字）。
+  请使用 awk 计算总金额和平均金额，
+  格式为 "Total: XXX Average: XXX"，保存到 /tmp/result.txt
+hints:
+  - level: 1
+    text: "awk 可以用变量累加，END 块输出结果"
+  - level: 2
+    text: "awk '{sum+=$1} END{print \"Total:\", sum, \"Average:\", sum/NR}'"
+  - level: 3
+    text: "awk '{sum+=$1} END{print \"Total:\", sum, \"Average:\", sum/NR}' /home/lab/transactions.txt > /tmp/result.txt"
+verify:
+  - type: file_content
+    path: /tmp/result.txt
+    expect: "Total:"

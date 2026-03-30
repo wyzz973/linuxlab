@@ -1,0 +1,22 @@
+id: find-type
+title: "按类型查找 - find -type"
+difficulty: 2
+category: linux-basics
+subcategory: file-operations
+tags: [find]
+description: |
+  find 命令可以按文件类型查找。
+  
+  请在 /home/lab/mixed 目录下找出所有目录（不包括文件），
+  将结果保存到 /tmp/result.txt
+hints:
+  - level: 1
+    text: "find -type d 查找目录，-type f 查找普通文件"
+  - level: 2
+    text: "find /path -type d"
+  - level: 3
+    text: "find /home/lab/mixed -type d > /tmp/result.txt"
+verify:
+  - type: file_content
+    path: /tmp/result.txt
+    expect: "subdir"

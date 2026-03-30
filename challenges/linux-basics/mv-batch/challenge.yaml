@@ -1,0 +1,21 @@
+id: mv-batch
+title: "批量移动文件"
+difficulty: 2
+category: linux-basics
+subcategory: file-operations
+tags: [mv, find]
+description: |
+  将多个文件批量移动到另一个目录。
+  
+  /home/lab/inbox 目录中有各种文件。
+  请将所有 .jpg 文件移动到 /home/lab/photos 目录中。
+hints:
+  - level: 1
+    text: "可以使用通配符或 find + mv"
+  - level: 2
+    text: "mv /home/lab/inbox/*.jpg /home/lab/photos/"
+  - level: 3
+    text: "mv /home/lab/inbox/*.jpg /home/lab/photos/"
+verify:
+  - type: file_exists
+    path: /home/lab/photos/vacation.jpg

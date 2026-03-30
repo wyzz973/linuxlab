@@ -1,0 +1,23 @@
+id: grep-invert
+title: "反向过滤 - grep -v"
+difficulty: 2
+category: linux-basics
+subcategory: pipes-redirects
+tags: [grep]
+description: |
+  grep -v 用于显示不匹配的行（反向过滤）。
+  
+  /home/lab/processes.txt 包含进程列表。
+  请过滤掉所有包含 "grep" 和 "[" 的行（通常是 grep 自身和内核线程），
+  将结果保存到 /tmp/result.txt
+hints:
+  - level: 1
+    text: "grep -v '模式' 显示不匹配的行"
+  - level: 2
+    text: "可以用管道连接多个 grep -v"
+  - level: 3
+    text: "grep -v 'grep' /home/lab/processes.txt | grep -v '\\[' > /tmp/result.txt"
+verify:
+  - type: file_content
+    path: /tmp/result.txt
+    expect: "nginx"

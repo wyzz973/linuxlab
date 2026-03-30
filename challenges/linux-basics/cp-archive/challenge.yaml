@@ -1,0 +1,21 @@
+id: cp-archive
+title: "归档模式复制 - cp -a"
+difficulty: 2
+category: linux-basics
+subcategory: file-operations
+tags: [cp]
+description: |
+  cp -a 等同于 cp -pdr，完整保留文件属性、链接和目录结构。
+  这是备份文件最安全的方式。
+  
+  请使用 cp -a 将 /home/lab/production 完整备份到 /home/lab/backup_production
+hints:
+  - level: 1
+    text: "cp -a 是最完整的复制方式"
+  - level: 2
+    text: "cp -a 源目录 目标目录"
+  - level: 3
+    text: "cp -a /home/lab/production /home/lab/backup_production"
+verify:
+  - type: file_exists
+    path: /home/lab/backup_production/app/server.js

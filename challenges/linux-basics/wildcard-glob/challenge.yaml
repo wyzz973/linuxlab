@@ -1,0 +1,26 @@
+id: wildcard-glob
+title: "通配符使用 - *, ?, []"
+difficulty: 2
+category: linux-basics
+subcategory: file-operations
+tags: [ls, glob]
+description: |
+  Shell 通配符是文件操作的基础：
+  - * 匹配任意字符
+  - ? 匹配单个字符  
+  - [] 匹配括号内的任一字符
+  
+  /home/lab/files 目录下有多个文件。
+  请列出所有以 "data" 开头且扩展名为 .txt 的文件，
+  保存到 /tmp/result.txt
+hints:
+  - level: 1
+    text: "使用 * 通配符匹配"
+  - level: 2
+    text: "ls data*.txt"
+  - level: 3
+    text: "ls /home/lab/files/data*.txt > /tmp/result.txt"
+verify:
+  - type: file_content
+    path: /tmp/result.txt
+    expect: "data"

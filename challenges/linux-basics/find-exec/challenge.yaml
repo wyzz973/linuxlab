@@ -1,0 +1,22 @@
+id: find-exec
+title: "find -exec 对搜索结果执行命令"
+difficulty: 3
+category: linux-basics
+subcategory: file-operations
+tags: [find]
+description: |
+  find 的 -exec 选项可以对每个找到的文件执行命令。
+  
+  请在 /home/lab/scripts 目录下找到所有 .sh 文件，
+  并给它们都添加执行权限。
+hints:
+  - level: 1
+    text: "find -exec command {} \; 对每个结果执行命令"
+  - level: 2
+    text: "find /path -name '*.sh' -exec chmod +x {} \;"
+  - level: 3
+    text: "find /home/lab/scripts -name '*.sh' -exec chmod +x {} \;"
+verify:
+  - type: command_output
+    command: "stat -c %a /home/lab/scripts/deploy.sh"
+    expect: "755"

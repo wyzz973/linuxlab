@@ -1,0 +1,23 @@
+id: pwd-cd
+title: "目录导航 - cd 和 pwd"
+difficulty: 1
+category: linux-basics
+subcategory: file-operations
+tags: [cd, pwd]
+description: |
+  cd 用于切换目录，pwd 显示当前目录。
+  
+  请完成以下任务：
+  1. 切换到 /home/lab/workspace 目录
+  2. 使用 pwd 将当前目录路径保存到 /tmp/result.txt
+hints:
+  - level: 1
+    text: "cd 切换目录，pwd 显示当前目录"
+  - level: 2
+    text: "cd /path && pwd > /tmp/result.txt"
+  - level: 3
+    text: "cd /home/lab/workspace && pwd > /tmp/result.txt"
+verify:
+  - type: file_content
+    path: /tmp/result.txt
+    expect: "/home/lab/workspace"

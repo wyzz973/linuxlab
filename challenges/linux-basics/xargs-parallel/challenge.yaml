@@ -1,0 +1,23 @@
+id: xargs-parallel
+title: "xargs 批量操作"
+difficulty: 3
+category: linux-basics
+subcategory: pipes-redirects
+tags: [xargs]
+description: |
+  xargs 从标准输入读取数据，转换为命令的参数来执行。
+  
+  /home/lab/urls.txt 包含一系列 URL（每行一个）。
+  请使用 xargs 批量创建以 URL 最后部分命名的空文件到 /home/lab/downloads/ 目录。
+  
+  例如：URL "http://example.com/file1.txt" 应创建 /home/lab/downloads/file1.txt
+hints:
+  - level: 1
+    text: "可以用 basename 提取文件名，然后用 xargs 和 touch"
+  - level: 2
+    text: "cat urls.txt | xargs -I{} bash -c 'touch /home/lab/downloads/$(basename {})'"
+  - level: 3
+    text: "cat /home/lab/urls.txt | xargs -I{} bash -c 'touch /home/lab/downloads/$(basename \"{}\")'"
+verify:
+  - type: file_exists
+    path: /home/lab/downloads/report.pdf

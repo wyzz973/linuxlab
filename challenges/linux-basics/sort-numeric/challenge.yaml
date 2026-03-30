@@ -1,0 +1,24 @@
+id: sort-numeric
+title: "多条件排序 - sort 高级用法"
+difficulty: 3
+category: linux-basics
+subcategory: pipes-redirects
+tags: [sort]
+description: |
+  sort 命令有许多高级排序选项。
+  
+  /home/lab/scores.txt 包含学生成绩（空格分隔）：
+  姓名 数学 语文 英语
+  
+  请按数学成绩（第2列）从高到低排序，保存到 /tmp/result.txt
+hints:
+  - level: 1
+    text: "sort -k 指定按第几列排序，-n 数字排序，-r 逆序"
+  - level: 2
+    text: "sort -k2 -nr 按第2列数字逆序"
+  - level: 3
+    text: "sort -k2 -nr /home/lab/scores.txt > /tmp/result.txt"
+verify:
+  - type: file_content
+    path: /tmp/result.txt
+    expect: "Alice"
