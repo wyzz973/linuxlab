@@ -1,0 +1,22 @@
+id: df-usage
+title: "查看磁盘使用情况 - df"
+difficulty: 1
+category: linux-basics
+subcategory: disk-management
+tags: [df]
+description: |
+  df 命令用于查看文件系统的磁盘空间使用情况。
+  
+  请以人类可读的格式（KB/MB/GB）显示所有已挂载文件系统的磁盘使用情况，
+  并包含文件系统类型信息，将结果保存到 /tmp/result.txt
+hints:
+  - level: 1
+    text: "df -h 以人类可读格式显示"
+  - level: 2
+    text: "df -hT 同时显示文件系统类型"
+  - level: 3
+    text: "df -hT > /tmp/result.txt"
+verify:
+  - type: file_content
+    path: /tmp/result.txt
+    expect: "Filesystem"

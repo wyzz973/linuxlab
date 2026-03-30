@@ -1,0 +1,22 @@
+id: find-by-size
+title: "按大小查找文件"
+difficulty: 2
+category: linux-basics
+subcategory: file-operations
+tags: [find]
+description: |
+  系统管理员经常需要找到占用空间大的文件。
+  
+  请在 /home/lab/storage 目录下找到所有大于 50KB 的文件，
+  将结果保存到 /tmp/result.txt
+hints:
+  - level: 1
+    text: "find 命令有 -size 选项可以按大小过滤"
+  - level: 2
+    text: "find -size +50k 表示大于 50KB"
+  - level: 3
+    text: "find /home/lab/storage -size +50k > /tmp/result.txt"
+verify:
+  - type: file_content
+    path: /tmp/result.txt
+    expect: "bigfile"

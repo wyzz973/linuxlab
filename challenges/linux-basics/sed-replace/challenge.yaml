@@ -1,0 +1,23 @@
+id: sed-replace
+title: "文本替换 - sed"
+difficulty: 2
+category: linux-basics
+subcategory: pipes-redirects
+tags: [sed]
+description: |
+  sed 是流编辑器，常用于文本替换。
+  
+  /home/lab/config.txt 中数据库主机地址写错了。
+  请将文件中所有的 "localhost" 替换为 "db.production.com"，
+  将修改后的内容保存到 /tmp/result.txt（不修改原文件）。
+hints:
+  - level: 1
+    text: "sed 's/旧/新/g' 可以全局替换"
+  - level: 2
+    text: "sed 's/localhost/db.production.com/g' 文件"
+  - level: 3
+    text: "sed 's/localhost/db.production.com/g' /home/lab/config.txt > /tmp/result.txt"
+verify:
+  - type: file_content
+    path: /tmp/result.txt
+    expect: "db.production.com"

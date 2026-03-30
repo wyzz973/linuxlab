@@ -1,0 +1,22 @@
+id: mv-rename
+title: "移动和重命名文件"
+difficulty: 1
+category: linux-basics
+subcategory: file-operations
+tags: [mv]
+description: |
+  使用 mv 命令可以移动文件，也可以重命名文件。
+  
+  请完成以下任务：
+  1. 将 /home/lab/old_name.txt 重命名为 /home/lab/new_name.txt
+  2. 将 /home/lab/temp/data.csv 移动到 /home/lab/archive/ 目录中
+hints:
+  - level: 1
+    text: "mv 命令既可以移动文件也可以重命名文件"
+  - level: 2
+    text: "mv 旧名 新名 用于重命名；mv 文件 目录/ 用于移动"
+  - level: 3
+    text: "mv /home/lab/old_name.txt /home/lab/new_name.txt && mv /home/lab/temp/data.csv /home/lab/archive/"
+verify:
+  - type: file_exists
+    path: /home/lab/new_name.txt

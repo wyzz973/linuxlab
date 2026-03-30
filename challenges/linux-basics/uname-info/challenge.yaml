@@ -1,0 +1,23 @@
+id: uname-info
+title: "查看系统信息 - uname"
+difficulty: 1
+category: linux-basics
+subcategory: system-info
+tags: [uname, hostname]
+description: |
+  uname 命令显示系统内核和操作系统信息。
+  
+  请完成以下任务：
+  1. 使用 uname -a 显示所有系统信息，保存到 /tmp/uname_result.txt
+  2. 使用 hostname 显示主机名，保存到 /tmp/hostname_result.txt
+hints:
+  - level: 1
+    text: "uname -a 显示所有信息"
+  - level: 2
+    text: "uname -a 和 hostname 是两个简单命令"
+  - level: 3
+    text: "uname -a > /tmp/uname_result.txt && hostname > /tmp/hostname_result.txt"
+verify:
+  - type: file_content
+    path: /tmp/uname_result.txt
+    expect: "Linux"

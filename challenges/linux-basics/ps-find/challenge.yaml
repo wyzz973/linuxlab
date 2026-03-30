@@ -1,0 +1,22 @@
+id: ps-find
+title: "查看进程信息 - ps"
+difficulty: 1
+category: linux-basics
+subcategory: process-management
+tags: [ps]
+description: |
+  ps 命令用于查看当前运行的进程。
+  
+  请列出系统中所有进程的详细信息（用户、PID、CPU、内存、命令等），
+  保存到 /tmp/result.txt
+hints:
+  - level: 1
+    text: "ps 有多种选项组合显示进程"
+  - level: 2
+    text: "ps aux 显示所有用户的所有进程"
+  - level: 3
+    text: "ps aux > /tmp/result.txt"
+verify:
+  - type: file_content
+    path: /tmp/result.txt
+    expect: "PID"

@@ -1,0 +1,23 @@
+id: who-id
+title: "查看用户信息 - who, id, w"
+difficulty: 1
+category: linux-basics
+subcategory: user-management
+tags: [who, id, w]
+description: |
+  了解当前登录的用户信息是系统管理的基础。
+  
+  请完成以下任务：
+  1. 使用 id 命令查看当前用户的 UID、GID 和所属组信息，保存到 /tmp/id_result.txt
+  2. 使用 whoami 查看当前用户名，保存到 /tmp/whoami_result.txt
+hints:
+  - level: 1
+    text: "id 显示用户身份信息，whoami 显示当前用户名"
+  - level: 2
+    text: "直接运行 id 和 whoami"
+  - level: 3
+    text: "id > /tmp/id_result.txt && whoami > /tmp/whoami_result.txt"
+verify:
+  - type: file_content
+    path: /tmp/id_result.txt
+    expect: "uid="

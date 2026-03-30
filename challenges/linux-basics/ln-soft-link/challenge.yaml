@@ -1,0 +1,22 @@
+id: ln-soft-link
+title: "创建软链接（符号链接）"
+difficulty: 2
+category: linux-basics
+subcategory: file-operations
+tags: [ln]
+description: |
+  软链接（符号链接）类似于 Windows 的快捷方式，指向另一个文件的路径。
+  
+  请完成以下任务：
+  1. 为 /home/lab/config/app.conf 创建一个软链接 /home/lab/app.conf
+  2. 为 /home/lab/scripts 目录创建一个软链接 /home/lab/bin
+hints:
+  - level: 1
+    text: "ln 命令的 -s 选项创建软链接"
+  - level: 2
+    text: "ln -s 源文件 链接名"
+  - level: 3
+    text: "ln -s /home/lab/config/app.conf /home/lab/app.conf && ln -s /home/lab/scripts /home/lab/bin"
+verify:
+  - type: file_exists
+    path: /home/lab/app.conf

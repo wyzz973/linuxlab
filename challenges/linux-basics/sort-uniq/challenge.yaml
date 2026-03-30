@@ -1,0 +1,23 @@
+id: sort-uniq
+title: "排序和去重 - sort & uniq"
+difficulty: 2
+category: linux-basics
+subcategory: pipes-redirects
+tags: [sort, uniq]
+description: |
+  sort 和 uniq 是处理文本数据的常用组合。
+  
+  /home/lab/access.log 记录了访问的 IP 地址（每行一个）。
+  请统计每个 IP 的访问次数，按访问次数从多到少排序，
+  结果保存到 /tmp/result.txt
+hints:
+  - level: 1
+    text: "sort 排序后用 uniq -c 统计次数"
+  - level: 2
+    text: "sort | uniq -c | sort -rn"
+  - level: 3
+    text: "sort /home/lab/access.log | uniq -c | sort -rn > /tmp/result.txt"
+verify:
+  - type: file_content
+    path: /tmp/result.txt
+    expect: "192.168"

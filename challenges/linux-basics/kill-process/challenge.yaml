@@ -1,0 +1,22 @@
+id: kill-process
+title: "终止进程 - kill"
+difficulty: 2
+category: linux-basics
+subcategory: process-management
+tags: [kill, ps, grep]
+description: |
+  有时需要终止失控或不需要的进程。
+  
+  系统中有一个名为 "rogue_process" 的后台进程在运行。
+  请找到该进程并终止它。
+hints:
+  - level: 1
+    text: "先用 ps 或 pgrep 找到进程 PID"
+  - level: 2
+    text: "pgrep -f rogue_process 或 ps aux | grep rogue_process"
+  - level: 3
+    text: "kill $(pgrep -f rogue_process) 或 pkill -f rogue_process"
+verify:
+  - type: command_output
+    command: "pgrep -f rogue_process | wc -l"
+    expect: "0"

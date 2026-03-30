@@ -1,0 +1,23 @@
+id: mkdir-nested
+title: "创建多层嵌套目录"
+difficulty: 1
+category: linux-basics
+subcategory: file-operations
+tags: [mkdir]
+description: |
+  使用 mkdir 命令创建目录结构。
+  
+  请一条命令创建以下嵌套目录结构：
+  /home/lab/project/src/main/java
+  
+  注意：中间的父目录可能不存在，需要自动创建。
+hints:
+  - level: 1
+    text: "mkdir 有一个选项可以递归创建父目录"
+  - level: 2
+    text: "使用 mkdir -p 选项"
+  - level: 3
+    text: "mkdir -p /home/lab/project/src/main/java"
+verify:
+  - type: file_exists
+    path: /home/lab/project/src/main/java

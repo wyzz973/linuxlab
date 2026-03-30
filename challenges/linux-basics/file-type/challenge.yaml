@@ -1,0 +1,23 @@
+id: file-type
+title: "识别文件类型"
+difficulty: 1
+category: linux-basics
+subcategory: file-operations
+tags: [file]
+description: |
+  file 命令可以识别文件的真实类型，不依赖扩展名。
+  
+  /home/lab/mystery 目录下有几个文件，扩展名可能是错误的。
+  请使用 file 命令检查每个文件的真实类型，
+  将结果保存到 /tmp/result.txt
+hints:
+  - level: 1
+    text: "file 命令可以检测文件类型"
+  - level: 2
+    text: "file 文件名 会显示文件的真实类型"
+  - level: 3
+    text: "file /home/lab/mystery/* > /tmp/result.txt"
+verify:
+  - type: file_content
+    path: /tmp/result.txt
+    expect: "text"

@@ -1,0 +1,24 @@
+id: cut-tr
+title: "字段切割和字符转换 - cut & tr"
+difficulty: 2
+category: linux-basics
+subcategory: pipes-redirects
+tags: [cut, tr]
+description: |
+  cut 用于按列提取文本，tr 用于字符转换。
+  
+  /home/lab/passwd_sample.txt 模拟了 /etc/passwd 的格式。
+  请提取每行的第 1 个字段（用户名）和第 7 个字段（shell），
+  用冒号分隔，并将所有大写字母转换为小写，
+  保存到 /tmp/result.txt
+hints:
+  - level: 1
+    text: "cut -d':' -f1,7 按冒号分隔提取第1和第7字段"
+  - level: 2
+    text: "可以用管道连接 cut 和 tr"
+  - level: 3
+    text: "cut -d':' -f1,7 /home/lab/passwd_sample.txt | tr 'A-Z' 'a-z' > /tmp/result.txt"
+verify:
+  - type: file_content
+    path: /tmp/result.txt
+    expect: "/bin/bash"

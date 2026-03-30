@@ -1,0 +1,21 @@
+id: chmod-recursive
+title: "递归修改目录权限"
+difficulty: 2
+category: linux-basics
+subcategory: permissions
+tags: [chmod]
+description: |
+  网站目录通常需要统一设置权限。
+  
+  请递归地将 /home/lab/webroot 目录及其所有内容的权限设为 755。
+hints:
+  - level: 1
+    text: "chmod -R 可以递归修改权限"
+  - level: 2
+    text: "chmod -R 755 目录名"
+  - level: 3
+    text: "chmod -R 755 /home/lab/webroot"
+verify:
+  - type: command_output
+    command: "stat -c %a /home/lab/webroot/css/style.css"
+    expect: "755"

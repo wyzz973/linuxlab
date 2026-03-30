@@ -1,0 +1,24 @@
+id: env-vars
+title: "环境变量 - env & export"
+difficulty: 2
+category: linux-basics
+subcategory: system-info
+tags: [env, export]
+description: |
+  环境变量是 Linux 系统中重要的配置机制。
+  
+  请完成以下任务：
+  1. 设置一个新的环境变量 MY_APP_ENV=production 并导出
+  2. 将所有环境变量列表保存到 /tmp/env_result.txt
+  3. 将 PATH 环境变量的值单独保存到 /tmp/path_result.txt
+hints:
+  - level: 1
+    text: "export 命令设置并导出环境变量，env 列出所有环境变量"
+  - level: 2
+    text: "export MY_APP_ENV=production"
+  - level: 3
+    text: "export MY_APP_ENV=production && env > /tmp/env_result.txt && echo $PATH > /tmp/path_result.txt"
+verify:
+  - type: file_content
+    path: /tmp/env_result.txt
+    expect: "MY_APP_ENV=production"

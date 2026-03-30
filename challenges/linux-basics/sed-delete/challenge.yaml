@@ -1,0 +1,22 @@
+id: sed-delete
+title: "删除指定行 - sed 删除操作"
+difficulty: 3
+category: linux-basics
+subcategory: pipes-redirects
+tags: [sed]
+description: |
+  sed 也可以用来删除匹配的行。
+  
+  /home/lab/code.py 中有一些注释行（以 # 开头）和空行。
+  请删除所有注释行和空行，将结果保存到 /tmp/result.txt
+hints:
+  - level: 1
+    text: "sed '/模式/d' 可以删除匹配的行"
+  - level: 2
+    text: "可以用分号组合多个 sed 命令"
+  - level: 3
+    text: "sed '/^#/d; /^$/d' /home/lab/code.py > /tmp/result.txt"
+verify:
+  - type: file_content
+    path: /tmp/result.txt
+    expect: "def"

@@ -1,0 +1,23 @@
+id: apt-remove
+title: "卸载软件包 - apt remove"
+difficulty: 2
+category: linux-basics
+subcategory: package-management
+tags: [apt]
+description: |
+  有时需要卸载不再需要的软件包。
+  
+  请完成以下任务：
+  1. 卸载 nano 编辑器（如果已安装）
+  2. 清理不再需要的依赖包
+  3. 将操作后 dpkg -l 的状态保存到 /tmp/result.txt
+hints:
+  - level: 1
+    text: "apt remove 卸载包，apt autoremove 清理依赖"
+  - level: 2
+    text: "apt remove -y 包名 && apt autoremove -y"
+  - level: 3
+    text: "apt remove -y nano && apt autoremove -y && dpkg -l > /tmp/result.txt"
+verify:
+  - type: file_exists
+    path: /tmp/result.txt

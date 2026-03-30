@@ -1,0 +1,21 @@
+id: cp-files
+title: "复制文件并保留属性"
+difficulty: 1
+category: linux-basics
+subcategory: file-operations
+tags: [cp]
+description: |
+  使用 cp 命令复制文件。
+  
+  请将 /home/lab/source/report.txt 复制到 /home/lab/backup/ 目录，
+  并保留文件的原始属性（时间戳、权限等）。
+hints:
+  - level: 1
+    text: "cp 有一个选项可以保留文件属性"
+  - level: 2
+    text: "使用 cp -p 保留属性"
+  - level: 3
+    text: "cp -p /home/lab/source/report.txt /home/lab/backup/"
+verify:
+  - type: file_exists
+    path: /home/lab/backup/report.txt

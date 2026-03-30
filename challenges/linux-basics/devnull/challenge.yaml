@@ -1,0 +1,22 @@
+id: devnull
+title: "丢弃输出 - /dev/null"
+difficulty: 2
+category: linux-basics
+subcategory: pipes-redirects
+tags: [redirect, devnull]
+description: |
+  /dev/null 是一个特殊文件，写入它的内容会被丢弃。
+  
+  请运行 find / -name "*.conf" 命令搜索系统中所有 .conf 文件，
+  但要将错误信息（权限不足等）丢弃到 /dev/null，
+  只保留正常输出到 /tmp/result.txt
+hints:
+  - level: 1
+    text: "2> 重定向标准错误"
+  - level: 2
+    text: "2>/dev/null 丢弃错误输出"
+  - level: 3
+    text: "find / -name '*.conf' > /tmp/result.txt 2>/dev/null"
+verify:
+  - type: file_exists
+    path: /tmp/result.txt

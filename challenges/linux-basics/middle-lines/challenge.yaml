@@ -1,0 +1,22 @@
+id: middle-lines
+title: "提取文件中间部分的行"
+difficulty: 3
+category: linux-basics
+subcategory: file-viewing
+tags: [head, tail, sed]
+description: |
+  有时我们需要提取文件中间某几行的内容。
+  
+  /home/lab/data.txt 有 50 行数据。
+  请提取第 20 到第 30 行的内容，保存到 /tmp/result.txt
+hints:
+  - level: 1
+    text: "可以组合 head 和 tail，或使用 sed"
+  - level: 2
+    text: "head -n 30 file | tail -n 11 可以取第20-30行"
+  - level: 3
+    text: "sed -n '20,30p' /home/lab/data.txt > /tmp/result.txt"
+verify:
+  - type: file_content
+    path: /tmp/result.txt
+    expect: "Line 20"

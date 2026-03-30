@@ -1,0 +1,21 @@
+id: tar-create
+title: "创建压缩归档文件"
+difficulty: 2
+category: linux-basics
+subcategory: file-operations
+tags: [tar, gzip]
+description: |
+  tar 是 Linux 中最常用的打包和压缩工具。
+  
+  请将 /home/lab/website 目录打包并用 gzip 压缩，
+  保存为 /home/lab/website-backup.tar.gz
+hints:
+  - level: 1
+    text: "tar 的 c 选项创建归档，z 选项使用 gzip 压缩"
+  - level: 2
+    text: "tar czf 归档名 目录名"
+  - level: 3
+    text: "tar czf /home/lab/website-backup.tar.gz -C /home/lab website"
+verify:
+  - type: file_exists
+    path: /home/lab/website-backup.tar.gz

@@ -1,0 +1,22 @@
+id: redirect-stderr
+title: "错误重定向 - 2> 和 2>&1"
+difficulty: 3
+category: linux-basics
+subcategory: pipes-redirects
+tags: [redirect]
+description: |
+  Linux 有三个标准流：stdin(0), stdout(1), stderr(2)。
+  
+  请运行命令 ls /home/lab/exists /home/lab/nonexistent，
+  将标准输出保存到 /tmp/stdout.txt，
+  将标准错误保存到 /tmp/stderr.txt。
+hints:
+  - level: 1
+    text: "1> 重定向标准输出，2> 重定向标准错误"
+  - level: 2
+    text: "命令 > stdout文件 2> stderr文件"
+  - level: 3
+    text: "ls /home/lab/exists /home/lab/nonexistent > /tmp/stdout.txt 2> /tmp/stderr.txt"
+verify:
+  - type: file_exists
+    path: /tmp/stderr.txt

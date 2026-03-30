@@ -1,0 +1,22 @@
+id: find-xargs
+title: "find 与 xargs 批量操作"
+difficulty: 3
+category: linux-basics
+subcategory: file-operations
+tags: [find, xargs]
+description: |
+  find 和 xargs 组合是批量处理文件的利器。
+  
+  请找到 /home/lab/project 目录下所有的 .bak 文件并删除它们。
+  使用 find 和 xargs 的组合来完成。
+hints:
+  - level: 1
+    text: "find 的输出可以通过管道传给 xargs"
+  - level: 2
+    text: "find /path -name '*.bak' | xargs rm"
+  - level: 3
+    text: "find /home/lab/project -name '*.bak' | xargs rm"
+verify:
+  - type: command_output
+    command: "find /home/lab/project -name '*.bak' | wc -l"
+    expect: "0"

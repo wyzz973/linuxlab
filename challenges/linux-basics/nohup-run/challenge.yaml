@@ -1,0 +1,21 @@
+id: nohup-run
+title: "不挂断运行 - nohup"
+difficulty: 3
+category: linux-basics
+subcategory: process-management
+tags: [nohup]
+description: |
+  nohup 命令可以让进程在用户退出后继续运行。
+  
+  请使用 nohup 在后台运行脚本 /home/lab/long_task.sh，
+  将输出重定向到 /home/lab/task.log
+hints:
+  - level: 1
+    text: "nohup 命令 > 输出文件 &"
+  - level: 2
+    text: "nohup 命令 > 日志文件 2>&1 &"
+  - level: 3
+    text: "nohup /home/lab/long_task.sh > /home/lab/task.log 2>&1 &"
+verify:
+  - type: file_exists
+    path: /home/lab/task.log

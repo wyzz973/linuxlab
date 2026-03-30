@@ -1,0 +1,26 @@
+id: awk-filter
+title: "awk 条件过滤和计算"
+difficulty: 4
+category: linux-basics
+subcategory: pipes-redirects
+tags: [awk]
+description: |
+  awk 可以进行条件过滤和数值计算。
+  
+  /home/lab/sales.txt 包含销售数据（空格分隔）：
+  产品名 数量 单价
+  
+  请使用 awk 计算每个产品的总价（数量×单价），
+  只输出总价超过 1000 的产品及其总价，
+  格式为 "产品名 总价"，保存到 /tmp/result.txt
+hints:
+  - level: 1
+    text: "awk 可以进行算术运算，也可以用 if 条件"
+  - level: 2
+    text: "awk '{total=$2*$3; if(total>1000) print $1, total}'"
+  - level: 3
+    text: "awk '{total=$2*$3; if(total>1000) print $1, total}' /home/lab/sales.txt > /tmp/result.txt"
+verify:
+  - type: file_content
+    path: /tmp/result.txt
+    expect: "Laptop"

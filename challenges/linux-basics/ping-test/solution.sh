@@ -1,0 +1,2 @@
+#!/bin/bash
+ping -c 4 127.0.0.1 > /tmp/result.txt

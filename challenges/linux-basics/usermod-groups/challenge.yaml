@@ -1,0 +1,23 @@
+id: usermod-groups
+title: "修改用户属性 - usermod"
+difficulty: 3
+category: linux-basics
+subcategory: user-management
+tags: [usermod, groupadd]
+description: |
+  usermod 命令可以修改已有用户的属性。
+  
+  请完成以下任务：
+  1. 将用户 devuser 添加到 docker 组（不影响现有组）
+  2. 将 devuser 的默认 shell 改为 /bin/zsh
+hints:
+  - level: 1
+    text: "usermod -aG 可以追加组，不影响现有组"
+  - level: 2
+    text: "usermod -aG 组名 用户名 和 usermod -s shell 用户名"
+  - level: 3
+    text: "usermod -aG docker devuser && usermod -s /bin/zsh devuser"
+verify:
+  - type: command_output
+    command: "groups devuser"
+    expect: "docker"

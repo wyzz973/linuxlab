@@ -1,0 +1,24 @@
+id: grep-advanced
+title: "grep 高级用法 - 正则和选项"
+difficulty: 3
+category: linux-basics
+subcategory: pipes-redirects
+tags: [grep]
+description: |
+  grep 支持正则表达式和许多有用的选项。
+  
+  /home/lab/emails.txt 包含各种文本内容。
+  请使用 grep 的扩展正则表达式找出所有包含邮箱地址的行
+  （匹配模式：字母数字._+-@字母数字.-），
+  同时显示行号，保存到 /tmp/result.txt
+hints:
+  - level: 1
+    text: "grep -E 启用扩展正则，-n 显示行号"
+  - level: 2
+    text: "邮箱正则：[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+"
+  - level: 3
+    text: "grep -nE '[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+' /home/lab/emails.txt > /tmp/result.txt"
+verify:
+  - type: file_content
+    path: /tmp/result.txt
+    expect: "@"

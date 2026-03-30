@@ -1,0 +1,24 @@
+id: groupadd-manage
+title: "管理用户组 - groupadd/groupmod/groupdel"
+difficulty: 2
+category: linux-basics
+subcategory: user-management
+tags: [groupadd, groupmod, groupdel]
+description: |
+  用户组是 Linux 权限管理的重要组成部分。
+  
+  请完成以下任务：
+  1. 创建一个名为 webteam 的新组
+  2. 创建一个名为 backend 的新组，GID 为 2000
+  3. 将 webteam 组重命名为 frontend
+hints:
+  - level: 1
+    text: "groupadd 创建组，groupmod 修改组"
+  - level: 2
+    text: "groupadd -g GID 组名 指定GID，groupmod -n 新名 旧名 重命名"
+  - level: 3
+    text: "groupadd webteam && groupadd -g 2000 backend && groupmod -n frontend webteam"
+verify:
+  - type: command_output
+    command: "getent group frontend"
+    expect: "frontend"

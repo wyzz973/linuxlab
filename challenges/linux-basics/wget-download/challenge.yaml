@@ -1,0 +1,24 @@
+id: wget-download
+title: "使用 wget 下载文件"
+difficulty: 2
+category: linux-basics
+subcategory: network-basics
+tags: [wget]
+description: |
+  wget 是一个非交互式的网络下载工具。
+  
+  请使用 wget 下载 http://localhost:8080/index.html
+  保存到 /home/lab/downloads/ 目录中。
+  
+  如果下载失败（没有可用的 Web 服务器），请创建一条命令记录
+  保存到 /tmp/result.txt 说明你尝试了什么命令。
+hints:
+  - level: 1
+    text: "wget -P 目录 URL 可以指定下载目录"
+  - level: 2
+    text: "wget -P /home/lab/downloads/ URL"
+  - level: 3
+    text: "mkdir -p /home/lab/downloads && wget -P /home/lab/downloads/ http://localhost:8080/index.html"
+verify:
+  - type: file_exists
+    path: /home/lab/downloads/index.html

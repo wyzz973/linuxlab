@@ -1,0 +1,23 @@
+id: passwd-set
+title: "设置用户密码 - passwd"
+difficulty: 2
+category: linux-basics
+subcategory: user-management
+tags: [passwd]
+description: |
+  创建用户后需要设置密码才能登录。
+  
+  请为用户 testuser 设置密码为 "Linux2025!"
+  
+  提示：可以使用非交互方式设置密码。
+hints:
+  - level: 1
+    text: "可以使用 echo 和管道来非交互式设置密码"
+  - level: 2
+    text: "echo '用户名:密码' | chpasswd"
+  - level: 3
+    text: "echo 'testuser:Linux2025!' | chpasswd"
+verify:
+  - type: command_output
+    command: "getent shadow testuser | cut -d: -f2 | wc -c"
+    expect: ""

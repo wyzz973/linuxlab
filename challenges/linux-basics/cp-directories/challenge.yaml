@@ -1,0 +1,21 @@
+id: cp-directories
+title: "递归复制整个目录"
+difficulty: 2
+category: linux-basics
+subcategory: file-operations
+tags: [cp]
+description: |
+  使用 cp 命令递归复制整个目录及其内容。
+  
+  请将 /home/lab/webapp 整个目录（包含所有子目录和文件）
+  复制到 /home/lab/webapp-backup
+hints:
+  - level: 1
+    text: "复制目录需要递归选项"
+  - level: 2
+    text: "使用 cp -r 递归复制"
+  - level: 3
+    text: "cp -r /home/lab/webapp /home/lab/webapp-backup"
+verify:
+  - type: file_exists
+    path: /home/lab/webapp-backup/css/style.css

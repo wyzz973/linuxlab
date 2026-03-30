@@ -1,0 +1,22 @@
+id: grep-filter
+title: "文本过滤 - grep 基础"
+difficulty: 2
+category: linux-basics
+subcategory: pipes-redirects
+tags: [grep]
+description: |
+  grep 是最强大的文本搜索工具之一。
+  
+  /home/lab/syslog.txt 是系统日志文件。
+  请找出所有包含 "ERROR" 的行，保存到 /tmp/result.txt
+hints:
+  - level: 1
+    text: "grep '模式' 文件名"
+  - level: 2
+    text: "grep 'ERROR' 文件名"
+  - level: 3
+    text: "grep 'ERROR' /home/lab/syslog.txt > /tmp/result.txt"
+verify:
+  - type: file_content
+    path: /tmp/result.txt
+    expect: "ERROR"

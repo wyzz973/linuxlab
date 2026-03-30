@@ -1,0 +1,22 @@
+id: nice-priority
+title: "进程优先级 - nice & renice"
+difficulty: 3
+category: linux-basics
+subcategory: process-management
+tags: [nice, renice]
+description: |
+  nice 值决定进程的调度优先级，范围 -20（最高）到 19（最低）。
+  
+  请完成以下任务：
+  1. 以 nice 值 10（低优先级）启动 sleep 600 命令在后台运行
+  2. 将该进程的 PID 保存到 /tmp/result.txt
+hints:
+  - level: 1
+    text: "nice -n 值 命令 设置优先级"
+  - level: 2
+    text: "nice -n 10 sleep 600 &"
+  - level: 3
+    text: "nice -n 10 sleep 600 & echo $! > /tmp/result.txt"
+verify:
+  - type: file_exists
+    path: /tmp/result.txt

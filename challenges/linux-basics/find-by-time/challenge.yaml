@@ -1,0 +1,22 @@
+id: find-by-time
+title: "按修改时间查找文件"
+difficulty: 3
+category: linux-basics
+subcategory: file-operations
+tags: [find]
+description: |
+  在日常运维中，我们经常需要找到最近修改过的文件。
+  
+  请在 /home/lab/logs 目录下找到最近 7 天内修改过的 .log 文件，
+  将结果保存到 /tmp/result.txt
+hints:
+  - level: 1
+    text: "find 命令有 -mtime 选项可以按修改时间过滤"
+  - level: 2
+    text: "-mtime -7 表示 7 天内修改过的文件，可以组合 -name 使用"
+  - level: 3
+    text: "find /home/lab/logs -name '*.log' -mtime -7 > /tmp/result.txt"
+verify:
+  - type: file_content
+    path: /tmp/result.txt
+    expect: ".log"

@@ -1,0 +1,22 @@
+id: cat-basic
+title: "查看和合并文件内容 - cat"
+difficulty: 1
+category: linux-basics
+subcategory: file-viewing
+tags: [cat]
+description: |
+  cat 命令用于查看文件内容、合并文件。
+  
+  请将 /home/lab/part1.txt 和 /home/lab/part2.txt 的内容
+  合并到 /home/lab/combined.txt 中（part1 在前，part2 在后）。
+hints:
+  - level: 1
+    text: "cat 可以同时接受多个文件参数"
+  - level: 2
+    text: "cat file1 file2 > output"
+  - level: 3
+    text: "cat /home/lab/part1.txt /home/lab/part2.txt > /home/lab/combined.txt"
+verify:
+  - type: file_content
+    path: /home/lab/combined.txt
+    expect: "Part 1 content"

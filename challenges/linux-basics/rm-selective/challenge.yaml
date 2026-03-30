@@ -1,0 +1,21 @@
+id: rm-selective
+title: "选择性删除文件"
+difficulty: 2
+category: linux-basics
+subcategory: file-operations
+tags: [rm, find]
+description: |
+  /home/lab/cleanup 目录中有多种文件。
+  
+  请删除该目录下所有 .tmp 和 .log 文件，但保留 .txt 和 .conf 文件。
+  不要删除目录本身。
+hints:
+  - level: 1
+    text: "可以使用通配符 *.tmp 来匹配文件"
+  - level: 2
+    text: "rm /home/lab/cleanup/*.tmp /home/lab/cleanup/*.log"
+  - level: 3
+    text: "rm /home/lab/cleanup/*.tmp /home/lab/cleanup/*.log"
+verify:
+  - type: file_exists
+    path: /home/lab/cleanup/config.conf

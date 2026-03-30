@@ -1,0 +1,22 @@
+id: ping-test
+title: "测试网络连通性 - ping"
+difficulty: 1
+category: linux-basics
+subcategory: network-basics
+tags: [ping]
+description: |
+  ping 命令用于测试网络连通性。
+  
+  请使用 ping 命令向 127.0.0.1（本机回环地址）发送 4 个数据包，
+  将结果保存到 /tmp/result.txt
+hints:
+  - level: 1
+    text: "ping -c 指定发送的数据包数量"
+  - level: 2
+    text: "ping -c 4 地址"
+  - level: 3
+    text: "ping -c 4 127.0.0.1 > /tmp/result.txt"
+verify:
+  - type: file_content
+    path: /tmp/result.txt
+    expect: "packets transmitted"

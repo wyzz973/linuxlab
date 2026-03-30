@@ -1,0 +1,25 @@
+id: redirect-basic
+title: "输出重定向基础 - > 和 >>"
+difficulty: 1
+category: linux-basics
+subcategory: pipes-redirects
+tags: [redirect]
+description: |
+  重定向是 Linux 中最基本的概念之一。
+  - > 覆盖写入文件
+  - >> 追加写入文件
+  
+  请完成以下任务：
+  1. 将 "Hello Linux" 写入 /tmp/output.txt（覆盖）
+  2. 将 "Welcome to Shell" 追加到 /tmp/output.txt
+hints:
+  - level: 1
+    text: "> 覆盖，>> 追加"
+  - level: 2
+    text: "echo '内容' > 文件 和 echo '内容' >> 文件"
+  - level: 3
+    text: "echo 'Hello Linux' > /tmp/output.txt && echo 'Welcome to Shell' >> /tmp/output.txt"
+verify:
+  - type: file_content
+    path: /tmp/output.txt
+    expect: "Hello Linux"

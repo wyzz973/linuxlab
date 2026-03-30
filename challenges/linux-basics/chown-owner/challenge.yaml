@@ -1,0 +1,22 @@
+id: chown-owner
+title: "修改文件所有者和组 - chown"
+difficulty: 2
+category: linux-basics
+subcategory: permissions
+tags: [chown]
+description: |
+  chown 命令用于修改文件的所有者和所属组。
+  
+  请将 /home/lab/webapp 目录及其所有内容的所有者改为 www-data，
+  组改为 www-data（递归修改）。
+hints:
+  - level: 1
+    text: "chown 可以同时修改所有者和组"
+  - level: 2
+    text: "chown -R 用户:组 目录"
+  - level: 3
+    text: "chown -R www-data:www-data /home/lab/webapp"
+verify:
+  - type: command_output
+    command: "stat -c %U /home/lab/webapp/index.html"
+    expect: "www-data"

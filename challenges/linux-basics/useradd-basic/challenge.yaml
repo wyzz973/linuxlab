@@ -1,0 +1,23 @@
+id: useradd-basic
+title: "创建新用户 - useradd"
+difficulty: 2
+category: linux-basics
+subcategory: user-management
+tags: [useradd]
+description: |
+  使用 useradd 命令创建新的系统用户。
+  
+  请创建一个新用户 developer，要求：
+  - 自动创建家目录
+  - 使用 /bin/bash 作为默认 shell
+hints:
+  - level: 1
+    text: "useradd 有 -m 和 -s 选项"
+  - level: 2
+    text: "-m 创建家目录，-s 指定 shell"
+  - level: 3
+    text: "useradd -m -s /bin/bash developer"
+verify:
+  - type: command_output
+    command: "id developer"
+    expect: "developer"

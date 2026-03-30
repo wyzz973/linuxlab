@@ -1,0 +1,22 @@
+id: free-memory
+title: "查看内存使用情况 - free"
+difficulty: 1
+category: linux-basics
+subcategory: system-info
+tags: [free]
+description: |
+  free 命令用于查看系统内存的使用情况。
+  
+  请以人类可读格式（MB/GB）显示内存使用情况，
+  保存到 /tmp/result.txt
+hints:
+  - level: 1
+    text: "free -h 以可读格式显示"
+  - level: 2
+    text: "free -h 或 free -m（以MB显示）"
+  - level: 3
+    text: "free -h > /tmp/result.txt"
+verify:
+  - type: file_content
+    path: /tmp/result.txt
+    expect: "Mem"

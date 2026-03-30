@@ -1,0 +1,22 @@
+id: cat-number
+title: "带行号显示文件 - cat -n"
+difficulty: 1
+category: linux-basics
+subcategory: file-viewing
+tags: [cat]
+description: |
+  有时我们需要在查看文件时显示行号。
+  
+  请带行号显示 /home/lab/script.sh 的内容，
+  并将结果保存到 /tmp/result.txt
+hints:
+  - level: 1
+    text: "cat 有一个选项可以显示行号"
+  - level: 2
+    text: "使用 cat -n 显示行号"
+  - level: 3
+    text: "cat -n /home/lab/script.sh > /tmp/result.txt"
+verify:
+  - type: file_content
+    path: /tmp/result.txt
+    expect: "1"

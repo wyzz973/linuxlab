@@ -1,0 +1,22 @@
+id: apt-search
+title: "搜索和查询软件包"
+difficulty: 2
+category: linux-basics
+subcategory: package-management
+tags: [apt, dpkg]
+description: |
+  了解如何搜索可用的软件包和查看已安装的包。
+  
+  请完成以下任务：
+  1. 列出所有已安装的软件包，保存到 /tmp/installed.txt
+  2. 搜索包含 "nginx" 关键字的可用包，保存到 /tmp/search.txt
+hints:
+  - level: 1
+    text: "dpkg -l 列出已安装包，apt search 搜索包"
+  - level: 2
+    text: "dpkg -l 和 apt search nginx"
+  - level: 3
+    text: "dpkg -l > /tmp/installed.txt && apt search nginx > /tmp/search.txt 2>/dev/null"
+verify:
+  - type: file_exists
+    path: /tmp/installed.txt

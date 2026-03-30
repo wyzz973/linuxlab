@@ -1,0 +1,22 @@
+id: du-find-large
+title: "找出占用空间最大的目录"
+difficulty: 3
+category: linux-basics
+subcategory: disk-management
+tags: [du, sort, head]
+description: |
+  系统管理员经常需要找出哪些目录占用了最多的磁盘空间。
+  
+  请找出 /home/lab 下占用空间最大的 3 个直接子目录，
+  按大小从大到小排序，将结果保存到 /tmp/result.txt
+hints:
+  - level: 1
+    text: "可以组合 du 和 sort 命令"
+  - level: 2
+    text: "du -s 只显示总计，sort -rn 逆序数字排序"
+  - level: 3
+    text: "du -s /home/lab/*/ | sort -rn | head -3 > /tmp/result.txt"
+verify:
+  - type: file_content
+    path: /tmp/result.txt
+    expect: "lab"

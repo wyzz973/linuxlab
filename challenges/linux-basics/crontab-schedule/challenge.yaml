@@ -1,0 +1,23 @@
+id: crontab-schedule
+title: "定时任务 - crontab"
+difficulty: 3
+category: linux-basics
+subcategory: process-management
+tags: [crontab, cron]
+description: |
+  crontab 用于设置定时执行的任务。
+  格式：分 时 日 月 星期 命令
+  
+  请为当前用户创建一个 cron 任务：
+  每天凌晨 2:30 执行 /home/lab/backup.sh
+hints:
+  - level: 1
+    text: "crontab 格式：分 时 日 月 星期 命令"
+  - level: 2
+    text: "30 2 * * * 表示每天 2:30"
+  - level: 3
+    text: "(crontab -l 2>/dev/null; echo '30 2 * * * /home/lab/backup.sh') | crontab -"
+verify:
+  - type: command_output
+    command: "crontab -l"
+    expect: "backup.sh"

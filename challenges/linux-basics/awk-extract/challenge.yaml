@@ -1,0 +1,25 @@
+id: awk-extract
+title: "字段提取 - awk 基础"
+difficulty: 3
+category: linux-basics
+subcategory: pipes-redirects
+tags: [awk]
+description: |
+  awk 是强大的文本处理工具，特别适合处理列式数据。
+  
+  /home/lab/employees.csv 是一个 CSV 文件（逗号分隔），包含员工信息。
+  格式：姓名,部门,薪资
+  
+  请使用 awk 提取所有员工的姓名和薪资（第1和第3列），
+  以 tab 分隔输出，保存到 /tmp/result.txt
+hints:
+  - level: 1
+    text: "awk -F 指定分隔符，$N 表示第N列"
+  - level: 2
+    text: "awk -F',' '{print $1, $3}' 文件"
+  - level: 3
+    text: "awk -F',' '{print $1\"\\t\"$3}' /home/lab/employees.csv > /tmp/result.txt"
+verify:
+  - type: file_content
+    path: /tmp/result.txt
+    expect: "Alice"

@@ -1,0 +1,22 @@
+id: touch-timestamps
+title: "使用 touch 创建文件和修改时间戳"
+difficulty: 2
+category: linux-basics
+subcategory: file-operations
+tags: [touch]
+description: |
+  touch 命令不仅可以创建空文件，还可以修改文件的时间戳。
+  
+  请完成以下任务：
+  1. 在 /home/lab/ 下创建一个空文件 newfile.txt
+  2. 将 /home/lab/oldfile.txt 的修改时间设置为 2025年1月1日 00:00
+hints:
+  - level: 1
+    text: "touch 可以创建文件，也可以用 -t 修改时间"
+  - level: 2
+    text: "touch -t YYYYMMDDhhmm 文件名"
+  - level: 3
+    text: "touch /home/lab/newfile.txt && touch -t 202501010000 /home/lab/oldfile.txt"
+verify:
+  - type: file_exists
+    path: /home/lab/newfile.txt

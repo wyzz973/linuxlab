@@ -1,0 +1,22 @@
+id: find-by-name
+title: "按名称查找文件"
+difficulty: 2
+category: linux-basics
+subcategory: file-operations
+tags: [find]
+description: |
+  使用 find 命令在目录树中搜索文件。
+  
+  请在 /home/lab/project 目录下查找所有 .py（Python）文件，
+  将找到的文件路径列表保存到 /tmp/result.txt（每行一个路径）。
+hints:
+  - level: 1
+    text: "find 命令的 -name 选项可以按文件名匹配"
+  - level: 2
+    text: "find /path -name '*.py' 可以查找所有 .py 文件"
+  - level: 3
+    text: "find /home/lab/project -name '*.py' > /tmp/result.txt"
+verify:
+  - type: file_content
+    path: /tmp/result.txt
+    expect: "main.py"

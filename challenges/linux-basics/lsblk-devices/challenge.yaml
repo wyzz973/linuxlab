@@ -1,0 +1,21 @@
+id: lsblk-devices
+title: "查看块设备信息 - lsblk"
+difficulty: 1
+category: linux-basics
+subcategory: disk-management
+tags: [lsblk]
+description: |
+  lsblk 命令以树状格式显示所有块设备信息。
+  
+  请列出系统中所有块设备的信息，包括设备名、大小、类型和挂载点，
+  将结果保存到 /tmp/result.txt
+hints:
+  - level: 1
+    text: "lsblk 直接运行即可显示块设备信息"
+  - level: 2
+    text: "lsblk -f 还可以显示文件系统信息"
+  - level: 3
+    text: "lsblk > /tmp/result.txt"
+verify:
+  - type: file_exists
+    path: /tmp/result.txt

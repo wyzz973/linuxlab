@@ -1,0 +1,23 @@
+id: date-cal
+title: "日期和日历 - date & cal"
+difficulty: 2
+category: linux-basics
+subcategory: system-info
+tags: [date, cal]
+description: |
+  date 命令显示和设置系统日期时间，cal 显示日历。
+  
+  请完成以下任务：
+  1. 使用 date 以 "YYYY-MM-DD HH:MM:SS" 格式显示当前时间，
+     保存到 /tmp/date_result.txt
+  2. 显示当前月份的日历，保存到 /tmp/cal_result.txt
+hints:
+  - level: 1
+    text: "date 可以用 +格式 自定义输出"
+  - level: 2
+    text: "date '+%Y-%m-%d %H:%M:%S'"
+  - level: 3
+    text: "date '+%Y-%m-%d %H:%M:%S' > /tmp/date_result.txt && cal > /tmp/cal_result.txt"
+verify:
+  - type: file_exists
+    path: /tmp/date_result.txt

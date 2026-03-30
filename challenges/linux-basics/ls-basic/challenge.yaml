@@ -1,0 +1,23 @@
+id: ls-basic
+title: "列出目录内容 - ls 基础用法"
+difficulty: 1
+category: linux-basics
+subcategory: file-operations
+tags: [ls]
+description: |
+  在 Linux 中，ls 命令是最常用的文件列表命令。
+  
+  请完成以下任务：
+  1. 列出 /home/lab 目录下的所有文件（包括隐藏文件）
+  2. 将结果保存到 /tmp/result.txt
+hints:
+  - level: 1
+    text: "ls 命令有一个选项可以显示隐藏文件"
+  - level: 2
+    text: "使用 ls -a 可以显示隐藏文件"
+  - level: 3
+    text: "ls -a /home/lab > /tmp/result.txt"
+verify:
+  - type: file_content
+    path: /tmp/result.txt
+    expect: ".hidden_config"

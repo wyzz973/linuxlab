@@ -1,0 +1,23 @@
+id: ls-advanced
+title: "ls 高级用法 - 按大小排序和详细信息"
+difficulty: 2
+category: linux-basics
+subcategory: file-operations
+tags: [ls]
+description: |
+  ls 命令有很多有用的选项组合。
+  
+  请完成以下任务：
+  1. 以长格式列出 /home/lab/data 目录下的所有文件，按文件大小从大到小排序
+  2. 将结果保存到 /tmp/result.txt
+hints:
+  - level: 1
+    text: "ls -l 显示详细信息，还有一个选项可以按大小排序"
+  - level: 2
+    text: "ls -lS 按文件大小排序（S 大写）"
+  - level: 3
+    text: "ls -lS /home/lab/data > /tmp/result.txt"
+verify:
+  - type: file_content
+    path: /tmp/result.txt
+    expect: "large_file.dat"

@@ -1,0 +1,22 @@
+id: ip-addr
+title: "查看网络接口信息 - ip addr"
+difficulty: 1
+category: linux-basics
+subcategory: network-basics
+tags: [ip, ifconfig]
+description: |
+  ip 命令是 Linux 中查看和管理网络的现代工具。
+  
+  请使用 ip addr 命令查看所有网络接口的信息，
+  将结果保存到 /tmp/result.txt
+hints:
+  - level: 1
+    text: "ip addr 或 ip a 显示所有网络接口"
+  - level: 2
+    text: "ip addr show"
+  - level: 3
+    text: "ip addr show > /tmp/result.txt"
+verify:
+  - type: file_content
+    path: /tmp/result.txt
+    expect: "lo"

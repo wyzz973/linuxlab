@@ -1,0 +1,22 @@
+id: tac-reverse
+title: "反向显示文件 - tac"
+difficulty: 1
+category: linux-basics
+subcategory: file-viewing
+tags: [tac]
+description: |
+  tac 命令（cat 的反写）可以反向显示文件，从最后一行到第一行。
+  
+  请将 /home/lab/changelog.txt 的内容反向输出，
+  保存到 /tmp/result.txt（这样最新的变更会显示在最前面）。
+hints:
+  - level: 1
+    text: "tac 是 cat 的反向版本"
+  - level: 2
+    text: "tac 文件名 即可反向输出"
+  - level: 3
+    text: "tac /home/lab/changelog.txt > /tmp/result.txt"
+verify:
+  - type: file_content
+    path: /tmp/result.txt
+    expect: "v3.0"

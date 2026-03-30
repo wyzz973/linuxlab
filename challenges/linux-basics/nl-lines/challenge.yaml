@@ -1,0 +1,23 @@
+id: nl-lines
+title: "使用 nl 添加行号"
+difficulty: 1
+category: linux-basics
+subcategory: file-viewing
+tags: [nl]
+description: |
+  nl 命令专门用于给文件添加行号，功能比 cat -n 更强大。
+  
+  请使用 nl 命令为 /home/lab/config.txt 添加行号，
+  要求空行也编号（使用 -b a 选项），
+  结果保存到 /tmp/result.txt
+hints:
+  - level: 1
+    text: "nl 默认不给空行编号"
+  - level: 2
+    text: "nl -b a 可以给所有行（包括空行）编号"
+  - level: 3
+    text: "nl -b a /home/lab/config.txt > /tmp/result.txt"
+verify:
+  - type: file_content
+    path: /tmp/result.txt
+    expect: "database"

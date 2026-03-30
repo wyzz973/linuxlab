@@ -1,0 +1,24 @@
+id: apt-basics
+title: "APT 包管理基础 - 更新和安装"
+difficulty: 2
+category: linux-basics
+subcategory: package-management
+tags: [apt, apt-get]
+description: |
+  apt 是 Debian/Ubuntu 系统的包管理工具。
+  
+  请完成以下任务：
+  1. 更新本地包索引
+  2. 安装 tree 包（如果已安装则跳过）
+  3. 将已安装的 tree 包信息保存到 /tmp/result.txt
+hints:
+  - level: 1
+    text: "apt update 更新索引，apt install 安装包"
+  - level: 2
+    text: "apt update && apt install -y tree"
+  - level: 3
+    text: "apt update && apt install -y tree && dpkg -l tree > /tmp/result.txt"
+verify:
+  - type: command_output
+    command: "which tree"
+    expect: "tree"

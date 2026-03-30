@@ -1,0 +1,21 @@
+id: userdel-remove
+title: "删除用户 - userdel"
+difficulty: 2
+category: linux-basics
+subcategory: user-management
+tags: [userdel]
+description: |
+  当员工离职时，需要删除其用户账号和相关文件。
+  
+  请删除用户 exemployee，同时删除其家目录和邮件目录。
+hints:
+  - level: 1
+    text: "userdel 有一个选项可以同时删除家目录"
+  - level: 2
+    text: "userdel -r 会删除用户的家目录"
+  - level: 3
+    text: "userdel -r exemployee"
+verify:
+  - type: exit_code
+    command: "id exemployee 2>/dev/null"
+    expect: 1

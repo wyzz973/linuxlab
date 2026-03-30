@@ -1,0 +1,23 @@
+id: tee-output
+title: "同时输出到屏幕和文件 - tee"
+difficulty: 2
+category: linux-basics
+subcategory: pipes-redirects
+tags: [tee]
+description: |
+  tee 命令可以将输入同时输出到标准输出和文件中。
+  
+  请使用管道和 tee 命令，将 /home/lab/data.txt 的内容
+  通过 grep 过滤出包含 "PASS" 的行，
+  同时保存到 /tmp/passed.txt 文件中。
+hints:
+  - level: 1
+    text: "tee 可以在管道中间保存数据到文件"
+  - level: 2
+    text: "命令 | tee 文件名"
+  - level: 3
+    text: "grep 'PASS' /home/lab/data.txt | tee /tmp/passed.txt"
+verify:
+  - type: file_content
+    path: /tmp/passed.txt
+    expect: "PASS"

@@ -1,0 +1,26 @@
+id: chmod-numeric
+title: "使用数字模式修改权限 - chmod"
+difficulty: 2
+category: linux-basics
+subcategory: permissions
+tags: [chmod]
+description: |
+  Linux 使用数字表示权限：r=4, w=2, x=1。
+  
+  请将 /home/lab/deploy.sh 的权限设置为：
+  - 所有者：读、写、执行 (7)
+  - 组用户：读、执行 (5)  
+  - 其他用户：仅读 (4)
+  
+  即权限应为 754。
+hints:
+  - level: 1
+    text: "chmod 后面跟三位数字分别代表 所有者、组、其他 的权限"
+  - level: 2
+    text: "chmod 754 文件名"
+  - level: 3
+    text: "chmod 754 /home/lab/deploy.sh"
+verify:
+  - type: command_output
+    command: "stat -c %a /home/lab/deploy.sh"
+    expect: "754"

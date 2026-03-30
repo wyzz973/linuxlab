@@ -1,0 +1,23 @@
+id: mount-info
+title: "查看挂载信息 - mount"
+difficulty: 2
+category: linux-basics
+subcategory: disk-management
+tags: [mount, findmnt]
+description: |
+  mount 命令可以查看当前系统的所有挂载点信息。
+  
+  请查看当前系统中所有挂载的文件系统，只显示 ext4 或 xfs 类型的挂载，
+  将结果保存到 /tmp/result.txt
+  
+  如果系统没有 ext4/xfs，则保存所有挂载信息。
+hints:
+  - level: 1
+    text: "mount 命令不带参数显示所有挂载，可以用 grep 过滤"
+  - level: 2
+    text: "mount | grep -E 'ext4|xfs' 或 findmnt -t ext4,xfs"
+  - level: 3
+    text: "mount | grep -E 'ext4|xfs' > /tmp/result.txt || mount > /tmp/result.txt"
+verify:
+  - type: file_exists
+    path: /tmp/result.txt

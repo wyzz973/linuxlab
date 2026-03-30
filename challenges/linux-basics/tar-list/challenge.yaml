@@ -1,0 +1,22 @@
+id: tar-list
+title: "查看归档文件内容"
+difficulty: 1
+category: linux-basics
+subcategory: file-operations
+tags: [tar]
+description: |
+  在解压之前，你可能想先查看归档文件里有什么。
+  
+  请列出 /home/lab/mystery.tar.gz 中的文件列表，
+  将结果保存到 /tmp/result.txt
+hints:
+  - level: 1
+    text: "tar 有一个选项可以列出归档内容而不解压"
+  - level: 2
+    text: "tar tf（t 表示 list）"
+  - level: 3
+    text: "tar tzf /home/lab/mystery.tar.gz > /tmp/result.txt"
+verify:
+  - type: file_content
+    path: /tmp/result.txt
+    expect: "secret.txt"

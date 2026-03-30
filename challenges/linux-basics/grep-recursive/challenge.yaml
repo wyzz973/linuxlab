@@ -1,0 +1,22 @@
+id: grep-recursive
+title: "递归搜索文件内容 - grep -r"
+difficulty: 2
+category: linux-basics
+subcategory: pipes-redirects
+tags: [grep]
+description: |
+  grep -r 可以递归搜索目录中所有文件的内容。
+  
+  请在 /home/lab/codebase 目录中递归搜索包含 "TODO" 的所有文件，
+  显示文件名和匹配的行，保存到 /tmp/result.txt
+hints:
+  - level: 1
+    text: "grep -r 递归搜索目录"
+  - level: 2
+    text: "grep -r 'TODO' 目录"
+  - level: 3
+    text: "grep -r 'TODO' /home/lab/codebase > /tmp/result.txt"
+verify:
+  - type: file_content
+    path: /tmp/result.txt
+    expect: "TODO"

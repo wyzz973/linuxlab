@@ -1,0 +1,20 @@
+id: ln-hard-link
+title: "创建硬链接"
+difficulty: 2
+category: linux-basics
+subcategory: file-operations
+tags: [ln]
+description: |
+  硬链接是指向同一个 inode 的多个文件名。修改其中一个，另一个也会改变。
+  
+  请为 /home/lab/original.txt 创建一个硬链接 /home/lab/hardlink.txt
+hints:
+  - level: 1
+    text: "ln 命令默认创建硬链接"
+  - level: 2
+    text: "ln 源文件 链接名"
+  - level: 3
+    text: "ln /home/lab/original.txt /home/lab/hardlink.txt"
+verify:
+  - type: file_exists
+    path: /home/lab/hardlink.txt

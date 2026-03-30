@@ -1,0 +1,24 @@
+id: curl-download
+title: "使用 curl 下载文件"
+difficulty: 2
+category: linux-basics
+subcategory: network-basics
+tags: [curl]
+description: |
+  curl 是一个功能强大的网络请求工具。
+  
+  请使用 curl 将本机 Web 服务的首页内容（http://localhost:8080/）
+  下载并保存到 /tmp/page.html
+  
+  如果本机没有 Web 服务，请使用 curl 获取 http://localhost 的内容
+  （即使连接失败也没关系），将 curl 的输出信息保存到 /tmp/result.txt
+hints:
+  - level: 1
+    text: "curl -o 文件名 URL 可以下载到文件"
+  - level: 2
+    text: "curl -o /tmp/page.html URL 或 curl URL > /tmp/result.txt"
+  - level: 3
+    text: "curl -sS -o /tmp/result.txt http://localhost 2>&1 || curl -sS http://localhost > /tmp/result.txt 2>&1"
+verify:
+  - type: file_exists
+    path: /tmp/result.txt

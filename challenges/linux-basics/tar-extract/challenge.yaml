@@ -1,0 +1,20 @@
+id: tar-extract
+title: "解压归档文件"
+difficulty: 2
+category: linux-basics
+subcategory: file-operations
+tags: [tar]
+description: |
+  将归档文件解压到指定目录。
+  
+  请将 /home/lab/archive.tar.gz 解压到 /home/lab/extracted/ 目录中。
+hints:
+  - level: 1
+    text: "tar 的 x 选项用于解压"
+  - level: 2
+    text: "tar xzf 归档名 -C 目标目录"
+  - level: 3
+    text: "mkdir -p /home/lab/extracted && tar xzf /home/lab/archive.tar.gz -C /home/lab/extracted/"
+verify:
+  - type: file_exists
+    path: /home/lab/extracted/data/users.csv

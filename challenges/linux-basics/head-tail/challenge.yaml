@@ -1,0 +1,23 @@
+id: head-tail
+title: "查看文件开头和结尾 - head & tail"
+difficulty: 1
+category: linux-basics
+subcategory: file-viewing
+tags: [head, tail]
+description: |
+  head 和 tail 命令分别用于查看文件的开头和结尾部分。
+  
+  /home/lab/server.log 是一个服务器日志文件。请完成：
+  1. 将前 5 行保存到 /tmp/head_result.txt
+  2. 将最后 3 行保存到 /tmp/tail_result.txt
+hints:
+  - level: 1
+    text: "head -n N 显示前 N 行，tail -n N 显示后 N 行"
+  - level: 2
+    text: "head -n 5 file 和 tail -n 3 file"
+  - level: 3
+    text: "head -n 5 /home/lab/server.log > /tmp/head_result.txt && tail -n 3 /home/lab/server.log > /tmp/tail_result.txt"
+verify:
+  - type: file_content
+    path: /tmp/head_result.txt
+    expect: "Server started"

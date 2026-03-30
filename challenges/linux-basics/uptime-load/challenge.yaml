@@ -1,0 +1,23 @@
+id: uptime-load
+title: "查看系统运行时间和负载 - uptime"
+difficulty: 1
+category: linux-basics
+subcategory: system-info
+tags: [uptime, w]
+description: |
+  uptime 命令显示系统运行时间和平均负载。
+  
+  请完成以下任务：
+  1. 使用 uptime 查看系统运行时间，保存到 /tmp/uptime_result.txt
+  2. 使用 w 查看当前登录用户和系统负载，保存到 /tmp/w_result.txt
+hints:
+  - level: 1
+    text: "uptime 和 w 都是直接运行的命令"
+  - level: 2
+    text: "uptime > file 和 w > file"
+  - level: 3
+    text: "uptime > /tmp/uptime_result.txt && w > /tmp/w_result.txt"
+verify:
+  - type: file_content
+    path: /tmp/uptime_result.txt
+    expect: "load average"

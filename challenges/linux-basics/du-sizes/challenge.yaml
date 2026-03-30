@@ -1,0 +1,21 @@
+id: du-sizes
+title: "查看目录大小 - du"
+difficulty: 2
+category: linux-basics
+subcategory: disk-management
+tags: [du]
+description: |
+  du 命令用于查看目录和文件占用的磁盘空间。
+  
+  请查看 /home/lab 目录下每个直接子目录的大小（人类可读格式），
+  深度为 1 层，将结果保存到 /tmp/result.txt
+hints:
+  - level: 1
+    text: "du -h 以可读格式显示，--max-depth 控制深度"
+  - level: 2
+    text: "du -h --max-depth=1 目录"
+  - level: 3
+    text: "du -h --max-depth=1 /home/lab > /tmp/result.txt"
+verify:
+  - type: file_exists
+    path: /tmp/result.txt

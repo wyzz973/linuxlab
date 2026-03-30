@@ -1,0 +1,26 @@
+id: special-permissions
+title: "特殊权限位 - SUID、SGID 和 Sticky Bit"
+difficulty: 4
+category: linux-basics
+subcategory: permissions
+tags: [chmod]
+description: |
+  Linux 有三种特殊权限位：
+  - SUID (4): 程序以文件所有者身份运行
+  - SGID (2): 程序以文件所属组身份运行
+  - Sticky Bit (1): 只有文件所有者才能删除文件
+  
+  请完成以下任务：
+  1. 给 /home/lab/special_program 设置 SUID 位（权限 4755）
+  2. 给 /home/lab/shared_dir 设置 Sticky Bit（权限 1777）
+hints:
+  - level: 1
+    text: "特殊权限位是 chmod 的第四位数字"
+  - level: 2
+    text: "SUID=4xxx, SGID=2xxx, Sticky=1xxx"
+  - level: 3
+    text: "chmod 4755 /home/lab/special_program && chmod 1777 /home/lab/shared_dir"
+verify:
+  - type: command_output
+    command: "stat -c %a /home/lab/special_program"
+    expect: "4755"

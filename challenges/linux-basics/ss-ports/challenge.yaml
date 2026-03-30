@@ -1,0 +1,21 @@
+id: ss-ports
+title: "查看端口和连接 - ss"
+difficulty: 2
+category: linux-basics
+subcategory: network-basics
+tags: [ss, netstat]
+description: |
+  ss 命令（取代旧的 netstat）用于查看网络连接和端口状态。
+  
+  请列出所有正在监听的 TCP 端口，包括进程信息，
+  保存到 /tmp/result.txt
+hints:
+  - level: 1
+    text: "ss 有 -t（TCP）、-l（监听）、-n（数字）、-p（进程）选项"
+  - level: 2
+    text: "ss -tlnp 显示监听的 TCP 端口和进程"
+  - level: 3
+    text: "ss -tlnp > /tmp/result.txt"
+verify:
+  - type: file_exists
+    path: /tmp/result.txt

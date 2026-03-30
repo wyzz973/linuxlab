@@ -1,0 +1,26 @@
+id: chmod-symbolic
+title: "使用符号模式修改权限"
+difficulty: 2
+category: linux-basics
+subcategory: permissions
+tags: [chmod]
+description: |
+  chmod 也支持符号模式，使用 u(用户)、g(组)、o(其他)、a(所有) 加上 +、-、= 操作。
+  
+  请对 /home/lab/shared.txt 进行以下操作：
+  1. 给所有者添加执行权限
+  2. 给组用户移除写权限  
+  3. 给其他用户设置为只读
+  
+  使用一条 chmod 符号模式命令完成。
+hints:
+  - level: 1
+    text: "可以用逗号分隔多个权限修改"
+  - level: 2
+    text: "chmod u+x,g-w,o=r 文件名"
+  - level: 3
+    text: "chmod u+x,g-w,o=r /home/lab/shared.txt"
+verify:
+  - type: command_output
+    command: "stat -c %a /home/lab/shared.txt"
+    expect: "754"

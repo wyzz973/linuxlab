@@ -1,0 +1,23 @@
+id: bg-fg-jobs
+title: "后台与前台任务管理 - bg, fg, jobs"
+difficulty: 3
+category: linux-basics
+subcategory: process-management
+tags: [bg, fg, jobs]
+description: |
+  Linux 支持将任务在前台和后台之间切换。
+  
+  请完成以下任务：
+  1. 在后台启动一个 sleep 300 命令
+  2. 使用 jobs 命令查看后台任务，将结果保存到 /tmp/result.txt
+hints:
+  - level: 1
+    text: "在命令后加 & 可以在后台运行"
+  - level: 2
+    text: "sleep 300 & 然后 jobs"
+  - level: 3
+    text: "sleep 300 & jobs > /tmp/result.txt"
+verify:
+  - type: file_content
+    path: /tmp/result.txt
+    expect: "sleep"

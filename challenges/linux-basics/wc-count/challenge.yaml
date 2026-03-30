@@ -1,0 +1,22 @@
+id: wc-count
+title: "统计文件行数、单词数和字节数 - wc"
+difficulty: 1
+category: linux-basics
+subcategory: file-viewing
+tags: [wc]
+description: |
+  wc（word count）命令用于统计文件的行数、单词数和字节数。
+  
+  请统计 /home/lab/article.txt 的行数，
+  只输出行数（不要文件名），保存到 /tmp/result.txt
+hints:
+  - level: 1
+    text: "wc -l 统计行数"
+  - level: 2
+    text: "可以用管道或重定向去掉文件名"
+  - level: 3
+    text: "wc -l < /home/lab/article.txt > /tmp/result.txt"
+verify:
+  - type: file_content
+    path: /tmp/result.txt
+    expect: "20"
