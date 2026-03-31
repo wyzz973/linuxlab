@@ -26,6 +26,14 @@ var categoryLabels = map[string]string{
 	"containers":      "容器与部署",
 }
 
+// CategoryLabel returns the display label for a category key.
+func CategoryLabel(category string) string {
+	if label, ok := categoryLabels[category]; ok {
+		return label
+	}
+	return category
+}
+
 type moduleEntry struct {
 	category   string
 	label      string
@@ -44,10 +52,7 @@ type ModulesModel struct {
 func NewModulesModel(cats map[string][]*challenge.Challenge, store *progress.Store) tea.Model {
 	var modules []moduleEntry
 	for cat, challenges := range cats {
-		label, ok := categoryLabels[cat]
-		if !ok {
-			label = cat
-		}
+		label := CategoryLabel(cat)
 		passed := 0
 		for _, ch := range challenges {
 			if entry, exists := store.Data.Challenges[ch.ID]; exists && entry.Status == "passed" {

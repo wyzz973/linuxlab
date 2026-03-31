@@ -47,13 +47,9 @@ func LoadAll(root string) ([]*Challenge, error) {
 				continue
 			}
 			chDir := filepath.Join(catDir, chEntry.Name())
-			// Skip directories without challenge.yaml
-			if _, err := os.Stat(filepath.Join(chDir, "challenge.yaml")); os.IsNotExist(err) {
-				continue
-			}
 			c, err := LoadChallenge(chDir)
 			if err != nil {
-				return nil, err
+				continue // skip directories without valid challenge.yaml
 			}
 			challenges = append(challenges, c)
 		}

@@ -32,9 +32,16 @@ func main() {
 	}
 
 	// Load progress
-	homeDir, _ := os.UserHomeDir()
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "无法获取用户目录: %v\n", err)
+		os.Exit(1)
+	}
 	progressDir := filepath.Join(homeDir, ".linuxlab")
-	os.MkdirAll(progressDir, 0o755)
+	if err := os.MkdirAll(progressDir, 0o755); err != nil {
+		fmt.Fprintf(os.Stderr, "无法创建进度目录: %v\n", err)
+		os.Exit(1)
+	}
 	progressPath := filepath.Join(progressDir, "progress.json")
 
 	store, err := progress.NewStore(progressPath)

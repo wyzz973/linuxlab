@@ -61,10 +61,7 @@ func (m ChallengesModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 func (m ChallengesModel) View() string {
 	var b strings.Builder
 
-	label, ok := categoryLabels[m.category]
-	if !ok {
-		label = m.category
-	}
+	label := CategoryLabel(m.category)
 	b.WriteString(TitleStyle.Render("  " + label))
 	b.WriteString("\n\n")
 

@@ -114,7 +114,7 @@ func (m AppModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		ch := m.currentChallenge
 		if ch != nil {
 			m.store.RecordAttempt(ch.ID, ch.Category, ch.Subcategory, msg.Passed, msg.HintsUsed)
-			_ = m.store.Save()
+			m.store.Save() // best-effort persist
 		}
 		m.screen = screenResult
 		return m, nil

@@ -94,10 +94,7 @@ func (m SkillMapModel) View() string {
 			arrow = "▼"
 		}
 
-		label, ok := categoryLabels[cat.Name]
-		if !ok {
-			label = cat.Name
-		}
+		label := CategoryLabel(cat.Name)
 
 		bar := ProgressBar(cat.Score, 10)
 		b.WriteString(fmt.Sprintf("%s%s %s  %s  %.0f%%\n", cursor, arrow, style.Render(label), bar, cat.Score*100))

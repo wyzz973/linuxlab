@@ -2,6 +2,7 @@ package verify
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/sd3/linuxlab/internal/challenge"
 )
@@ -47,4 +48,17 @@ func AllPassed(results []Result) bool {
 		}
 	}
 	return true
+}
+
+// compareStrings trims and compares actual vs expected, returning a Result.
+func compareStrings(actual, expected, context string) Result {
+	a := strings.TrimSpace(actual)
+	e := strings.TrimSpace(expected)
+	if a != e {
+		return Result{
+			Passed:  false,
+			Message: fmt.Sprintf("%s不匹配\n期望: %q\n实际: %q", context, e, a),
+		}
+	}
+	return Result{Passed: true, Message: context + "匹配"}
 }

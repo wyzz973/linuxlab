@@ -18,17 +18,7 @@ func (v *CommandOutputVerifier) Verify(rule challenge.VerifyRule) Result {
 	if err != nil {
 		return Result{Passed: false, Message: fmt.Sprintf("命令执行失败: %v", err)}
 	}
-
-	actual := strings.TrimSpace(string(out))
-	expected := strings.TrimSpace(rule.Expect)
-
-	if actual != expected {
-		return Result{
-			Passed:  false,
-			Message: fmt.Sprintf("命令输出不匹配\n期望: %q\n实际: %q", expected, actual),
-		}
-	}
-	return Result{Passed: true, Message: fmt.Sprintf("命令输出匹配: %s", rule.Command)}
+	return compareStrings(string(out), rule.Expect, "命令输出")
 }
 
 // ExitCodeVerifier runs a command and compares its exit code to the expected value.
