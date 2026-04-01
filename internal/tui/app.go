@@ -236,6 +236,14 @@ func (m AppModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		if m.refModel != nil {
 			m.refModel, cmd = m.refModel.Update(msg)
 		}
+	case screenResult:
+		// Handle keys directly for result screen (no sub-model)
+		if keyMsg, ok := msg.(tea.KeyMsg); ok {
+			switch {
+			case keyMsg.Type == tea.KeyEsc || (keyMsg.Type == tea.KeyRunes && string(keyMsg.Runes) == "q"):
+				return m, func() tea.Msg { return GoBackMsg{} }
+			}
+		}
 	}
 	return m, cmd
 }
@@ -367,18 +375,89 @@ echo ""`,
 	args := sb.InteractiveShellArgs()
 	c := exec.Command(args[0], args[1:]...)
 	return tea.ExecProcess(c, func(err error) tea.Msg {
-		// Run check.sh if it exists, for script-type verification
-		checkScript := filepath.Join(ch.Dir, "check.sh")
-		if _, statErr := os.Stat(checkScript); statErr == nil {
-			// For Docker/Compose sandbox, run check.sh inside the container
-			if scriptData, readErr := os.ReadFile(checkScript); readErr == nil {
-				sb.Exec(ctx, string(scriptData))
+		defer sb.Destroy(ctx)
+
+		// Run verification INSIDE the sandbox, not on the host
+		var results []verify.Result
+		for _, rule := range ch.Verify {
+			switch rule.Type {
+			case "file_content":
+				out, _, execErr := sb.Exec(ctx, "cat '"+rule.Path+"' 2>/dev/null")
+				if execErr != nil {
+					results = append(results, verify.Result{Passed: false, Message: fmt.Sprintf("无法读取文件 %s: %v", rule.Path, execErr)})
+				} else {
+					actual := strings.TrimSpace(out)
+					expected := strings.TrimSpace(rule.Expect)
+					if actual == expected {
+						results = append(results, verify.Result{Passed: true, Message: "文件内容匹配"})
+					} else {
+						results = append(results, verify.Result{Passed: false, Message: fmt.Sprintf("文件内容不匹配\n期望: %s\n实际: %s", expected, actual)})
+					}
+				}
+			case "file_exists":
+				_, code, _ := sb.Exec(ctx, "test -e '"+rule.Path+"'")
+				if code == 0 {
+					results = append(results, verify.Result{Passed: true, Message: fmt.Sprintf("路径存在: %s", rule.Path)})
+				} else {
+					results = append(results, verify.Result{Passed: false, Message: fmt.Sprintf("路径不存在: %s", rule.Path)})
+				}
+			case "command_output":
+				out, _, execErr := sb.Exec(ctx, rule.Command)
+				if execErr != nil {
+					results = append(results, verify.Result{Passed: false, Message: fmt.Sprintf("命令执行失败: %v", execErr)})
+				} else {
+					actual := strings.TrimSpace(out)
+					expected := strings.TrimSpace(rule.Expect)
+					if actual == expected {
+						results = append(results, verify.Result{Passed: true, Message: "命令输出匹配"})
+					} else {
+						results = append(results, verify.Result{Passed: false, Message: fmt.Sprintf("命令输出不匹配\n期望: %s\n实际: %s", expected, actual)})
+					}
+				}
+			case "exit_code":
+				_, code, _ := sb.Exec(ctx, rule.Command)
+				expected := strings.TrimSpace(rule.Expect)
+				if fmt.Sprintf("%d", code) == expected {
+					results = append(results, verify.Result{Passed: true, Message: fmt.Sprintf("退出码匹配: %s", expected)})
+				} else {
+					results = append(results, verify.Result{Passed: false, Message: fmt.Sprintf("退出码不匹配\n期望: %s\n实际: %d", expected, code)})
+				}
+			case "permissions":
+				out, _, _ := sb.Exec(ctx, "stat -c '%a' '"+rule.Path+"' 2>/dev/null || stat -f '%Lp' '"+rule.Path+"' 2>/dev/null")
+				actual := strings.TrimSpace(out)
+				expected := strings.TrimSpace(rule.Expect)
+				if actual == expected {
+					results = append(results, verify.Result{Passed: true, Message: fmt.Sprintf("权限匹配: %s", expected)})
+				} else {
+					results = append(results, verify.Result{Passed: false, Message: fmt.Sprintf("权限不匹配\n期望: %s\n实际: %s", expected, actual)})
+				}
+			case "script":
+				scriptPath := rule.Path
+				if !filepath.IsAbs(scriptPath) {
+					scriptPath = filepath.Join(ch.Dir, scriptPath)
+				}
+				if scriptData, readErr := os.ReadFile(scriptPath); readErr == nil {
+					out, code, _ := sb.Exec(ctx, string(scriptData))
+					if code == 0 {
+						results = append(results, verify.Result{Passed: true, Message: "脚本检测通过"})
+					} else {
+						results = append(results, verify.Result{Passed: false, Message: fmt.Sprintf("脚本检测未通过: %s", strings.TrimSpace(out))})
+					}
+				} else {
+					results = append(results, verify.Result{Passed: false, Message: fmt.Sprintf("无法读取脚本: %v", readErr)})
+				}
+			default:
+				results = append(results, verify.Result{Passed: false, Message: fmt.Sprintf("未知验证类型: %s", rule.Type)})
 			}
 		}
 
-		defer sb.Destroy(ctx)
-		results := verify.RunAll(ch.Verify)
-		passed := verify.AllPassed(results)
+		passed := true
+		for _, r := range results {
+			if !r.Passed {
+				passed = false
+				break
+			}
+		}
 		return ChallengeResultMsg{Passed: passed, Results: results, HintsUsed: hintsUsed}
 	})
 }
