@@ -24,6 +24,7 @@ var registry = map[string]Verifier{
 	"file_exists":    &FileExistsVerifier{},
 	"command_output": &CommandOutputVerifier{},
 	"exit_code":      &ExitCodeVerifier{},
+	"permissions":    &PermissionsVerifier{},
 }
 
 // RunAll executes all verification rules and returns their results.
