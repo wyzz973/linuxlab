@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/charmbracelet/lipgloss"
 	"github.com/sd3/linuxlab/internal/challenge"
 )
 
@@ -26,7 +25,7 @@ func NewRecommendModel(challenges []*challenge.Challenge) tea.Model {
 func (m RecommendModel) Init() tea.Cmd { return nil }
 
 func (m RecommendModel) maxVisible() int {
-	v := m.height - 10
+	v := m.height - 4 // header + footer + 2 padding lines
 	if v < 5 {
 		v = 5
 	}
@@ -84,17 +83,18 @@ func (m RecommendModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m RecommendModel) View() string {
+	header := headerView("LinuxLab · 薄弱推荐", m.width)
+	footer := footerView("↑/k 上移 · ↓/j 下移 · Enter 选择 · Esc 返回", m.width)
+
 	var b strings.Builder
-	b.WriteString(TitleStyle.Render("  薄弱推荐"))
-	b.WriteString("\n\n")
 
 	if len(m.challenges) == 0 {
-		b.WriteString(DimStyle.Render("  暂无推荐。完成一些题目后再来看看！"))
-		b.WriteString("\n\n")
-		b.WriteString(HelpStyle.Render("Esc 返回"))
-		boxWidth := responsiveBoxWidth(m.width)
-		content := BoxStyle.Width(boxWidth).Render(b.String())
-		return lipgloss.Place(m.width, m.height, lipgloss.Center, lipgloss.Center, content)
+		b.WriteString(DimStyle.Render("暂无推荐。完成一些题目后再来看看！"))
+		b.WriteString("\n")
+
+		contentHeight := maxInt(1, m.height-2)
+		content := fillContent(b.String(), m.width, contentHeight)
+		return header + "\n" + content + "\n" + footer
 	}
 
 	maxVis := m.maxVisible()
@@ -126,10 +126,8 @@ func (m RecommendModel) View() string {
 		b.WriteString("\n")
 	}
 
-	b.WriteString("\n")
-	b.WriteString(HelpStyle.Render("↑/k 上移 · ↓/j 下移 · Enter 选择 · Esc 返回"))
+	contentHeight := maxInt(1, m.height-2)
+	content := fillContent(b.String(), m.width, contentHeight)
 
-	boxWidth := responsiveBoxWidth(m.width)
-	content := BoxStyle.Width(boxWidth).Render(b.String())
-	return lipgloss.Place(m.width, m.height, lipgloss.Center, lipgloss.Center, content)
+	return header + "\n" + content + "\n" + footer
 }

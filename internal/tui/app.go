@@ -7,7 +7,6 @@ import (
 	"strings"
 
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/charmbracelet/lipgloss"
 	"github.com/sd3/linuxlab/internal/challenge"
 	"github.com/sd3/linuxlab/internal/progress"
 	"github.com/sd3/linuxlab/internal/reference"
@@ -73,6 +72,12 @@ func (m AppModel) Init() tea.Cmd {
 	return m.menu.Init()
 }
 
+// sizeModel sends a WindowSizeMsg to a sub-model so it knows the terminal dimensions.
+func (m AppModel) sizeModel(sub tea.Model) tea.Model {
+	sized, _ := sub.Update(tea.WindowSizeMsg{Width: m.width, Height: m.height})
+	return sized
+}
+
 func (m AppModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.WindowSizeMsg:
@@ -119,11 +124,11 @@ func (m AppModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		switch msg.Choice {
 		case "practice":
 			m.screen = screenModules
-			m.modules = NewModulesModel(m.categories, m.store)
+			m.modules = m.sizeModel(NewModulesModel(m.categories, m.store))
 			return m, nil
 		case "skillmap":
 			m.screen = screenSkillMap
-			m.skillmap = NewSkillMapModel(m.store)
+			m.skillmap = m.sizeModel(NewSkillMapModel(m.store))
 			return m, nil
 		case "recommend":
 			var all []*challenge.Challenge
@@ -132,12 +137,12 @@ func (m AppModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 			recs := progress.RecommendMultiple(m.store, all, 5)
 			m.screen = screenRecommend
-			m.recommend = NewRecommendModel(recs)
+			m.recommend = m.sizeModel(NewRecommendModel(recs))
 			return m, nil
 		case "reference":
 			if m.refs != nil {
 				m.screen = screenReference
-				m.refModel = NewReferenceModel(m.refs)
+				m.refModel = m.sizeModel(NewReferenceModel(m.refs))
 				return m, nil
 			}
 			return m, nil
@@ -147,13 +152,13 @@ func (m AppModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case ModuleSelectedMsg:
 		m.screen = screenChallenges
 		m.currentCat = msg.Category
-		m.challenges = NewChallengesModel(msg.Category, m.categories[msg.Category], m.store)
+		m.challenges = m.sizeModel(NewChallengesModel(msg.Category, m.categories[msg.Category], m.store))
 		return m, nil
 
 	case ChallengeSelectedMsg:
 		m.screen = screenDetail
 		m.currentChallenge = msg.Challenge
-		m.detail = NewDetailModel(msg.Challenge)
+		m.detail = m.sizeModel(NewDetailModel(msg.Challenge))
 		return m, nil
 
 	case LaunchChallengeMsg:
@@ -175,11 +180,11 @@ func (m AppModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.screen = screenMenu
 		case screenChallenges:
 			m.screen = screenModules
-			m.modules = NewModulesModel(m.categories, m.store)
+			m.modules = m.sizeModel(NewModulesModel(m.categories, m.store))
 		case screenDetail:
 			m.screen = screenChallenges
 			if m.currentCat != "" {
-				m.challenges = NewChallengesModel(m.currentCat, m.categories[m.currentCat], m.store)
+				m.challenges = m.sizeModel(NewChallengesModel(m.currentCat, m.categories[m.currentCat], m.store))
 			}
 		case screenSkillMap:
 			m.screen = screenMenu
@@ -190,7 +195,7 @@ func (m AppModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case screenResult:
 			m.screen = screenChallenges
 			if m.currentCat != "" {
-				m.challenges = NewChallengesModel(m.currentCat, m.categories[m.currentCat], m.store)
+				m.challenges = m.sizeModel(NewChallengesModel(m.currentCat, m.categories[m.currentCat], m.store))
 			}
 		}
 		return m, nil
@@ -305,16 +310,23 @@ func (m AppModel) launchChallenge(msg LaunchChallengeMsg) tea.Cmd {
 }
 
 func (m AppModel) resultView() string {
-	var b strings.Builder
-
 	if m.lastResult == nil {
-		return BoxStyle.Render("无结果")
+		header := headerView("LinuxLab · 检测结果", m.width)
+		footer := footerView("Esc 返回列表 · q 退出", m.width)
+		contentHeight := maxInt(1, m.height-2)
+		content := fillContent("无结果", m.width, contentHeight)
+		return header + "\n" + content + "\n" + footer
 	}
 
+	header := headerView("LinuxLab · 检测结果", m.width)
+	footer := footerView("Esc 返回列表 · q 退出", m.width)
+
+	var b strings.Builder
+
 	if m.lastResult.Passed {
-		b.WriteString(TitleStyle.Render("  " + PassedIcon + " 挑战通过!"))
+		b.WriteString(TitleStyle.Render(PassedIcon + " 挑战通过!"))
 	} else {
-		b.WriteString(ErrorStyle.Render("  " + FailedIcon + " 挑战未通过"))
+		b.WriteString(ErrorStyle.Render(FailedIcon + " 挑战未通过"))
 	}
 	b.WriteString("\n\n")
 
@@ -323,17 +335,15 @@ func (m AppModel) resultView() string {
 		if !r.Passed {
 			icon = FailedIcon
 		}
-		b.WriteString(fmt.Sprintf("  %s 检查 %d: %s\n", icon, i+1, r.Message))
+		b.WriteString(fmt.Sprintf("%s 检查 %d: %s\n", icon, i+1, r.Message))
 	}
 
 	if m.lastResult.HintsUsed > 0 {
 		b.WriteString(fmt.Sprintf("\n使用提示: %d\n", m.lastResult.HintsUsed))
 	}
 
-	b.WriteString("\n")
-	b.WriteString(HelpStyle.Render("Esc 返回列表 · q 退出"))
+	contentHeight := maxInt(1, m.height-2)
+	content := fillContent(b.String(), m.width, contentHeight)
 
-	boxWidth := responsiveBoxWidth(m.width)
-	content := BoxStyle.Width(boxWidth).Render(b.String())
-	return lipgloss.Place(m.width, m.height, lipgloss.Center, lipgloss.Center, content)
+	return header + "\n" + content + "\n" + footer
 }

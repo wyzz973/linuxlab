@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/charmbracelet/lipgloss"
 	"github.com/sd3/linuxlab/internal/challenge"
 	"github.com/sd3/linuxlab/internal/sandbox"
 )
@@ -63,10 +62,17 @@ func (m DetailModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 func (m DetailModel) View() string {
 	ch := m.challenge
-	var b strings.Builder
+	header := headerView("LinuxLab · "+ch.Title, m.width)
 
-	b.WriteString(TitleStyle.Render("  " + ch.Title))
-	b.WriteString("\n\n")
+	hintInfo := ""
+	if m.hintLevel < len(ch.Hints) {
+		hintInfo = fmt.Sprintf(" · h 查看提示 (%d/%d)", m.hintLevel, len(ch.Hints))
+	} else if len(ch.Hints) > 0 {
+		hintInfo = fmt.Sprintf(" · 已显示全部提示 (%d/%d)", m.hintLevel, len(ch.Hints))
+	}
+	footer := footerView("Enter 开始挑战 · Esc 返回"+hintInfo, m.width)
+
+	var b strings.Builder
 
 	b.WriteString(fmt.Sprintf("难度: %s\n", DifficultyStars(ch.Difficulty)))
 
@@ -93,16 +99,8 @@ func (m DetailModel) View() string {
 		}
 	}
 
-	b.WriteString("\n")
-	hintInfo := ""
-	if m.hintLevel < len(ch.Hints) {
-		hintInfo = fmt.Sprintf(" · h 查看提示 (%d/%d)", m.hintLevel, len(ch.Hints))
-	} else if len(ch.Hints) > 0 {
-		hintInfo = fmt.Sprintf(" · 已显示全部提示 (%d/%d)", m.hintLevel, len(ch.Hints))
-	}
-	b.WriteString(HelpStyle.Render("Enter 开始挑战 · Esc 返回" + hintInfo))
+	contentHeight := maxInt(1, m.height-2)
+	content := fillContent(b.String(), m.width, contentHeight)
 
-	boxWidth := responsiveBoxWidth(m.width)
-	content := BoxStyle.Width(boxWidth).Render(b.String())
-	return lipgloss.Place(m.width, m.height, lipgloss.Center, lipgloss.Center, content)
+	return header + "\n" + content + "\n" + footer
 }

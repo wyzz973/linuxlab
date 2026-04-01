@@ -6,7 +6,6 @@ import (
 	"strings"
 
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/charmbracelet/lipgloss"
 	"github.com/sd3/linuxlab/internal/challenge"
 	"github.com/sd3/linuxlab/internal/progress"
 )
@@ -106,10 +105,10 @@ func (m ModulesModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m ModulesModel) View() string {
-	var b strings.Builder
-	b.WriteString(TitleStyle.Render("  选择学习模块"))
-	b.WriteString("\n\n")
+	header := headerView("LinuxLab · 选择学习模块", m.width)
+	footer := footerView("↑/k 上移 · ↓/j 下移 · Enter 选择 · Esc 返回", m.width)
 
+	var b strings.Builder
 	for i, mod := range m.modules {
 		cursor := "  "
 		style := DimStyle
@@ -123,13 +122,11 @@ func (m ModulesModel) View() string {
 			pct = float64(mod.passed) / float64(mod.total)
 		}
 		bar := ProgressBar(pct, 10)
-		b.WriteString(fmt.Sprintf("%s%s  %s  %d/%d\n", cursor, style.Render(mod.label), bar, mod.passed, mod.total))
+		b.WriteString(fmt.Sprintf("%s%-16s  %s  %d/%d\n", cursor, style.Render(mod.label), bar, mod.passed, mod.total))
 	}
 
-	b.WriteString("\n")
-	b.WriteString(HelpStyle.Render("↑/k 上移 · ↓/j 下移 · Enter 选择 · Esc 返回"))
+	contentHeight := maxInt(1, m.height-2)
+	content := fillContent(b.String(), m.width, contentHeight)
 
-	boxWidth := responsiveBoxWidth(m.width)
-	content := BoxStyle.Width(boxWidth).Render(b.String())
-	return lipgloss.Place(m.width, m.height, lipgloss.Center, lipgloss.Center, content)
+	return header + "\n" + content + "\n" + footer
 }

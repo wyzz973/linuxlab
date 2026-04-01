@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/charmbracelet/lipgloss"
 	"github.com/sd3/linuxlab/internal/progress"
 )
 
@@ -73,10 +72,10 @@ func (m SkillMapModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m SkillMapModel) View() string {
-	var b strings.Builder
+	header := headerView("LinuxLab · 能力图谱", m.width)
+	footer := footerView("↑/k 上移 · ↓/j 下移 · Enter 展开/折叠 · Esc 返回", m.width)
 
-	b.WriteString(TitleStyle.Render("  能力图谱"))
-	b.WriteString("\n\n")
+	var b strings.Builder
 
 	if m.skillMap.TotalCount > 0 {
 		pct := m.skillMap.OverallScore
@@ -115,10 +114,8 @@ func (m SkillMapModel) View() string {
 		}
 	}
 
-	b.WriteString("\n")
-	b.WriteString(HelpStyle.Render("↑/k 上移 · ↓/j 下移 · Enter 展开/折叠 · Esc 返回"))
+	contentHeight := maxInt(1, m.height-2)
+	content := fillContent(b.String(), m.width, contentHeight)
 
-	boxWidth := responsiveBoxWidth(m.width)
-	content := BoxStyle.Width(boxWidth).Render(b.String())
-	return lipgloss.Place(m.width, m.height, lipgloss.Center, lipgloss.Center, content)
+	return header + "\n" + content + "\n" + footer
 }

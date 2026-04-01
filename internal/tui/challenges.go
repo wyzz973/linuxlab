@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/charmbracelet/lipgloss"
 	"github.com/sd3/linuxlab/internal/challenge"
 	"github.com/sd3/linuxlab/internal/progress"
 )
@@ -39,7 +38,7 @@ func NewChallengesModel(category string, challenges []*challenge.Challenge, stor
 func (m ChallengesModel) Init() tea.Cmd { return nil }
 
 func (m ChallengesModel) maxVisible() int {
-	v := m.height - 10 // account for header, footer, box padding
+	v := m.height - 4 // header + footer + 2 padding lines
 	if v < 5 {
 		v = 5
 	}
@@ -90,11 +89,11 @@ func (m ChallengesModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m ChallengesModel) View() string {
-	var b strings.Builder
-
 	label := CategoryLabel(m.category)
-	b.WriteString(TitleStyle.Render("  " + label))
-	b.WriteString("\n\n")
+	header := headerView("LinuxLab · "+label, m.width)
+	footer := footerView(fmt.Sprintf("%d/%d · ↑/k ↓/j 选择 · Enter 确认 · Esc 返回", m.cursor+1, len(m.challenges)), m.width)
+
+	var b strings.Builder
 
 	maxVis := m.maxVisible()
 	end := m.offset + maxVis
@@ -135,10 +134,8 @@ func (m ChallengesModel) View() string {
 		b.WriteString("\n")
 	}
 
-	b.WriteString("\n")
-	b.WriteString(HelpStyle.Render("↑/k 上移 · ↓/j 下移 · Enter 选择 · Esc 返回"))
+	contentHeight := maxInt(1, m.height-2)
+	content := fillContent(b.String(), m.width, contentHeight)
 
-	boxWidth := responsiveBoxWidth(m.width)
-	content := BoxStyle.Width(boxWidth).Render(b.String())
-	return lipgloss.Place(m.width, m.height, lipgloss.Center, lipgloss.Center, content)
+	return header + "\n" + content + "\n" + footer
 }

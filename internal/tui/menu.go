@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/charmbracelet/lipgloss"
 )
 
 // MenuChoiceMsg is sent when the user selects a menu item.
@@ -70,10 +69,10 @@ func (m MenuModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m MenuModel) View() string {
-	var b strings.Builder
-	b.WriteString(TitleStyle.Render("  LinuxLab - Linux 命令行学习"))
-	b.WriteString("\n\n")
+	header := headerView("LinuxLab", m.width)
+	footer := footerView("↑/k 上移 · ↓/j 下移 · Enter 选择 · q 退出", m.width)
 
+	var b strings.Builder
 	for i, item := range m.items {
 		cursor := "  "
 		style := DimStyle
@@ -84,10 +83,8 @@ func (m MenuModel) View() string {
 		b.WriteString(fmt.Sprintf("%s%s\n", cursor, style.Render(item.label)))
 	}
 
-	b.WriteString("\n")
-	b.WriteString(HelpStyle.Render("↑/k 上移 · ↓/j 下移 · Enter 选择 · q 退出"))
+	contentHeight := maxInt(1, m.height-2)
+	content := fillContent(b.String(), m.width, contentHeight)
 
-	boxWidth := responsiveBoxWidth(m.width)
-	content := BoxStyle.Width(boxWidth).Render(b.String())
-	return lipgloss.Place(m.width, m.height, lipgloss.Center, lipgloss.Center, content)
+	return header + "\n" + content + "\n" + footer
 }
