@@ -1,0 +1,901 @@
+commands:
+  # ===== 文件操作 =====
+  - name: ls
+    brief: "列出目录内容"
+    examples:
+      - desc: "列出所有文件（包括隐藏文件）"
+        cmd: "ls -la {{目录}}"
+      - desc: "按大小排序"
+        cmd: "ls -lS {{目录}}"
+      - desc: "按修改时间排序"
+        cmd: "ls -lt {{目录}}"
+      - desc: "递归列出子目录"
+        cmd: "ls -R {{目录}}"
+    related_challenges: [ls-basic, ls-advanced, ls-recursive]
+
+  - name: cd
+    brief: "切换工作目录"
+    examples:
+      - desc: "进入指定目录"
+        cmd: "cd {{目录路径}}"
+      - desc: "返回上级目录"
+        cmd: "cd .."
+      - desc: "返回用户主目录"
+        cmd: "cd ~"
+      - desc: "返回上一个目录"
+        cmd: "cd -"
+    related_challenges: [pwd-cd]
+
+  - name: pwd
+    brief: "显示当前工作目录"
+    examples:
+      - desc: "显示当前路径"
+        cmd: "pwd"
+      - desc: "显示物理路径（解析符号链接）"
+        cmd: "pwd -P"
+      - desc: "显示逻辑路径"
+        cmd: "pwd -L"
+    related_challenges: [pwd-cd]
+
+  - name: mkdir
+    brief: "创建目录"
+    examples:
+      - desc: "创建单个目录"
+        cmd: "mkdir {{目录名}}"
+      - desc: "递归创建多级目录"
+        cmd: "mkdir -p {{路径/子路径/目录}}"
+      - desc: "创建并设置权限"
+        cmd: "mkdir -m 755 {{目录名}}"
+    related_challenges: [mkdir-nested]
+
+  - name: rmdir
+    brief: "删除空目录"
+    examples:
+      - desc: "删除空目录"
+        cmd: "rmdir {{目录名}}"
+      - desc: "递归删除空的父目录"
+        cmd: "rmdir -p {{路径/子路径/目录}}"
+      - desc: "忽略非空目录错误"
+        cmd: "rmdir --ignore-fail-on-non-empty {{目录名}}"
+    related_challenges: [rmdir-empty]
+
+  - name: cp
+    brief: "复制文件和目录"
+    examples:
+      - desc: "复制文件"
+        cmd: "cp {{源文件}} {{目标文件}}"
+      - desc: "递归复制目录"
+        cmd: "cp -r {{源目录}} {{目标目录}}"
+      - desc: "保留属性复制"
+        cmd: "cp -a {{源}} {{目标}}"
+      - desc: "交互式复制（覆盖前确认）"
+        cmd: "cp -i {{源文件}} {{目标文件}}"
+    related_challenges: [cp-files, cp-directories, cp-archive]
+
+  - name: mv
+    brief: "移动或重命名文件"
+    examples:
+      - desc: "重命名文件"
+        cmd: "mv {{旧文件名}} {{新文件名}}"
+      - desc: "移动文件到目录"
+        cmd: "mv {{文件}} {{目标目录}}/"
+      - desc: "交互式移动（覆盖前确认）"
+        cmd: "mv -i {{源}} {{目标}}"
+      - desc: "批量移动"
+        cmd: "mv {{文件1}} {{文件2}} {{目标目录}}/"
+    related_challenges: [mv-rename, mv-batch]
+
+  - name: rm
+    brief: "删除文件和目录"
+    examples:
+      - desc: "删除文件"
+        cmd: "rm {{文件}}"
+      - desc: "递归删除目录"
+        cmd: "rm -r {{目录}}"
+      - desc: "强制删除不提示"
+        cmd: "rm -rf {{目录}}"
+      - desc: "交互式删除"
+        cmd: "rm -i {{文件}}"
+    related_challenges: [rm-recursive, rm-selective]
+
+  - name: touch
+    brief: "创建文件或更新时间戳"
+    examples:
+      - desc: "创建空文件"
+        cmd: "touch {{文件名}}"
+      - desc: "更新访问和修改时间"
+        cmd: "touch -t {{YYYYMMDDhhmm}} {{文件}}"
+      - desc: "仅更新访问时间"
+        cmd: "touch -a {{文件}}"
+    related_challenges: [touch-timestamps]
+
+  - name: find
+    brief: "搜索文件和目录"
+    examples:
+      - desc: "按名称搜索"
+        cmd: "find {{路径}} -name '{{模式}}'"
+      - desc: "按类型搜索"
+        cmd: "find {{路径}} -type {{f|d|l}}"
+      - desc: "按大小搜索"
+        cmd: "find {{路径}} -size +{{大小}}M"
+      - desc: "按修改时间搜索"
+        cmd: "find {{路径}} -mtime -{{天数}}"
+      - desc: "搜索并执行命令"
+        cmd: "find {{路径}} -name '{{模式}}' -exec {{命令}} {} \\;"
+    related_challenges: [find-by-name, find-by-size, find-by-time, find-type, find-exec, find-xargs]
+
+  - name: ln
+    brief: "创建链接"
+    examples:
+      - desc: "创建硬链接"
+        cmd: "ln {{源文件}} {{链接名}}"
+      - desc: "创建符号链接"
+        cmd: "ln -s {{源文件}} {{链接名}}"
+      - desc: "强制覆盖已存在的链接"
+        cmd: "ln -sf {{源文件}} {{链接名}}"
+    related_challenges: [ln-hard-link, ln-soft-link]
+
+  - name: tar
+    brief: "归档和压缩文件"
+    examples:
+      - desc: "创建 tar.gz 压缩包"
+        cmd: "tar -czf {{归档名.tar.gz}} {{文件或目录}}"
+      - desc: "解压 tar.gz"
+        cmd: "tar -xzf {{归档名.tar.gz}}"
+      - desc: "查看归档内容"
+        cmd: "tar -tzf {{归档名.tar.gz}}"
+      - desc: "解压到指定目录"
+        cmd: "tar -xzf {{归档名.tar.gz}} -C {{目标目录}}"
+    related_challenges: [tar-create, tar-extract, tar-list]
+
+  - name: file
+    brief: "检测文件类型"
+    examples:
+      - desc: "检测文件类型"
+        cmd: "file {{文件名}}"
+      - desc: "仅输出 MIME 类型"
+        cmd: "file --mime-type {{文件名}}"
+      - desc: "批量检测"
+        cmd: "file {{文件1}} {{文件2}} {{文件3}}"
+    related_challenges: [file-type]
+
+  - name: mktemp
+    brief: "创建临时文件或目录"
+    examples:
+      - desc: "创建临时文件"
+        cmd: "mktemp"
+      - desc: "创建临时目录"
+        cmd: "mktemp -d"
+      - desc: "使用自定义模板"
+        cmd: "mktemp /tmp/{{前缀}}.XXXXXX"
+    related_challenges: [mktemp-usage]
+
+  # ===== 文件查看 =====
+  - name: cat
+    brief: "查看文件内容"
+    examples:
+      - desc: "查看文件"
+        cmd: "cat {{文件}}"
+      - desc: "显示行号"
+        cmd: "cat -n {{文件}}"
+      - desc: "合并多个文件"
+        cmd: "cat {{文件1}} {{文件2}} > {{合并文件}}"
+    related_challenges: [cat-basic, cat-number]
+
+  - name: head
+    brief: "查看文件开头"
+    examples:
+      - desc: "查看前 10 行"
+        cmd: "head {{文件}}"
+      - desc: "查看前 N 行"
+        cmd: "head -n {{行数}} {{文件}}"
+      - desc: "查看前 N 字节"
+        cmd: "head -c {{字节数}} {{文件}}"
+    related_challenges: [head-tail]
+
+  - name: tail
+    brief: "查看文件末尾"
+    examples:
+      - desc: "查看后 10 行"
+        cmd: "tail {{文件}}"
+      - desc: "查看后 N 行"
+        cmd: "tail -n {{行数}} {{文件}}"
+      - desc: "实时跟踪文件变化"
+        cmd: "tail -f {{日志文件}}"
+    related_challenges: [head-tail]
+
+  - name: less
+    brief: "分页查看文件"
+    examples:
+      - desc: "分页查看文件"
+        cmd: "less {{文件}}"
+      - desc: "显示行号"
+        cmd: "less -N {{文件}}"
+      - desc: "搜索文本（进入后按 /）"
+        cmd: "less {{文件}}"
+    related_challenges: [less-search]
+
+  - name: more
+    brief: "分页显示文件内容"
+    examples:
+      - desc: "分页显示"
+        cmd: "more {{文件}}"
+      - desc: "从第 N 行开始"
+        cmd: "more +{{行号}} {{文件}}"
+      - desc: "每次显示 N 行"
+        cmd: "more -{{行数}} {{文件}}"
+
+  - name: nl
+    brief: "给文件添加行号"
+    examples:
+      - desc: "给所有行添加行号"
+        cmd: "nl -ba {{文件}}"
+      - desc: "给非空行添加行号"
+        cmd: "nl {{文件}}"
+      - desc: "自定义行号格式"
+        cmd: "nl -n rz -w {{宽度}} {{文件}}"
+    related_challenges: [nl-lines]
+
+  - name: wc
+    brief: "统计行数、字数、字节数"
+    examples:
+      - desc: "统计所有信息"
+        cmd: "wc {{文件}}"
+      - desc: "仅统计行数"
+        cmd: "wc -l {{文件}}"
+      - desc: "仅统计字数"
+        cmd: "wc -w {{文件}}"
+    related_challenges: [wc-count]
+
+  - name: tac
+    brief: "反向显示文件内容"
+    examples:
+      - desc: "反向显示文件"
+        cmd: "tac {{文件}}"
+      - desc: "使用自定义分隔符"
+        cmd: "tac -s '{{分隔符}}' {{文件}}"
+      - desc: "反向显示并传递给管道"
+        cmd: "tac {{文件}} | head -n {{行数}}"
+    related_challenges: [tac-reverse]
+
+  # ===== 文本处理 =====
+  - name: grep
+    brief: "搜索文本模式"
+    examples:
+      - desc: "搜索模式"
+        cmd: "grep '{{模式}}' {{文件}}"
+      - desc: "忽略大小写搜索"
+        cmd: "grep -i '{{模式}}' {{文件}}"
+      - desc: "递归搜索目录"
+        cmd: "grep -r '{{模式}}' {{目录}}"
+      - desc: "显示行号"
+        cmd: "grep -n '{{模式}}' {{文件}}"
+      - desc: "反向匹配（排除）"
+        cmd: "grep -v '{{模式}}' {{文件}}"
+    related_challenges: [grep-filter, grep-recursive, grep-count, grep-invert, grep-advanced]
+
+  - name: awk
+    brief: "文本处理和数据提取"
+    examples:
+      - desc: "打印指定列"
+        cmd: "awk '{print ${{列号}}}' {{文件}}"
+      - desc: "使用分隔符"
+        cmd: "awk -F'{{分隔符}}' '{print $1, $3}' {{文件}}"
+      - desc: "条件过滤"
+        cmd: "awk '${{列号}} > {{值}} {print}' {{文件}}"
+      - desc: "求和"
+        cmd: "awk '{sum += ${{列号}}} END {print sum}' {{文件}}"
+    related_challenges: [awk-extract, awk-filter, awk-sum]
+
+  - name: sed
+    brief: "流编辑器"
+    examples:
+      - desc: "替换文本"
+        cmd: "sed 's/{{旧文本}}/{{新文本}}/g' {{文件}}"
+      - desc: "原地替换"
+        cmd: "sed -i 's/{{旧文本}}/{{新文本}}/g' {{文件}}"
+      - desc: "删除行"
+        cmd: "sed '{{行号}}d' {{文件}}"
+      - desc: "删除匹配行"
+        cmd: "sed '/{{模式}}/d' {{文件}}"
+    related_challenges: [sed-replace, sed-delete, sed-inplace]
+
+  - name: sort
+    brief: "排序文本行"
+    examples:
+      - desc: "字母排序"
+        cmd: "sort {{文件}}"
+      - desc: "数字排序"
+        cmd: "sort -n {{文件}}"
+      - desc: "逆序排序"
+        cmd: "sort -r {{文件}}"
+      - desc: "按指定列排序"
+        cmd: "sort -k{{列号}} -t'{{分隔符}}' {{文件}}"
+    related_challenges: [sort-numeric, sort-uniq]
+
+  - name: uniq
+    brief: "去除重复行"
+    examples:
+      - desc: "去除相邻重复行"
+        cmd: "sort {{文件}} | uniq"
+      - desc: "仅显示重复行"
+        cmd: "sort {{文件}} | uniq -d"
+      - desc: "统计重复次数"
+        cmd: "sort {{文件}} | uniq -c"
+    related_challenges: [sort-uniq]
+
+  - name: cut
+    brief: "按列提取文本"
+    examples:
+      - desc: "按分隔符提取列"
+        cmd: "cut -d'{{分隔符}}' -f{{列号}} {{文件}}"
+      - desc: "提取字符范围"
+        cmd: "cut -c{{起始}}-{{结束}} {{文件}}"
+      - desc: "提取多列"
+        cmd: "cut -d'{{分隔符}}' -f{{列1}},{{列2}} {{文件}}"
+    related_challenges: [cut-tr]
+
+  - name: tr
+    brief: "字符转换和删除"
+    examples:
+      - desc: "大写转小写"
+        cmd: "echo '{{文本}}' | tr 'A-Z' 'a-z'"
+      - desc: "删除指定字符"
+        cmd: "echo '{{文本}}' | tr -d '{{字符}}'"
+      - desc: "压缩重复字符"
+        cmd: "echo '{{文本}}' | tr -s '{{字符}}'"
+    related_challenges: [cut-tr]
+
+  - name: tee
+    brief: "同时输出到屏幕和文件"
+    examples:
+      - desc: "输出并写入文件"
+        cmd: "{{命令}} | tee {{文件}}"
+      - desc: "追加到文件"
+        cmd: "{{命令}} | tee -a {{文件}}"
+      - desc: "输出到多个文件"
+        cmd: "{{命令}} | tee {{文件1}} {{文件2}}"
+    related_challenges: [tee-output]
+
+  - name: xargs
+    brief: "将输入转为命令参数"
+    examples:
+      - desc: "基本用法"
+        cmd: "{{命令1}} | xargs {{命令2}}"
+      - desc: "指定每次参数个数"
+        cmd: "{{命令}} | xargs -n {{个数}} {{命令2}}"
+      - desc: "并行执行"
+        cmd: "{{命令}} | xargs -P {{进程数}} -I {} {{命令2}} {}"
+      - desc: "使用自定义占位符"
+        cmd: "find . -name '*.log' | xargs -I {} cp {} {{备份目录}}/"
+    related_challenges: [find-xargs, xargs-parallel]
+
+  # ===== 权限管理 =====
+  - name: chmod
+    brief: "修改文件权限"
+    examples:
+      - desc: "数字方式设置权限"
+        cmd: "chmod {{755}} {{文件}}"
+      - desc: "符号方式添加执行权限"
+        cmd: "chmod +x {{文件}}"
+      - desc: "递归修改目录权限"
+        cmd: "chmod -R {{755}} {{目录}}"
+      - desc: "设置特殊权限（SUID）"
+        cmd: "chmod u+s {{文件}}"
+    related_challenges: [chmod-numeric, chmod-symbolic, chmod-recursive, special-permissions]
+
+  - name: chown
+    brief: "修改文件所有者"
+    examples:
+      - desc: "修改所有者"
+        cmd: "chown {{用户}} {{文件}}"
+      - desc: "修改所有者和组"
+        cmd: "chown {{用户}}:{{组}} {{文件}}"
+      - desc: "递归修改"
+        cmd: "chown -R {{用户}}:{{组}} {{目录}}"
+    related_challenges: [chown-owner]
+
+  - name: chgrp
+    brief: "修改文件所属组"
+    examples:
+      - desc: "修改文件组"
+        cmd: "chgrp {{组名}} {{文件}}"
+      - desc: "递归修改组"
+        cmd: "chgrp -R {{组名}} {{目录}}"
+      - desc: "参照其他文件设置组"
+        cmd: "chgrp --reference={{参照文件}} {{目标文件}}"
+    related_challenges: [chgrp-group]
+
+  - name: umask
+    brief: "设置默认权限掩码"
+    examples:
+      - desc: "查看当前 umask"
+        cmd: "umask"
+      - desc: "设置 umask"
+        cmd: "umask {{022}}"
+      - desc: "以符号方式显示"
+        cmd: "umask -S"
+    related_challenges: [umask-default]
+
+  # ===== 用户管理 =====
+  - name: useradd
+    brief: "创建用户"
+    examples:
+      - desc: "创建用户"
+        cmd: "useradd {{用户名}}"
+      - desc: "创建用户并指定主目录"
+        cmd: "useradd -m -d {{主目录}} {{用户名}}"
+      - desc: "创建用户并指定 Shell"
+        cmd: "useradd -s /bin/bash {{用户名}}"
+    related_challenges: [useradd-basic]
+
+  - name: usermod
+    brief: "修改用户属性"
+    examples:
+      - desc: "添加到附加组"
+        cmd: "usermod -aG {{组名}} {{用户名}}"
+      - desc: "修改用户名"
+        cmd: "usermod -l {{新用户名}} {{旧用户名}}"
+      - desc: "修改主目录"
+        cmd: "usermod -d {{新主目录}} -m {{用户名}}"
+    related_challenges: [usermod-groups]
+
+  - name: userdel
+    brief: "删除用户"
+    examples:
+      - desc: "删除用户"
+        cmd: "userdel {{用户名}}"
+      - desc: "删除用户及主目录"
+        cmd: "userdel -r {{用户名}}"
+      - desc: "强制删除已登录用户"
+        cmd: "userdel -f {{用户名}}"
+    related_challenges: [userdel-remove]
+
+  - name: passwd
+    brief: "修改用户密码"
+    examples:
+      - desc: "修改当前用户密码"
+        cmd: "passwd"
+      - desc: "修改指定用户密码"
+        cmd: "passwd {{用户名}}"
+      - desc: "锁定用户"
+        cmd: "passwd -l {{用户名}}"
+    related_challenges: [passwd-set]
+
+  - name: groupadd
+    brief: "创建用户组"
+    examples:
+      - desc: "创建组"
+        cmd: "groupadd {{组名}}"
+      - desc: "指定 GID 创建组"
+        cmd: "groupadd -g {{GID}} {{组名}}"
+      - desc: "创建系统组"
+        cmd: "groupadd -r {{组名}}"
+    related_challenges: [groupadd-manage]
+
+  - name: who
+    brief: "显示已登录用户"
+    examples:
+      - desc: "显示登录用户"
+        cmd: "who"
+      - desc: "显示详细信息"
+        cmd: "who -a"
+      - desc: "显示当前用户"
+        cmd: "whoami"
+    related_challenges: [who-id]
+
+  - name: id
+    brief: "显示用户身份信息"
+    examples:
+      - desc: "显示当前用户信息"
+        cmd: "id"
+      - desc: "显示指定用户信息"
+        cmd: "id {{用户名}}"
+      - desc: "仅显示用户 ID"
+        cmd: "id -u {{用户名}}"
+    related_challenges: [who-id]
+
+  - name: su
+    brief: "切换用户"
+    examples:
+      - desc: "切换到 root 用户"
+        cmd: "su -"
+      - desc: "切换到指定用户"
+        cmd: "su - {{用户名}}"
+      - desc: "以其他用户执行命令"
+        cmd: "su - {{用户名}} -c '{{命令}}'"
+
+  - name: sudo
+    brief: "以管理员权限执行命令"
+    examples:
+      - desc: "以 root 执行命令"
+        cmd: "sudo {{命令}}"
+      - desc: "以其他用户执行"
+        cmd: "sudo -u {{用户名}} {{命令}}"
+      - desc: "编辑 sudoers 文件"
+        cmd: "sudo visudo"
+    related_challenges: [sudo-config]
+
+  # ===== 磁盘管理 =====
+  - name: df
+    brief: "查看磁盘使用情况"
+    examples:
+      - desc: "显示所有文件系统"
+        cmd: "df -h"
+      - desc: "显示指定文件系统"
+        cmd: "df -h {{挂载点}}"
+      - desc: "显示文件系统类型"
+        cmd: "df -Th"
+    related_challenges: [df-usage]
+
+  - name: du
+    brief: "查看目录占用空间"
+    examples:
+      - desc: "查看目录大小"
+        cmd: "du -sh {{目录}}"
+      - desc: "查看子目录大小"
+        cmd: "du -h --max-depth=1 {{目录}}"
+      - desc: "排序显示最大的目录"
+        cmd: "du -sh {{目录}}/* | sort -rh | head -10"
+    related_challenges: [du-sizes, du-find-large]
+
+  - name: mount
+    brief: "挂载文件系统"
+    examples:
+      - desc: "挂载设备"
+        cmd: "mount {{设备}} {{挂载点}}"
+      - desc: "挂载 ISO 文件"
+        cmd: "mount -o loop {{ISO文件}} {{挂载点}}"
+      - desc: "查看所有挂载"
+        cmd: "mount | column -t"
+    related_challenges: [mount-info]
+
+  - name: umount
+    brief: "卸载文件系统"
+    examples:
+      - desc: "卸载文件系统"
+        cmd: "umount {{挂载点}}"
+      - desc: "强制卸载"
+        cmd: "umount -f {{挂载点}}"
+      - desc: "延迟卸载"
+        cmd: "umount -l {{挂载点}}"
+
+  - name: lsblk
+    brief: "列出块设备"
+    examples:
+      - desc: "列出所有块设备"
+        cmd: "lsblk"
+      - desc: "显示详细信息"
+        cmd: "lsblk -f"
+      - desc: "以树形显示"
+        cmd: "lsblk -t"
+    related_challenges: [lsblk-devices]
+
+  - name: fdisk
+    brief: "磁盘分区管理"
+    examples:
+      - desc: "查看分区表"
+        cmd: "fdisk -l"
+      - desc: "查看指定磁盘分区"
+        cmd: "fdisk -l {{设备}}"
+      - desc: "管理磁盘分区"
+        cmd: "fdisk {{设备}}"
+
+  # ===== 进程管理 =====
+  - name: ps
+    brief: "查看进程信息"
+    examples:
+      - desc: "查看所有进程"
+        cmd: "ps aux"
+      - desc: "查看进程树"
+        cmd: "ps -ef --forest"
+      - desc: "查找特定进程"
+        cmd: "ps aux | grep {{进程名}}"
+    related_challenges: [ps-find, process-tree]
+
+  - name: kill
+    brief: "终止进程"
+    examples:
+      - desc: "终止进程"
+        cmd: "kill {{PID}}"
+      - desc: "强制终止进程"
+        cmd: "kill -9 {{PID}}"
+      - desc: "发送指定信号"
+        cmd: "kill -{{信号}} {{PID}}"
+    related_challenges: [kill-process]
+
+  - name: killall
+    brief: "按名称终止进程"
+    examples:
+      - desc: "按名称终止"
+        cmd: "killall {{进程名}}"
+      - desc: "强制终止"
+        cmd: "killall -9 {{进程名}}"
+      - desc: "交互确认"
+        cmd: "killall -i {{进程名}}"
+
+  - name: top
+    brief: "实时查看系统资源和进程"
+    examples:
+      - desc: "查看实时进程"
+        cmd: "top"
+      - desc: "批处理模式"
+        cmd: "top -b -n 1"
+      - desc: "查看特定用户进程"
+        cmd: "top -u {{用户名}}"
+
+  - name: bg
+    brief: "将任务放到后台运行"
+    examples:
+      - desc: "将最近挂起的任务放入后台"
+        cmd: "bg"
+      - desc: "将指定任务放入后台"
+        cmd: "bg %{{任务号}}"
+      - desc: "先挂起再后台运行"
+        cmd: "Ctrl+Z 然后 bg"
+    related_challenges: [bg-fg-jobs]
+
+  - name: fg
+    brief: "将后台任务调到前台"
+    examples:
+      - desc: "将最近的后台任务调到前台"
+        cmd: "fg"
+      - desc: "将指定任务调到前台"
+        cmd: "fg %{{任务号}}"
+      - desc: "查看任务列表后调到前台"
+        cmd: "jobs && fg %{{任务号}}"
+    related_challenges: [bg-fg-jobs]
+
+  - name: jobs
+    brief: "列出当前 Shell 的后台任务"
+    examples:
+      - desc: "列出后台任务"
+        cmd: "jobs"
+      - desc: "显示进程 ID"
+        cmd: "jobs -l"
+      - desc: "仅显示运行中的任务"
+        cmd: "jobs -r"
+    related_challenges: [bg-fg-jobs]
+
+  - name: nohup
+    brief: "使命令不受挂断信号影响"
+    examples:
+      - desc: "后台运行命令"
+        cmd: "nohup {{命令}} &"
+      - desc: "指定输出文件"
+        cmd: "nohup {{命令}} > {{输出文件}} 2>&1 &"
+      - desc: "运行脚本"
+        cmd: "nohup bash {{脚本.sh}} &"
+    related_challenges: [nohup-run]
+
+  - name: nice
+    brief: "设置进程优先级"
+    examples:
+      - desc: "以低优先级运行"
+        cmd: "nice -n 19 {{命令}}"
+      - desc: "以高优先级运行"
+        cmd: "nice -n -20 {{命令}}"
+      - desc: "修改运行中进程优先级"
+        cmd: "renice {{优先级}} -p {{PID}}"
+    related_challenges: [nice-priority]
+
+  - name: crontab
+    brief: "定时任务管理"
+    examples:
+      - desc: "编辑当前用户的定时任务"
+        cmd: "crontab -e"
+      - desc: "查看定时任务"
+        cmd: "crontab -l"
+      - desc: "删除所有定时任务"
+        cmd: "crontab -r"
+      - desc: "定时任务格式"
+        cmd: "{{分}} {{时}} {{日}} {{月}} {{周}} {{命令}}"
+    related_challenges: [crontab-schedule]
+
+  # ===== 网络工具 =====
+  - name: ping
+    brief: "测试网络连通性"
+    examples:
+      - desc: "ping 主机"
+        cmd: "ping {{主机}}"
+      - desc: "指定次数"
+        cmd: "ping -c {{次数}} {{主机}}"
+      - desc: "指定间隔"
+        cmd: "ping -i {{秒数}} {{主机}}"
+    related_challenges: [ping-test]
+
+  - name: curl
+    brief: "发送 HTTP 请求"
+    examples:
+      - desc: "GET 请求"
+        cmd: "curl {{URL}}"
+      - desc: "下载文件"
+        cmd: "curl -o {{文件名}} {{URL}}"
+      - desc: "POST 请求"
+        cmd: "curl -X POST -d '{{数据}}' {{URL}}"
+      - desc: "显示响应头"
+        cmd: "curl -I {{URL}}"
+    related_challenges: [curl-download]
+
+  - name: wget
+    brief: "下载文件"
+    examples:
+      - desc: "下载文件"
+        cmd: "wget {{URL}}"
+      - desc: "指定输出文件名"
+        cmd: "wget -O {{文件名}} {{URL}}"
+      - desc: "后台下载"
+        cmd: "wget -b {{URL}}"
+      - desc: "断点续传"
+        cmd: "wget -c {{URL}}"
+    related_challenges: [wget-download]
+
+  - name: ss
+    brief: "查看网络连接和端口"
+    examples:
+      - desc: "查看监听端口"
+        cmd: "ss -tlnp"
+      - desc: "查看所有 TCP 连接"
+        cmd: "ss -ta"
+      - desc: "查看 UDP 端口"
+        cmd: "ss -ulnp"
+    related_challenges: [ss-ports]
+
+  - name: netstat
+    brief: "网络连接和路由信息"
+    examples:
+      - desc: "查看所有监听端口"
+        cmd: "netstat -tlnp"
+      - desc: "查看路由表"
+        cmd: "netstat -r"
+      - desc: "查看网络统计"
+        cmd: "netstat -s"
+
+  - name: ip
+    brief: "网络接口和路由管理"
+    examples:
+      - desc: "查看 IP 地址"
+        cmd: "ip addr show"
+      - desc: "查看路由表"
+        cmd: "ip route show"
+      - desc: "添加 IP 地址"
+        cmd: "ip addr add {{IP/掩码}} dev {{网卡}}"
+    related_challenges: [ip-addr]
+
+  - name: dig
+    brief: "DNS 查询"
+    examples:
+      - desc: "查询域名"
+        cmd: "dig {{域名}}"
+      - desc: "查询特定记录类型"
+        cmd: "dig {{域名}} {{A|MX|NS|TXT}}"
+      - desc: "简洁输出"
+        cmd: "dig +short {{域名}}"
+
+  - name: traceroute
+    brief: "追踪网络路由"
+    examples:
+      - desc: "追踪路由"
+        cmd: "traceroute {{主机}}"
+      - desc: "使用 ICMP"
+        cmd: "traceroute -I {{主机}}"
+      - desc: "设置最大跳数"
+        cmd: "traceroute -m {{跳数}} {{主机}}"
+
+  - name: ssh
+    brief: "远程安全登录"
+    examples:
+      - desc: "连接远程主机"
+        cmd: "ssh {{用户}}@{{主机}}"
+      - desc: "指定端口连接"
+        cmd: "ssh -p {{端口}} {{用户}}@{{主机}}"
+      - desc: "使用密钥连接"
+        cmd: "ssh -i {{密钥文件}} {{用户}}@{{主机}}"
+
+  # ===== 系统信息 =====
+  - name: uname
+    brief: "显示系统信息"
+    examples:
+      - desc: "显示所有信息"
+        cmd: "uname -a"
+      - desc: "显示内核版本"
+        cmd: "uname -r"
+      - desc: "显示操作系统"
+        cmd: "uname -s"
+    related_challenges: [uname-info]
+
+  - name: hostname
+    brief: "显示或设置主机名"
+    examples:
+      - desc: "显示主机名"
+        cmd: "hostname"
+      - desc: "显示 IP 地址"
+        cmd: "hostname -I"
+      - desc: "显示 FQDN"
+        cmd: "hostname -f"
+
+  - name: uptime
+    brief: "显示系统运行时间"
+    examples:
+      - desc: "显示运行时间"
+        cmd: "uptime"
+      - desc: "简洁格式"
+        cmd: "uptime -p"
+      - desc: "显示启动时间"
+        cmd: "uptime -s"
+    related_challenges: [uptime-load]
+
+  - name: free
+    brief: "显示内存使用情况"
+    examples:
+      - desc: "人类可读格式"
+        cmd: "free -h"
+      - desc: "以 MB 显示"
+        cmd: "free -m"
+      - desc: "持续监控"
+        cmd: "free -h -s {{秒数}}"
+    related_challenges: [free-memory]
+
+  - name: date
+    brief: "显示和设置日期时间"
+    examples:
+      - desc: "显示当前日期时间"
+        cmd: "date"
+      - desc: "自定义格式"
+        cmd: "date '+%Y-%m-%d %H:%M:%S'"
+      - desc: "显示 UNIX 时间戳"
+        cmd: "date +%s"
+    related_challenges: [date-cal]
+
+  - name: env
+    brief: "显示环境变量"
+    examples:
+      - desc: "显示所有环境变量"
+        cmd: "env"
+      - desc: "设置临时环境变量执行命令"
+        cmd: "env {{变量}}={{值}} {{命令}}"
+      - desc: "查看特定变量"
+        cmd: "echo ${{变量名}}"
+    related_challenges: [env-vars]
+
+  - name: systemctl
+    brief: "管理系统服务"
+    examples:
+      - desc: "启动服务"
+        cmd: "systemctl start {{服务名}}"
+      - desc: "停止服务"
+        cmd: "systemctl stop {{服务名}}"
+      - desc: "查看服务状态"
+        cmd: "systemctl status {{服务名}}"
+      - desc: "设置开机自启"
+        cmd: "systemctl enable {{服务名}}"
+      - desc: "列出所有服务"
+        cmd: "systemctl list-units --type=service"
+
+  # ===== 包管理 =====
+  - name: apt
+    brief: "Debian/Ubuntu 包管理器"
+    examples:
+      - desc: "更新软件源"
+        cmd: "apt update"
+      - desc: "安装软件包"
+        cmd: "apt install {{包名}}"
+      - desc: "搜索软件包"
+        cmd: "apt search {{关键词}}"
+      - desc: "删除软件包"
+        cmd: "apt remove {{包名}}"
+      - desc: "升级所有软件包"
+        cmd: "apt upgrade"
+    related_challenges: [apt-basics, apt-search, apt-remove]
+
+  - name: dpkg
+    brief: "Debian 包管理底层工具"
+    examples:
+      - desc: "安装 deb 包"
+        cmd: "dpkg -i {{包文件.deb}}"
+      - desc: "列出已安装的包"
+        cmd: "dpkg -l"
+      - desc: "查看包信息"
+        cmd: "dpkg -s {{包名}}"
+      - desc: "列出包中的文件"
+        cmd: "dpkg -L {{包名}}"
