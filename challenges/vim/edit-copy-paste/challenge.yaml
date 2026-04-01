@@ -22,15 +22,8 @@ setup_files:
         background: #000;
       }
 verify:
-  - type: file_content
-    path: challenge.txt
-    expect: |
-      .header {
-        border: 1px solid #333;
-        color: #fff;
-        background: #000;
-        border: 1px solid #333;
-      }
+  - type: script
+    path: check.sh
 hints:
   - level: 1
     text: "先用 yy 复制 border 那一行，再移到目标位置用 p 粘贴"

@@ -32,21 +32,8 @@ setup_files:
       Expenses: $7,500
       Profit: $2,500
 verify:
-  - type: file_content
-    path: challenge.txt
-    expect: |
-      # Report
-      
-      ## Summary
-      This is the monthly report.
-      
-      ## Data
-      Revenue: $10,000
-      Expenses: $7,500
-      Profit: $2,500
-      
-      ## Conclusion
-      Data looks good.
+  - type: script
+    path: check.sh
 hints:
   - level: 1
     text: "使用 :r filename 可以将文件内容读入当前位置"

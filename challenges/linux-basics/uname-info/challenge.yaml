@@ -18,6 +18,5 @@ hints:
   - level: 3
     text: "uname -a > /tmp/uname_result.txt && hostname > /tmp/hostname_result.txt"
 verify:
-  - type: file_content
-    path: /tmp/uname_result.txt
-    expect: "Linux"
+  - type: script
+    path: check.sh

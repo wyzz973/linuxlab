@@ -29,6 +29,5 @@ hints:
   - level: 3
     text: "使用 $1 获取第一个命令行参数"
 verify:
-  - type: command_output
-    command: "bash /home/learner/solution.sh 2"
-    expect: "You selected: View user"
+  - type: script
+    path: check.sh

@@ -25,6 +25,5 @@ hints:
   - level: 3
     text: "echo ${str:0:5}; echo ${str:6:11}; echo ${str: -8}"
 verify:
-  - type: command_output
-    command: "bash /home/learner/solution.sh"
-    expect: "Shell\nProgramming\nLanguage"
+  - type: script
+    path: check.sh

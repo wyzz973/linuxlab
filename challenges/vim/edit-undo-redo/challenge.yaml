@@ -20,12 +20,8 @@ setup_files:
       level=error
       level=debug
 verify:
-  - type: file_content
-    path: challenge.txt
-    expect: |
-      level=info
-      level=warning
-      level=debug
+  - type: script
+    path: check.sh
 hints:
   - level: 1
     text: "如果不小心改错了行，按 u 撤销"

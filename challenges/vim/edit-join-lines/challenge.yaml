@@ -20,10 +20,8 @@ setup_files:
       WHERE active = true
       ORDER BY name;
 verify:
-  - type: file_content
-    path: challenge.txt
-    expect: |
-      SELECT name, email, age FROM users WHERE active = true ORDER BY name;
+  - type: script
+    path: check.sh
 hints:
   - level: 1
     text: "使用 J 将下一行合并到当前行，多次按 J"

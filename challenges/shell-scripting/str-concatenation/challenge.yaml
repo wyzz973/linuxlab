@@ -26,6 +26,5 @@ hints:
   - level: 3
     text: "echo \"${first}, ${second}!\"; echo $first$second"
 verify:
-  - type: command_output
-    command: "bash /home/learner/solution.sh"
-    expect: "Hello, World!\nHelloWorld\nHello_Script"
+  - type: script
+    path: check.sh

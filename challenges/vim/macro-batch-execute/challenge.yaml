@@ -23,15 +23,8 @@ setup_files:
       level senior
       team backend
 verify:
-  - type: file_content
-    path: challenge.txt
-    expect: |
-      "name": "Alice",
-      "age": "30",
-      "city": "Shanghai",
-      "role": "engineer",
-      "level": "senior",
-      "team": "backend",
+  - type: script
+    path: check.sh
 hints:
   - level: 1
     text: "录制宏：在行首加引号，在空格处改为\": \"，在行尾加引号和逗号"

@@ -25,16 +25,8 @@ setup_files:
       - [DONE] Fix CSS layout issue
       - [TODO] Write integration tests
 verify:
-  - type: file_content
-    path: challenge.txt
-    expect: |
-      ## Sprint 14 Tasks
-      
-      - [DONE] Migrate database schema
-      - [DONE] Update API endpoints
-      - [DONE] Add input validation
-      - [DONE] Fix CSS layout issue
-      - [DONE] Write integration tests
+  - type: script
+    path: check.sh
 hints:
   - level: 1
     text: "当编辑多文件时，:ls 查看缓冲区列表，:bn/:bp 切换"

@@ -25,6 +25,5 @@ hints:
   - level: 3
     text: "echo ${filepath#/}; echo ${filepath##*/}; echo ${filename##*.}"
 verify:
-  - type: command_output
-    command: "bash /home/learner/solution.sh"
-    expect: "home/user/documents/report.tar.gz\nreport.tar.gz\ngz"
+  - type: script
+    path: check.sh

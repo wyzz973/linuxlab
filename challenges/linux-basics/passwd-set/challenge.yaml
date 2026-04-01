@@ -18,6 +18,5 @@ hints:
   - level: 3
     text: "echo 'testuser:Linux2025!' | chpasswd"
 verify:
-  - type: command_output
-    command: "getent shadow testuser | cut -d: -f2 | wc -c"
-    expect: ""
+  - type: script
+    path: check.sh

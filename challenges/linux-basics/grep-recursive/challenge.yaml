@@ -17,6 +17,5 @@ hints:
   - level: 3
     text: "grep -r 'TODO' /home/lab/codebase > /tmp/result.txt"
 verify:
-  - type: file_content
-    path: /tmp/result.txt
-    expect: "TODO"
+  - type: script
+    path: check.sh

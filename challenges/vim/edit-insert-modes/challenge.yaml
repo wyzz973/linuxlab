@@ -21,14 +21,8 @@ setup_files:
       database:
         name: mydb
 verify:
-  - type: file_content
-    path: challenge.txt
-    expect: |
-      server:
-        host: localhost
-        port: 3000
-      database:
-        name: mydb
+  - type: script
+    path: check.sh
 hints:
   - level: 1
     text: "先移动到 host: localhost 那一行，然后用 o 在下方新开一行"

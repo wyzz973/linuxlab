@@ -16,6 +16,5 @@ hints:
   - level: 3
     text: "chmod -R 755 /home/lab/webroot"
 verify:
-  - type: command_output
-    command: "stat -c %a /home/lab/webroot/css/style.css"
-    expect: "755"
+  - type: script
+    path: check.sh

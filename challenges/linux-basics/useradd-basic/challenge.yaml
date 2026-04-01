@@ -18,6 +18,5 @@ hints:
   - level: 3
     text: "useradd -m -s /bin/bash developer"
 verify:
-  - type: command_output
-    command: "id developer"
-    expect: "developer"
+  - type: script
+    path: check.sh

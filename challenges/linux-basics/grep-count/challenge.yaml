@@ -18,6 +18,5 @@ hints:
   - level: 3
     text: "grep -ic 'error' /home/lab/survey.txt > /tmp/result.txt"
 verify:
-  - type: file_content
-    path: /tmp/result.txt
-    expect: "5"
+  - type: script
+    path: check.sh

@@ -19,6 +19,5 @@ hints:
   - level: 3
     text: "cut -d':' -f1,7 /home/lab/passwd_sample.txt | tr 'A-Z' 'a-z' > /tmp/result.txt"
 verify:
-  - type: file_content
-    path: /tmp/result.txt
-    expect: "/bin/bash"
+  - type: script
+    path: check.sh

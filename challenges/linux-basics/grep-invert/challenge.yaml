@@ -18,6 +18,5 @@ hints:
   - level: 3
     text: "grep -v 'grep' /home/lab/processes.txt | grep -v '\\[' > /tmp/result.txt"
 verify:
-  - type: file_content
-    path: /tmp/result.txt
-    expect: "nginx"
+  - type: script
+    path: check.sh

@@ -18,6 +18,5 @@ hints:
   - level: 3
     text: "df -ih > /tmp/result.txt"
 verify:
-  - type: file_content
-    path: /tmp/result.txt
-    expect: "Inodes"
+  - type: script
+    path: check.sh

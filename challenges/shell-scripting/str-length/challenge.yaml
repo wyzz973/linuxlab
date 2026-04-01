@@ -27,6 +27,5 @@ hints:
   - level: 3
     text: "while read line; do echo \"$line: ${#line}\"; done < file"
 verify:
-  - type: command_output
-    command: "bash /home/learner/solution.sh"
-    expect: "hello: 5\nworld: 5\nshell: 5"
+  - type: script
+    path: check.sh

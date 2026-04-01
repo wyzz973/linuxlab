@@ -18,6 +18,5 @@ hints:
   - level: 3
     text: "id > /tmp/id_result.txt && whoami > /tmp/whoami_result.txt"
 verify:
-  - type: file_content
-    path: /tmp/id_result.txt
-    expect: "uid="
+  - type: script
+    path: check.sh

@@ -30,6 +30,5 @@ hints:
   - level: 3
     text: "初始化 max 和 min 为第一个元素，然后逐个比较"
 verify:
-  - type: command_output
-    command: "bash /home/learner/solution.sh"
-    expect: "Students: 10\nHighest: 97\nLowest: 70\nTotal: 853\nAverage: 85"
+  - type: script
+    path: check.sh

@@ -22,14 +22,8 @@ setup_files:
       docs_url = "http://docs.example.com/api"
       webhook = "http://hooks.example.com/notify"
 verify:
-  - type: file_content
-    path: challenge.txt
-    expect: |
-      api_url = "https://api.example.com/v1"
-      cdn_url = "https://cdn.example.com/assets"
-      auth_url = "https://auth.example.com/login"
-      docs_url = "https://docs.example.com/api"
-      webhook = "https://hooks.example.com/notify"
+  - type: script
+    path: check.sh
 hints:
   - level: 1
     text: "使用 :%s 命令进行全局替换"

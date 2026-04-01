@@ -35,6 +35,5 @@ hints:
   - level: 3
     text: "for key in $(echo \"${!capitals[@]}\" | tr ' ' '\\n' | sort); do ..."
 verify:
-  - type: command_output
-    command: "bash /home/learner/solution.sh"
-    expect: "Beijing\nChina\nFrance\nJapan\nBeijing\nParis\nTokyo\n3"
+  - type: script
+    path: check.sh

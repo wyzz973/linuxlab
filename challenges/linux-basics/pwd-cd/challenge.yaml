@@ -18,6 +18,5 @@ hints:
   - level: 3
     text: "cd /home/lab/workspace && pwd > /tmp/result.txt"
 verify:
-  - type: file_content
-    path: /tmp/result.txt
-    expect: "/home/lab/workspace"
+  - type: script
+    path: check.sh

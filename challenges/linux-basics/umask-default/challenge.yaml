@@ -22,6 +22,5 @@ hints:
   - level: 3
     text: "umask 027 && touch /home/lab/secure_file.txt && mkdir /home/lab/secure_dir"
 verify:
-  - type: command_output
-    command: "stat -c %a /home/lab/secure_file.txt"
-    expect: "640"
+  - type: script
+    path: check.sh

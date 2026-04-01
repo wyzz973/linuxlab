@@ -25,6 +25,5 @@ hints:
   - level: 3
     text: "用计数器记录当前是第几个参数"
 verify:
-  - type: command_output
-    command: "bash /home/learner/solution.sh one two three four"
-    expect: "Processing #1: one (3 remaining)\nProcessing #2: two (2 remaining)\nProcessing #3: three (1 remaining)\nProcessing #4: four (0 remaining)"
+  - type: script
+    path: check.sh

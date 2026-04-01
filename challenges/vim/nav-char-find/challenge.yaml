@@ -22,12 +22,8 @@ setup_files:
       city = 'Beijing'
       role = 'admin'
 verify:
-  - type: file_content
-    path: challenge.txt
-    expect: |
-      name = "Alice"
-      city = "Beijing"
-      role = "admin"
+  - type: script
+    path: check.sh
 hints:
   - level: 1
     text: "使用 f' 快速跳到单引号位置，然后 r\" 替换字符"

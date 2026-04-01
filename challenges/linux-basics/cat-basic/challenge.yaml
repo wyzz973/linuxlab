@@ -17,6 +17,5 @@ hints:
   - level: 3
     text: "cat /home/lab/part1.txt /home/lab/part2.txt > /home/lab/combined.txt"
 verify:
-  - type: file_content
-    path: /home/lab/combined.txt
-    expect: "Part 1 content"
+  - type: script
+    path: check.sh

@@ -20,14 +20,8 @@ setup_files:
           console.log(result);
       }
 verify:
-  - type: file_content
-    path: challenge.txt
-    expect: |
-      function main() {
-          let data = [1, 2, 3];
-          let result = process(data);
-          console.log(result);
-      }
+  - type: script
+    path: check.sh
 hints:
   - level: 1
     text: "使用 % 在括号间跳转，可以快速发现不匹配的括号"

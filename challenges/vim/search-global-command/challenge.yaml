@@ -28,16 +28,8 @@ setup_files:
       
       }
 verify:
-  - type: file_content
-    path: challenge.txt
-    expect: |
-      server {
-          listen 80;
-          server_name example.com;
-          location / {
-              proxy_pass http://backend;
-          }
-      }
+  - type: script
+    path: check.sh
 hints:
   - level: 1
     text: "使用 :g 全局命令匹配空行并删除"

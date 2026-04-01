@@ -31,6 +31,5 @@ hints:
   - level: 3
     text: "getopts 将选项值存储在 $OPTARG 中"
 verify:
-  - type: command_output
-    command: "bash /home/learner/solution.sh -n Alice -a 25 -v"
-    expect: "Verbose mode enabled\nName: Alice\nAge: 25"
+  - type: script
+    path: check.sh

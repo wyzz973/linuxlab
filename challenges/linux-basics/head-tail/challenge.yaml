@@ -18,6 +18,5 @@ hints:
   - level: 3
     text: "head -n 5 /home/lab/server.log > /tmp/head_result.txt && tail -n 3 /home/lab/server.log > /tmp/tail_result.txt"
 verify:
-  - type: file_content
-    path: /tmp/head_result.txt
-    expect: "Server started"
+  - type: script
+    path: check.sh

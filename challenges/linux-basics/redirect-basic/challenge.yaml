@@ -20,6 +20,5 @@ hints:
   - level: 3
     text: "echo 'Hello Linux' > /tmp/output.txt && echo 'Welcome to Shell' >> /tmp/output.txt"
 verify:
-  - type: file_content
-    path: /tmp/output.txt
-    expect: "Hello Linux"
+  - type: script
+    path: check.sh

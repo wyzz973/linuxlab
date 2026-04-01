@@ -17,6 +17,5 @@ hints:
   - level: 3
     text: "find /home/lab/logs -name '*.log' -mtime -7 > /tmp/result.txt"
 verify:
-  - type: file_content
-    path: /tmp/result.txt
-    expect: ".log"
+  - type: script
+    path: check.sh

@@ -23,6 +23,5 @@ hints:
   - level: 3
     text: "if [ $((i % 3)) -eq 0 ]; then continue; fi"
 verify:
-  - type: command_output
-    command: "bash /home/learner/solution.sh"
-    expect: "1 2 4 5 7 8 10 11 13 14 16 17 19 20\nStopped at 20, sum=210"
+  - type: script
+    path: check.sh

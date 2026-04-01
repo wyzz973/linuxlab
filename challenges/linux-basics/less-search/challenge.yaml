@@ -19,6 +19,5 @@ hints:
   - level: 3
     text: "grep -C 2 'CRITICAL' /home/lab/large_log.txt > /tmp/result.txt"
 verify:
-  - type: file_content
-    path: /tmp/result.txt
-    expect: "CRITICAL"
+  - type: script
+    path: check.sh

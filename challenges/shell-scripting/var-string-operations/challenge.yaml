@@ -25,6 +25,5 @@ hints:
   - level: 3
     text: "echo ${#url}; echo ${url:12:6}; expr index \"$url\" l"
 verify:
-  - type: command_output
-    command: "bash /home/learner/solution.sh | head -2"
-    expect: "46\nrunoob"
+  - type: script
+    path: check.sh

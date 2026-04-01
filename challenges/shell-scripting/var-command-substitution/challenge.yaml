@@ -22,6 +22,5 @@ hints:
   - level: 3
     text: "today=$(date +%Y-%m-%d)"
 verify:
-  - type: command_output
-    command: "bash /home/learner/solution.sh | grep -c '^\\(Today:\\|User:\\|Lines in passwd:\\)'"
-    expect: "3"
+  - type: script
+    path: check.sh

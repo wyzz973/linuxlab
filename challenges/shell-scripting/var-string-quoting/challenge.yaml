@@ -23,6 +23,5 @@ hints:
   - level: 3
     text: "echo \"Hello, $lang!\"; echo 'Hello, $lang!'"
 verify:
-  - type: command_output
-    command: "bash /home/learner/solution.sh"
-    expect: "Hello, Shell!\nHello, $lang!"
+  - type: script
+    path: check.sh

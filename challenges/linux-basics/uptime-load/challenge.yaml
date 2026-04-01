@@ -18,6 +18,5 @@ hints:
   - level: 3
     text: "uptime > /tmp/uptime_result.txt && w > /tmp/w_result.txt"
 verify:
-  - type: file_content
-    path: /tmp/uptime_result.txt
-    expect: "load average"
+  - type: script
+    path: check.sh

@@ -16,6 +16,5 @@ hints:
   - level: 3
     text: "chgrp -R developers /home/lab/project"
 verify:
-  - type: command_output
-    command: "stat -c %G /home/lab/project/src/main.py"
-    expect: "developers"
+  - type: script
+    path: check.sh

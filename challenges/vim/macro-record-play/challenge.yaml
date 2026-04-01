@@ -24,14 +24,8 @@ setup_files:
       role,engineer
       team,backend
 verify:
-  - type: file_content
-    path: challenge.txt
-    expect: |
-      name=Alice
-      age=30
-      city=Shanghai
-      role=engineer
-      team=backend
+  - type: script
+    path: check.sh
 hints:
   - level: 1
     text: "录制一个宏：qa 开始，f, 找到逗号，r= 替换为等号，j0 到下一行，q 结束"

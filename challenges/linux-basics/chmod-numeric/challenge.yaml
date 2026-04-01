@@ -21,6 +21,5 @@ hints:
   - level: 3
     text: "chmod 754 /home/lab/deploy.sh"
 verify:
-  - type: command_output
-    command: "stat -c %a /home/lab/deploy.sh"
-    expect: "754"
+  - type: script
+    path: check.sh

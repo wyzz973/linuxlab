@@ -17,6 +17,5 @@ hints:
   - level: 3
     text: "kill $(pgrep -f rogue_process) 或 pkill -f rogue_process"
 verify:
-  - type: command_output
-    command: "pgrep -f rogue_process | wc -l"
-    expect: "0"
+  - type: script
+    path: check.sh

@@ -29,6 +29,5 @@ hints:
   - level: 3
     text: "is_even 4 && echo 'even' || echo 'odd'"
 verify:
-  - type: command_output
-    command: "bash /home/learner/solution.sh"
-    expect: "4 is even\n7 is odd\nMax of 15 and 23 is: 23"
+  - type: script
+    path: check.sh

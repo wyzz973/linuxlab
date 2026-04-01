@@ -31,6 +31,5 @@ hints:
   - level: 3
     text: "result=$((a ${op} b)) 可以动态使用运算符"
 verify:
-  - type: command_output
-    command: "bash /home/learner/solution.sh"
-    expect: "10 + 5 = 15\n20 - 8 = 12\n6 * 7 = 42\n100 / 4 = 25\n17 % 3 = 2"
+  - type: script
+    path: check.sh

@@ -20,14 +20,8 @@ setup_files:
       var role = "engineer";
       var level = "senior";
 verify:
-  - type: file_content
-    path: challenge.txt
-    expect: |
-      let name = "Alice";
-      let age = 30;
-      let city = "Shanghai";
-      let role = "engineer";
-      let level = "senior";
+  - type: script
+    path: check.sh
 hints:
   - level: 1
     text: ". 命令可以重复上一次修改，先改一个 var 为 let，再用 . 重复"

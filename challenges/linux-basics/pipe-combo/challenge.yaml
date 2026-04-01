@@ -20,6 +20,5 @@ hints:
   - level: 3
     text: "awk '{print $1}' /home/lab/web_access.log | sort | uniq -c | sort -rn | head -5 > /tmp/result.txt"
 verify:
-  - type: file_content
-    path: /tmp/result.txt
-    expect: "192.168"
+  - type: script
+    path: check.sh

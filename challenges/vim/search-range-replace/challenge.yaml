@@ -25,17 +25,8 @@ setup_files:
       debug_enabled = no
       log_enabled = no
 verify:
-  - type: file_content
-    path: challenge.txt
-    expect: |
-      [staging]
-      cache_enabled = no
-      debug_enabled = no
-      log_enabled = no
-      [production]
-      cache_enabled = yes
-      debug_enabled = yes
-      log_enabled = yes
+  - type: script
+    path: check.sh
 hints:
   - level: 1
     text: "使用范围替换，只对 production 部分的行操作"

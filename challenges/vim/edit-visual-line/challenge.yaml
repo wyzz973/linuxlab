@@ -21,13 +21,8 @@ setup_files:
       app_secret=mykey123
       log_level=info
 verify:
-  - type: file_content
-    path: challenge.txt
-    expect: |
-      DATABASE_HOST=localhost
-      DATABASE_PORT=5432
-      APP_SECRET=mykey123
-      LOG_LEVEL=info
+  - type: script
+    path: check.sh
 hints:
   - level: 1
     text: "使用 v 选择等号前的变量名，然后 U 转大写"

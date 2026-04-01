@@ -31,6 +31,5 @@ hints:
   - level: 3
     text: "也可以用 && 和 || 简写：[ $a -eq $b ] && echo 'true' || echo 'false'"
 verify:
-  - type: command_output
-    command: "bash /home/learner/solution.sh"
-    expect: "a == b: false\na != b: true\na > b: false\na < b: true\na >= 10: true\nb <= 20: true"
+  - type: script
+    path: check.sh

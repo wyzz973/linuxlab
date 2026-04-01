@@ -17,6 +17,5 @@ hints:
   - level: 3
     text: "find /home/lab/project -name '*.bak' | xargs rm"
 verify:
-  - type: command_output
-    command: "find /home/lab/project -name '*.bak' | wc -l"
-    expect: "0"
+  - type: script
+    path: check.sh

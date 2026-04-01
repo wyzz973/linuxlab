@@ -31,6 +31,5 @@ hints:
   - level: 3
     text: "$(()) 支持直接的算术表达式，不需要转义"
 verify:
-  - type: command_output
-    command: "bash /home/learner/solution.sh"
-    expect: "13\n7\n30\n3\n1\n26"
+  - type: script
+    path: check.sh

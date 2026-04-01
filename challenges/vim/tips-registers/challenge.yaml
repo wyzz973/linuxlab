@@ -25,18 +25,8 @@ setup_files:
       
       # OUTPUT (paste in order below):
 verify:
-  - type: file_content
-    path: challenge.txt
-    expect: |
-      # Source data (do not modify above lines)
-      alpha [2]
-      beta [3]
-      gamma [1]
-      
-      # OUTPUT (paste in order below):
-      gamma [1]
-      alpha [2]
-      beta [3]
+  - type: script
+    path: check.sh
 hints:
   - level: 1
     text: "使用命名寄存器分别复制三行，然后按顺序粘贴"

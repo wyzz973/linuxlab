@@ -20,14 +20,8 @@ setup_files:
       - [x] Write unit tests
       - [x] Deploy to staging
 verify:
-  - type: file_content
-    path: challenge.txt
-    expect: |
-      # Task List
-      - [x] Setup project structure
-      - [ ] DONE: Implement login feature
-      - [x] Write unit tests
-      - [x] Deploy to staging
+  - type: script
+    path: check.sh
 hints:
   - level: 1
     text: "使用 j 向下移动到第 3 行，然后用 l 移动到 FIXME 位置"

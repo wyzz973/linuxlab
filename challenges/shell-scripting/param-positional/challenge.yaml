@@ -25,6 +25,5 @@ hints:
   - level: 3
     text: "$0 包含脚本的完整路径"
 verify:
-  - type: command_output
-    command: "bash /home/learner/solution.sh Alice 25 Beijing"
-    expect: "Name: Alice\nAge: 25\nCity: Beijing\nScript: /home/learner/solution.sh"
+  - type: script
+    path: check.sh

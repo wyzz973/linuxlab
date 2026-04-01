@@ -18,6 +18,5 @@ hints:
   - level: 3
     text: "sed 's/localhost/db.production.com/g' /home/lab/config.txt > /tmp/result.txt"
 verify:
-  - type: file_content
-    path: /tmp/result.txt
-    expect: "db.production.com"
+  - type: script
+    path: check.sh

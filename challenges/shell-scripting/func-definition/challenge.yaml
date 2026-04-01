@@ -27,6 +27,5 @@ hints:
   - level: 3
     text: "函数参数用 $1 $2 访问：add() { echo $(($1 + $2)); }"
 verify:
-  - type: command_output
-    command: "bash /home/learner/solution.sh | sed -n '1p;3p'"
-    expect: "Hello from function!\n30"
+  - type: script
+    path: check.sh

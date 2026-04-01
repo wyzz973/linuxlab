@@ -18,6 +18,5 @@ hints:
   - level: 3
     text: "(crontab -l 2>/dev/null; echo '30 2 * * * /home/lab/backup.sh') | crontab -"
 verify:
-  - type: command_output
-    command: "crontab -l"
-    expect: "backup.sh"
+  - type: script
+    path: check.sh

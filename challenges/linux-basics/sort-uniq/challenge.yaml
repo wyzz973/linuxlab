@@ -18,6 +18,5 @@ hints:
   - level: 3
     text: "sort /home/lab/access.log | uniq -c | sort -rn > /tmp/result.txt"
 verify:
-  - type: file_content
-    path: /tmp/result.txt
-    expect: "192.168"
+  - type: script
+    path: check.sh

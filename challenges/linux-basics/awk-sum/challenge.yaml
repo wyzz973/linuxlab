@@ -18,6 +18,5 @@ hints:
   - level: 3
     text: "awk '{sum+=$1} END{print \"Total:\", sum, \"Average:\", sum/NR}' /home/lab/transactions.txt > /tmp/result.txt"
 verify:
-  - type: file_content
-    path: /tmp/result.txt
-    expect: "Total:"
+  - type: script
+    path: check.sh

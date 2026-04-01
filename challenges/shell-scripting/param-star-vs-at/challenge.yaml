@@ -29,6 +29,5 @@ hints:
   - level: 3
     text: "for arg in \"$*\" 只循环一次，for arg in \"$@\" 循环实际参数次数"
 verify:
-  - type: command_output
-    command: "bash /home/learner/solution.sh \"hello world\" \"foo bar\" \"test\""
-    expect: "Using $*: 1 iterations\nUsing $@: 3 iterations"
+  - type: script
+    path: check.sh

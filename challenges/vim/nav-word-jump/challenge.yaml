@@ -20,13 +20,8 @@ setup_files:
           discount = old_name * 0.05
           return old_name - discount + tax
 verify:
-  - type: file_content
-    path: challenge.txt
-    expect: |
-      def calculate_total(new_name):
-          tax = new_name * 0.1
-          discount = new_name * 0.05
-          return new_name - discount + tax
+  - type: script
+    path: check.sh
 hints:
   - level: 1
     text: "使用 w 向前跳转单词，定位到 old_name 后用 cw 修改"

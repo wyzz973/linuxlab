@@ -18,6 +18,5 @@ hints:
   - level: 3
     text: "ls -lS /home/lab/data > /tmp/result.txt"
 verify:
-  - type: file_content
-    path: /tmp/result.txt
-    expect: "large_file.dat"
+  - type: script
+    path: check.sh

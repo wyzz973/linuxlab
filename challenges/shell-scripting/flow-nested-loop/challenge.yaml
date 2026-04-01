@@ -25,6 +25,5 @@ hints:
   - level: 3
     text: "for i in {1..9}; do for((j=1;j<=i;j++)); do printf \"%dx%d=%d\\t\" $j $i $((j*i)); done; echo; done"
 verify:
-  - type: command_output
-    command: "bash /home/learner/solution.sh | head -3"
-    expect: "1x1=1\t\n1x2=2\t2x2=4\t\n1x3=3\t2x3=6\t3x3=9\t"
+  - type: script
+    path: check.sh

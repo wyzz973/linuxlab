@@ -29,20 +29,8 @@ setup_files:
       " Show matching brackets
       FILL_6
 verify:
-  - type: file_content
-    path: challenge.txt
-    expect: |
-      " Show line numbers
-      set number
-      " Use 4 spaces for tabs
-      set tabstop=4
-      set expandtab
-      " Enable syntax highlighting
-      syntax on
-      " Enable auto indentation
-      set autoindent
-      " Show matching brackets
-      set showmatch
+  - type: script
+    path: check.sh
 hints:
   - level: 1
     text: "每个 FILL 对应一条 Vim 配置命令"

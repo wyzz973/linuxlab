@@ -22,14 +22,8 @@ setup_files:
       save(result)
           return True
 verify:
-  - type: file_content
-    path: challenge.txt
-    expect: |
-      def process():
-          if ready:
-              result = compute()
-              save(result)
-          return True
+  - type: script
+    path: check.sh
 hints:
   - level: 1
     text: "使用 >> 增加缩进，可以对多行操作"

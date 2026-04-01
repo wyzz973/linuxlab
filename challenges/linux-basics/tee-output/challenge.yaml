@@ -18,6 +18,5 @@ hints:
   - level: 3
     text: "grep 'PASS' /home/lab/data.txt | tee /tmp/passed.txt"
 verify:
-  - type: file_content
-    path: /tmp/passed.txt
-    expect: "PASS"
+  - type: script
+    path: check.sh

@@ -34,6 +34,5 @@ hints:
   - level: 3
     text: "cat <<EOF 可以直接输出多行文本，cat <<EOF > file 可以写入文件"
 verify:
-  - type: command_output
-    command: "bash /home/learner/solution.sh | grep -c '\\(server\\|host=\\|port=\\|Price:\\)'"
-    expect: "4"
+  - type: script
+    path: check.sh

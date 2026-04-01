@@ -27,17 +27,8 @@ setup_files:
       def isLoggedIn(user):
           return user.active
 verify:
-  - type: file_content
-    path: challenge.txt
-    expect: |
-      def get_user_name(user):
-          return user.name
-      
-      def set_password(user, pwd):
-          user.password = pwd
-      
-      def is_logged_in(user):
-          return user.active
+  - type: script
+    path: check.sh
 hints:
   - level: 1
     text: "使用 cw 修改单词，将驼峰命名改为下划线命名"

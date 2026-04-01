@@ -17,6 +17,5 @@ hints:
   - level: 3
     text: "find /home/lab/scripts -name '*.sh' -exec chmod +x {} \\;"
 verify:
-  - type: command_output
-    command: "stat -c %a /home/lab/scripts/deploy.sh"
-    expect: "755"
+  - type: script
+    path: check.sh

@@ -29,13 +29,8 @@ setup_files:
       DB_PORT=5432
       DB_NAME=appdb
 verify:
-  - type: file_content
-    path: challenge.txt
-    expect: |
-      [app]
-      name = MyApp
-      db_connection = postgres://admin:secret123@db.production.com:5432/appdb
-      cache_ttl = 3600
+  - type: script
+    path: check.sh
 hints:
   - level: 1
     text: "用 :tabnew db.conf 在新标签页打开数据库配置查看连接信息"

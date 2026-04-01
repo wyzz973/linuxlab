@@ -33,6 +33,5 @@ hints:
   - level: 3
     text: "for i in $(seq 0 $((${#arr[@]}-1))); do echo \"$i: ${arr[$i]}\"; done"
 verify:
-  - type: command_output
-    command: "bash /home/learner/solution.sh | head -1"
-    expect: "5"
+  - type: script
+    path: check.sh

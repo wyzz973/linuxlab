@@ -18,6 +18,5 @@ hints:
   - level: 3
     text: "rm -rf /home/lab/old_project"
 verify:
-  - type: exit_code
-    command: "test -d /home/lab/old_project"
-    expect: 1
+  - type: script
+    path: check.sh

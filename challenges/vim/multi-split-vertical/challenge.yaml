@@ -26,12 +26,8 @@ setup_files:
       DANGER_COLOR = #e74c3c
       SUCCESS_COLOR = #2ecc71
 verify:
-  - type: file_content
-    path: challenge.txt
-    expect: |
-      .primary { color: #3498db; }
-      .danger { color: #e74c3c; }
-      .success { color: #2ecc71; }
+  - type: script
+    path: check.sh
 hints:
   - level: 1
     text: "用 :vsplit colors.txt 并排查看颜色值"

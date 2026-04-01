@@ -38,6 +38,5 @@ hints:
   - level: 3
     text: "用 while read score 循环读取每行分数"
 verify:
-  - type: command_output
-    command: "bash /home/learner/solution.sh"
-    expect: "95: A\n82: B\n73: C\n61: D\n45: F"
+  - type: script
+    path: check.sh

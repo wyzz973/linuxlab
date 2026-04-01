@@ -28,6 +28,5 @@ hints:
   - level: 3
     text: "cat file 输出文件内容"
 verify:
-  - type: command_output
-    command: "bash /home/learner/solution.sh"
-    expect: "Line 1\nLine 2\nLine 3\nOverwritten"
+  - type: script
+    path: check.sh

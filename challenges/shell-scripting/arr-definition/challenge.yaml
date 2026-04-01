@@ -28,6 +28,5 @@ hints:
   - level: 3
     text: "fruits[1]=\"blueberry\" 修改第二个元素"
 verify:
-  - type: command_output
-    command: "bash /home/learner/solution.sh"
-    expect: "apple\ncherry\napple banana cherry date elderberry\napple blueberry cherry date elderberry"
+  - type: script
+    path: check.sh

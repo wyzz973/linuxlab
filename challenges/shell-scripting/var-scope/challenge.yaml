@@ -29,6 +29,5 @@ hints:
   - level: 3
     text: "local local_var=\"I am local\" 定义局部变量"
 verify:
-  - type: command_output
-    command: "bash /home/learner/solution.sh"
-    expect: "I am local\nModified in function\n"
+  - type: script
+    path: check.sh

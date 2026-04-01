@@ -19,6 +19,5 @@ hints:
   - level: 3
     text: "export MY_APP_ENV=production && env > /tmp/env_result.txt && echo $PATH > /tmp/path_result.txt"
 verify:
-  - type: file_content
-    path: /tmp/env_result.txt
-    expect: "MY_APP_ENV=production"
+  - type: script
+    path: check.sh

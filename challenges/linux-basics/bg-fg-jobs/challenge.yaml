@@ -18,6 +18,5 @@ hints:
   - level: 3
     text: "sleep 300 & jobs > /tmp/result.txt"
 verify:
-  - type: file_content
-    path: /tmp/result.txt
-    expect: "sleep"
+  - type: script
+    path: check.sh

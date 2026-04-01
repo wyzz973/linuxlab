@@ -31,18 +31,8 @@ setup_files:
           <title>My Page</title>
       </head>
 verify:
-  - type: file_content
-    path: challenge.txt
-    expect: |
-      <!DOCTYPE html>
-      <html>
-      <head>
-          <title>My Page</title>
-      </head>
-      <body>
-          <p>Hello World</p>
-      </body>
-      </html>
+  - type: script
+    path: check.sh
 hints:
   - level: 1
     text: "用 :split header.html 打开分屏查看 header 内容"

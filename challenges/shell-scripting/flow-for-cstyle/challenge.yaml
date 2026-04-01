@@ -26,6 +26,5 @@ hints:
   - level: 3
     text: "使用 printf 或 echo -n 实现不换行输出"
 verify:
-  - type: command_output
-    command: "bash /home/learner/solution.sh"
-    expect: "1^2 = 1\n2^2 = 4\n3^2 = 9\n4^2 = 16\n5^2 = 25\n5x1=5 5x2=10 5x3=15 5x4=20 5x5=25"
+  - type: script
+    path: check.sh

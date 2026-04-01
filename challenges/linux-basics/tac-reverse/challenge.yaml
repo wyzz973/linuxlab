@@ -17,6 +17,5 @@ hints:
   - level: 3
     text: "tac /home/lab/changelog.txt > /tmp/result.txt"
 verify:
-  - type: file_content
-    path: /tmp/result.txt
-    expect: "v3.0"
+  - type: script
+    path: check.sh

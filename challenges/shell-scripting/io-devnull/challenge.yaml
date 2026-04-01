@@ -28,6 +28,5 @@ hints:
   - level: 3
     text: "/dev/null 是一个特殊文件，写入的所有内容都会被丢弃"
 verify:
-  - type: command_output
-    command: "bash /home/learner/solution.sh"
-    expect: "Error suppressed\nOutput suppressed\n1\nAll done"
+  - type: script
+    path: check.sh

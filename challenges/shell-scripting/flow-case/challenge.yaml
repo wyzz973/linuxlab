@@ -36,6 +36,5 @@ hints:
   - level: 3
     text: "使用 * 通配符匹配扩展名，如 *.sh)"
 verify:
-  - type: command_output
-    command: "bash /home/learner/solution.sh"
-    expect: "setup.sh: 脚本文件\nreadme.md: 文本文件\nphoto.jpg: 图片文件\narchive.tar.gz: 压缩文件\ndata.csv: 未知类型"
+  - type: script
+    path: check.sh

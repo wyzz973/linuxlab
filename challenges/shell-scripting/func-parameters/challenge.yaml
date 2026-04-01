@@ -26,6 +26,5 @@ hints:
   - level: 3
     text: "注意：函数内的 $1 $2 会覆盖脚本的 $1 $2"
 verify:
-  - type: command_output
-    command: "bash /home/learner/solution.sh"
-    expect: "Name: Alice, Age: 28, Job: Engineer\nArgument count: 5\nAll arguments: a b c d e"
+  - type: script
+    path: check.sh

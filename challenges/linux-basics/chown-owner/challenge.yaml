@@ -17,6 +17,5 @@ hints:
   - level: 3
     text: "chown -R www-data:www-data /home/lab/webapp"
 verify:
-  - type: command_output
-    command: "stat -c %U /home/lab/webapp/index.html"
-    expect: "www-data"
+  - type: script
+    path: check.sh

@@ -31,6 +31,5 @@ hints:
   - level: 3
     text: "local local_count=100 只在当前函数调用期间存在"
 verify:
-  - type: command_output
-    command: "bash /home/learner/solution.sh"
-    expect: "Inside: count=1, local_count=100\nInside: count=2, local_count=100\nInside: count=3, local_count=100\nOutside: count=3\nOutside: local_count="
+  - type: script
+    path: check.sh

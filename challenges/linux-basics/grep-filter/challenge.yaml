@@ -17,6 +17,5 @@ hints:
   - level: 3
     text: "grep 'ERROR' /home/lab/syslog.txt > /tmp/result.txt"
 verify:
-  - type: file_content
-    path: /tmp/result.txt
-    expect: "ERROR"
+  - type: script
+    path: check.sh

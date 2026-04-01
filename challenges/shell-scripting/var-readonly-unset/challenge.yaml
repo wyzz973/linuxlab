@@ -22,6 +22,5 @@ hints:
   - level: 3
     text: "readonly site; unset temp; echo $site; echo $temp"
 verify:
-  - type: command_output
-    command: "bash /home/learner/solution.sh"
-    expect: "runoob.com\n"
+  - type: script
+    path: check.sh

@@ -18,6 +18,5 @@ hints:
   - level: 3
     text: "usermod -aG docker devuser && usermod -s /bin/zsh devuser"
 verify:
-  - type: command_output
-    command: "groups devuser"
-    expect: "docker"
+  - type: script
+    path: check.sh

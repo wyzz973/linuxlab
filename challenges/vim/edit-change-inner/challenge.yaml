@@ -21,12 +21,8 @@ setup_files:
       server = "localhost"
       greeting = print(message)
 verify:
-  - type: file_content
-    path: challenge.txt
-    expect: |
-      message = "goodbye world"
-      server = "production.server.com"
-      greeting = print(message)
+  - type: script
+    path: check.sh
 hints:
   - level: 1
     text: "光标在引号内或引号上时，ci\" 可以删除引号内容并进入插入模式"

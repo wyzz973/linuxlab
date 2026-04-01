@@ -22,6 +22,5 @@ hints:
   - level: 3
     text: "if [ $num -gt 0 ]; then echo positive; elif ..."
 verify:
-  - type: command_output
-    command: "bash /home/learner/solution.sh"
-    expect: "42 is positive"
+  - type: script
+    path: check.sh

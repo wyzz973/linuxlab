@@ -25,13 +25,8 @@ setup_files:
       # End of config
       log_level=warn
 verify:
-  - type: file_content
-    path: challenge.txt
-    expect: |
-      name=production
-      debug=false
-      port=8080
-      log_level=warn
+  - type: script
+    path: check.sh
 hints:
   - level: 1
     text: "使用 dd 删除整行，先移到注释行再删除"

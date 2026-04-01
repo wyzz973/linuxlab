@@ -17,6 +17,5 @@ hints:
   - level: 3
     text: "usermod -aG sudo operator"
 verify:
-  - type: command_output
-    command: "groups operator"
-    expect: "sudo"
+  - type: script
+    path: check.sh

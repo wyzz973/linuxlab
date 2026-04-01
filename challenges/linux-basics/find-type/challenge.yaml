@@ -17,6 +17,5 @@ hints:
   - level: 3
     text: "find /home/lab/mixed -type d > /tmp/result.txt"
 verify:
-  - type: file_content
-    path: /tmp/result.txt
-    expect: "subdir"
+  - type: script
+    path: check.sh

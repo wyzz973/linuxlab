@@ -22,14 +22,8 @@ setup_files:
       int w = 40;
       int v = 50;
 verify:
-  - type: file_content
-    path: challenge.txt
-    expect: |
-      // int x = 10;
-      // int y = 20;
-      // int z = 30;
-      // int w = 40;
-      // int v = 50;
+  - type: script
+    path: check.sh
 hints:
   - level: 1
     text: "使用 Ctrl-v 进入块选择模式，选中所有行的第一列"

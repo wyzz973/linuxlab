@@ -17,6 +17,5 @@ hints:
   - level: 3
     text: "ls -R /home/lab/project > /tmp/result.txt"
 verify:
-  - type: file_content
-    path: /tmp/result.txt
-    expect: "main.py"
+  - type: script
+    path: check.sh

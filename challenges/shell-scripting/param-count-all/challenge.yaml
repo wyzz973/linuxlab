@@ -29,6 +29,5 @@ hints:
   - level: 3
     text: "使用 IFS=',' 和 echo \"$*\" 可以用逗号连接所有参数"
 verify:
-  - type: command_output
-    command: "bash /home/learner/solution.sh apple banana cherry date"
-    expect: "Count: 4\napple\nbanana\ncherry\ndate\nAll: apple,banana,cherry,date"
+  - type: script
+    path: check.sh

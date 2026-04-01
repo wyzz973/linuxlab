@@ -25,17 +25,8 @@ setup_files:
       - Run smoke tests
       - Deploy to production
 verify:
-  - type: file_content
-    path: challenge.txt
-    expect: |
-      1. Install dependencies
-      2. Configure database
-      3. Run migrations
-      4. Start development server
-      5. Run test suite
-      6. Deploy to staging
-      7. Run smoke tests
-      8. Deploy to production
+  - type: script
+    path: check.sh
 hints:
   - level: 1
     text: "这需要一个能递增数字的宏，或者用 Vim 的行号功能"

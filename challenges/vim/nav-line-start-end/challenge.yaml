@@ -22,14 +22,8 @@ setup_files:
       printf("%d", z)
       return 0
 verify:
-  - type: file_content
-    path: challenge.txt
-    expect: |
-      int x = 10;
-      int y = 20;
-      int z = x + y;
-      printf("%d", z);
-      return 0;
+  - type: script
+    path: check.sh
 hints:
   - level: 1
     text: "使用 $ 跳到行尾，然后用 a 在光标后插入"

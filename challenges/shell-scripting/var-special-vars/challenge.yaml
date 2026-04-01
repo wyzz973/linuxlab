@@ -22,6 +22,5 @@ hints:
   - level: 3
     text: "直接使用 echo \"Exit status: $?\" 即可获取上一条命令的退出码"
 verify:
-  - type: command_output
-    command: "bash /home/learner/solution.sh | grep -c '\\(Script name:\\|PID:\\|Exit status:\\)'"
-    expect: "4"
+  - type: script
+    path: check.sh

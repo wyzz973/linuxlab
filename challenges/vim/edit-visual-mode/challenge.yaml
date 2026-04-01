@@ -25,13 +25,8 @@ setup_files:
           return sum;
       }
 verify:
-  - type: file_content
-    path: challenge.txt
-    expect: |
-      function calculate(a, b) {
-          let sum = a + b;
-          return sum;
-      }
+  - type: script
+    path: check.sh
 hints:
   - level: 1
     text: "使用 V 进入行选择模式，j 扩展选择范围，d 删除"

@@ -18,6 +18,5 @@ hints:
   - level: 3
     text: "nl -b a /home/lab/config.txt > /tmp/result.txt"
 verify:
-  - type: file_content
-    path: /tmp/result.txt
-    expect: "database"
+  - type: script
+    path: check.sh

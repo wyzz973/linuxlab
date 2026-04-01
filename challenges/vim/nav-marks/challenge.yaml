@@ -30,20 +30,8 @@ setup_files:
           cursor = conn.execute(query)
           return cursor.fetchall()
 verify:
-  - type: file_content
-    path: challenge.txt
-    expect: |
-      # DONE: Add error handling
-      def connect_db(host, port):
-          conn = create_connection(host, port)
-          if conn is None:
-              raise ConnectionError("Failed")
-          return conn
-      
-      # DONE: Add retry logic
-      def fetch_data(conn, query):
-          cursor = conn.execute(query)
-          return cursor.fetchall()
+  - type: script
+    path: check.sh
 hints:
   - level: 1
     text: "使用 ma 在第一个 TODO 处设标记，修改后用 'a 跳回"

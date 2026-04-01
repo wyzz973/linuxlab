@@ -24,6 +24,5 @@ hints:
   - level: 3
     text: "使用 echo 输出结果，$(func arg) 捕获递归调用的返回值"
 verify:
-  - type: command_output
-    command: "bash /home/learner/solution.sh"
-    expect: "6! = 720\n0 1 1 2 3 5 8 13 21 34"
+  - type: script
+    path: check.sh

@@ -17,6 +17,5 @@ hints:
   - level: 3
     text: "find /home/lab/storage -size +50k > /tmp/result.txt"
 verify:
-  - type: file_content
-    path: /tmp/result.txt
-    expect: "bigfile"
+  - type: script
+    path: check.sh

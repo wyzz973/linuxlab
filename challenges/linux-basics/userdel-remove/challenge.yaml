@@ -16,6 +16,5 @@ hints:
   - level: 3
     text: "userdel -r exemployee"
 verify:
-  - type: exit_code
-    command: "id exemployee 2>/dev/null"
-    expect: 1
+  - type: script
+    path: check.sh

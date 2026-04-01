@@ -34,24 +34,8 @@ setup_files:
       [2024-01-15 10:15:02] ERROR: Disk write failed
       [2024-01-15 10:15:03] INFO: Retry scheduled
 verify:
-  - type: file_content
-    path: challenge.txt
-    expect: |
-      [2024-01-15 10:00:01] INFO: Server started
-      [2024-01-15 10:00:02] INFO: Loading config
-      [2024-01-15 10:00:03] INFO: Config loaded
-      
-      [2024-01-15 10:05:01] INFO: User login: alice
-      [2024-01-15 10:05:02] INFO: Session created
-      [2024-01-15 10:05:03] INFO: Dashboard loaded
-      
-      [2024-01-15 10:10:01] WARN: High memory usage
-      [2024-01-15 10:10:02] WARN: Cache cleared
-      [2024-01-15 10:10:03] INFO: Memory recovered
-      
-      [2024-01-15 10:15:01] INFO: Backup started
-      [2024-01-15 10:15:02] FIXED: Disk write failed
-      [2024-01-15 10:15:03] INFO: Retry scheduled
+  - type: script
+    path: check.sh
 hints:
   - level: 1
     text: "使用 } 在段落间跳转，快速到达文件末尾区域"

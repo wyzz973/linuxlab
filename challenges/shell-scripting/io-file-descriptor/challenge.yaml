@@ -28,6 +28,5 @@ hints:
   - level: 3
     text: "exec 3>&- 关闭fd3"
 verify:
-  - type: command_output
-    command: "bash /home/learner/solution.sh"
-    expect: "Written via fd 3\nHello from file descriptor"
+  - type: script
+    path: check.sh

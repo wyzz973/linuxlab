@@ -17,6 +17,5 @@ hints:
   - level: 3
     text: "ping -c 4 127.0.0.1 > /tmp/result.txt"
 verify:
-  - type: file_content
-    path: /tmp/result.txt
-    expect: "packets transmitted"
+  - type: script
+    path: check.sh

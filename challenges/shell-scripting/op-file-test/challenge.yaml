@@ -42,6 +42,5 @@ hints:
   - level: 3
     text: "[ -f file ] && echo 'is file' || echo 'not file'"
 verify:
-  - type: command_output
-    command: "bash /home/learner/solution.sh"
-    expect: "is file\nnot directory\nis readable\nhas content\nis directory\nis executable\nnot exists"
+  - type: script
+    path: check.sh

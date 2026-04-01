@@ -36,6 +36,5 @@ hints:
   - level: 3
     text: "注意 until 的条件是'停止条件'，不是'继续条件'"
 verify:
-  - type: command_output
-    command: "bash /home/learner/solution.sh | head -1"
-    expect: "Sum: 55, stopped at: 10"
+  - type: script
+    path: check.sh

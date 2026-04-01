@@ -38,6 +38,5 @@ hints:
   - level: 3
     text: "sort -n file | tail -1 获取最大值"
 verify:
-  - type: command_output
-    command: "bash /home/learner/solution.sh"
-    expect: "5\n3\n17\n42\n61\n85\n85\n3"
+  - type: script
+    path: check.sh

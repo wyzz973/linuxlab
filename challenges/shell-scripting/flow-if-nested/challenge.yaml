@@ -32,6 +32,5 @@ hints:
   - level: 3
     text: "也可以使用 [[ ]] 配合 && 简化条件"
 verify:
-  - type: command_output
-    command: "bash /home/learner/solution.sh"
-    expect: "alice: full access\nbob: no access (underage)\ncharlie: limited access\ndave: no access (underage)"
+  - type: script
+    path: check.sh

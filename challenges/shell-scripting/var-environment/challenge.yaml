@@ -25,6 +25,5 @@ hints:
   - level: 3
     text: "可以用 [[ \"$PATH\" == *\"/usr/bin\"* ]] 来检查字符串包含"
 verify:
-  - type: command_output
-    command: "bash /home/learner/solution.sh | tail -2"
-    expect: "LinuxLab\nPATH contains /usr/bin"
+  - type: script
+    path: check.sh

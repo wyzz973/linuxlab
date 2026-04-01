@@ -19,6 +19,5 @@ hints:
   - level: 3
     text: "groupadd webteam && groupadd -g 2000 backend && groupmod -n frontend webteam"
 verify:
-  - type: command_output
-    command: "getent group frontend"
-    expect: "frontend"
+  - type: script
+    path: check.sh

@@ -25,6 +25,5 @@ hints:
   - level: 3
     text: "echo ${text/apple/banana}; echo ${text//apple/orange}"
 verify:
-  - type: command_output
-    command: "bash /home/learner/solution.sh"
-    expect: "I love banana, apple is sweet\nI love orange, orange is sweet\n-home-user-documents-file.txt"
+  - type: script
+    path: check.sh

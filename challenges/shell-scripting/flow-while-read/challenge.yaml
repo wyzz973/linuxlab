@@ -28,6 +28,5 @@ hints:
   - level: 3
     text: "tail -n +2 file | while IFS=',' read name age city; do ..."
 verify:
-  - type: command_output
-    command: "bash /home/learner/solution.sh"
-    expect: "Alice is 28 years old, lives in Beijing\nBob is 35 years old, lives in Shanghai\nCharlie is 22 years old, lives in Guangzhou"
+  - type: script
+    path: check.sh

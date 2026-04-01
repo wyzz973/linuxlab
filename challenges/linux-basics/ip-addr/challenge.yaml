@@ -17,6 +17,5 @@ hints:
   - level: 3
     text: "ip addr show > /tmp/result.txt"
 verify:
-  - type: file_content
-    path: /tmp/result.txt
-    expect: "lo"
+  - type: script
+    path: check.sh

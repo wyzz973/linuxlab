@@ -21,6 +21,5 @@ hints:
   - level: 3
     text: "echo \"Welcome to ${name} v${version}\""
 verify:
-  - type: command_output
-    command: "bash /home/learner/solution.sh"
-    expect: "Welcome to LinuxLab v3"
+  - type: script
+    path: check.sh

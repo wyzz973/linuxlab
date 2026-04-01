@@ -27,6 +27,5 @@ hints:
   - level: 3
     text: "倒计时：while [ $count -gt 0 ]; do echo $count; count=$((count-1)); done"
 verify:
-  - type: command_output
-    command: "bash /home/learner/solution.sh"
-    expect: "5! = 120\n5\n4\n3\n2\n1\nGo!"
+  - type: script
+    path: check.sh

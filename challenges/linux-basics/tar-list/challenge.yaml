@@ -17,6 +17,5 @@ hints:
   - level: 3
     text: "tar tzf /home/lab/mystery.tar.gz > /tmp/result.txt"
 verify:
-  - type: file_content
-    path: /tmp/result.txt
-    expect: "secret.txt"
+  - type: script
+    path: check.sh

@@ -18,6 +18,5 @@ hints:
   - level: 3
     text: "file /home/lab/mystery/* > /tmp/result.txt"
 verify:
-  - type: file_content
-    path: /tmp/result.txt
-    expect: "text"
+  - type: script
+    path: check.sh

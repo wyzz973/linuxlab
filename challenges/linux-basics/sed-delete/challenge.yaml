@@ -17,6 +17,5 @@ hints:
   - level: 3
     text: "sed '/^#/d; /^$/d' /home/lab/code.py > /tmp/result.txt"
 verify:
-  - type: file_content
-    path: /tmp/result.txt
-    expect: "def"
+  - type: script
+    path: check.sh

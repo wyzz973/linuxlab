@@ -29,6 +29,5 @@ hints:
   - level: 3
     text: "[ \"$str1\" = \"$str2\" ] 注意引号和空格"
 verify:
-  - type: command_output
-    command: "bash /home/learner/solution.sh"
-    expect: "not equal\ndifferent\nstr3 is empty\nstr1 is not empty\nstr1 has value"
+  - type: script
+    path: check.sh

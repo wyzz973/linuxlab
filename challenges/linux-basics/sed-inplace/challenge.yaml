@@ -17,6 +17,5 @@ hints:
   - level: 3
     text: "sed -i 's/80/8443/g' /home/lab/nginx.conf"
 verify:
-  - type: file_content
-    path: /home/lab/nginx.conf
-    expect: "8443"
+  - type: script
+    path: check.sh

@@ -21,6 +21,5 @@ hints:
   - level: 3
     text: "chmod u+x,g-w,o=r /home/lab/shared.txt"
 verify:
-  - type: command_output
-    command: "stat -c %a /home/lab/shared.txt"
-    expect: "754"
+  - type: script
+    path: check.sh

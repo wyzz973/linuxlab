@@ -17,6 +17,5 @@ hints:
   - level: 3
     text: "du -s /home/lab/*/ | sort -rn | head -3 > /tmp/result.txt"
 verify:
-  - type: file_content
-    path: /tmp/result.txt
-    expect: "lab"
+  - type: script
+    path: check.sh

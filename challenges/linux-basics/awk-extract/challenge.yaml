@@ -20,6 +20,5 @@ hints:
   - level: 3
     text: "awk -F',' '{print $1\"\\t\"$3}' /home/lab/employees.csv > /tmp/result.txt"
 verify:
-  - type: file_content
-    path: /tmp/result.txt
-    expect: "Alice"
+  - type: script
+    path: check.sh

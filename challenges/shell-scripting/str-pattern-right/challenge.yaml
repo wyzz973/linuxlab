@@ -25,6 +25,5 @@ hints:
   - level: 3
     text: "echo ${filepath%.*}; echo ${filepath%%.*}; echo ${filepath%/*}"
 verify:
-  - type: command_output
-    command: "bash /home/learner/solution.sh"
-    expect: "/home/user/documents/report.tar\n/home/user/documents/report\n/home/user/documents"
+  - type: script
+    path: check.sh
