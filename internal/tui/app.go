@@ -364,6 +364,33 @@ func (m AppModel) launchSandbox(ch *challenge.Challenge, hintsUsed int) tea.Cmd 
 		hintsArray += fmt.Sprintf("_HINTS[%d]='%s'\n", i, escapeShell(h.Text))
 	}
 
+	// Build learn content from reference data matched to challenge tags
+	learnContent := ""
+	if m.refs != nil {
+		tagSet := make(map[string]bool)
+		for _, t := range ch.Tags {
+			tagSet[strings.ToLower(t)] = true
+		}
+		for _, cmd := range m.refs.Commands {
+			if !tagSet[strings.ToLower(cmd.Name)] {
+				continue
+			}
+			learnContent += fmt.Sprintf(`
+  echo ""
+  echo -e "\033[1;36m  ┌─ %s ─────────────────────────────────────\033[0m"
+  echo -e "\033[1;36m  │\033[0m  %s"
+  echo -e "\033[1;36m  │\033[0m"
+`, escapeShell(cmd.Name), escapeShell(cmd.Brief))
+			for _, ex := range cmd.Examples {
+				learnContent += fmt.Sprintf(`  echo -e "\033[1;36m  │\033[0m  \033[2m%s:\033[0m"
+  echo -e "\033[1;36m  │\033[0m    \033[1;32m$ %s\033[0m"
+  echo -e "\033[1;36m  │\033[0m"
+`, escapeShell(ex.Desc), escapeShell(ex.Cmd))
+			}
+			learnContent += `  echo -e "\033[1;36m  └──────────────────────────────────────────\033[0m"` + "\n"
+		}
+	}
+
 	// Inject helper commands (.bashrc) into the sandbox
 	desc := strings.TrimSpace(ch.Description)
 	bashrc := fmt.Sprintf(`
@@ -382,7 +409,7 @@ task() {
   echo ""
   echo -e "  $_DESC" | sed 's/^/  /'
   echo ""
-  echo -e "\033[2m  输入 hint 查看提示 · exit 完成挑战\033[0m"
+  echo -e "\033[2m  learn 命令详解 · hint 提示 · help 帮助 · exit 完成\033[0m"
   echo -e "\033[1;34m══════════════════════════════════════════════════════\033[0m"
   echo ""
 }
@@ -404,13 +431,25 @@ hint() {
   _HINT_SHOWN=$((_HINT_SHOWN+1))
 }
 
+learn() {
+  echo ""
+  echo -e "\033[1;36m  ═══ 本题涉及的命令详解 ═══\033[0m"
+%s
+  if [ -z "$1" ]; then
+    echo ""
+    echo -e "\033[2m  掌握了吗？输入 task 回顾任务，hint 查看提示\033[0m"
+  fi
+  echo ""
+}
+
 help() {
   echo ""
   echo -e "\033[1m  可用命令:\033[0m"
-  echo -e "    \033[1;34mtask\033[0m     查看任务描述"
-  echo -e "    \033[1;33mhint\033[0m     查看下一条提示 (共 $_HINT_COUNT 条)"
-  echo -e "    \033[1mhelp\033[0m     显示此帮助"
-  echo -e "    \033[1mexit\033[0m     完成挑战并检测结果"
+  echo -e "    \033[1;34mtask\033[0m      查看任务描述"
+  echo -e "    \033[1;36mlearn\033[0m     查看本题涉及的命令详解和示例"
+  echo -e "    \033[1;33mhint\033[0m      查看下一条提示 (共 $_HINT_COUNT 条)"
+  echo -e "    \033[1mhelp\033[0m      显示此帮助"
+  echo -e "    \033[1mexit\033[0m      完成挑战并检测结果"
   echo ""
 }
 
@@ -424,6 +463,7 @@ task
 		escapeShell(desc),
 		len(ch.Hints),
 		hintsArray,
+		learnContent,
 	)
 
 	// Write .bashrc into the sandbox
