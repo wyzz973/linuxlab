@@ -59,66 +59,68 @@ func boxWidth(termWidth int) int {
 	return w
 }
 
-// contentBox renders a rounded-border box with a title injected into the top border.
-// rightLabel is optional text shown right-aligned in the top border.
+// contentBox renders a rounded-border box with a title in the top border.
+// The title is rendered as a custom top line to avoid ANSI escape code corruption.
 func contentBox(title string, body string, termWidth, termHeight int, rightLabel string) string {
 	w := boxWidth(termWidth)
+	innerW := w - 6 // border (2) + padding (4)
 
-	border := lipgloss.RoundedBorder()
-
-	boxStyle := lipgloss.NewStyle().
-		Border(border).
-		BorderForeground(ColorDim).
-		Padding(1, 2).
-		Width(w)
-
-	rendered := boxStyle.Render(body)
-	lines := strings.Split(rendered, "\n")
-
-	if len(lines) > 0 && title != "" {
-		topLine := lines[0]
-		titleStr := " " + title + " "
-		// Inject title after the first 2 characters of border (╭─)
-		titleRunes := []rune(titleStr)
-		topRunes := []rune(topLine)
-
-		if len(topRunes) > 3+len(titleRunes) {
-			var newTop []rune
-			newTop = append(newTop, topRunes[:2]...)
-			newTop = append(newTop, titleRunes...)
-			remaining := topRunes[2+len(titleRunes):]
-
-			// If we have a right label, inject it near the end
-			if rightLabel != "" {
-				rlStr := " " + rightLabel + " "
-				rlRunes := []rune(rlStr)
-				if len(remaining) > len(rlRunes)+1 {
-					insertAt := len(remaining) - len(rlRunes) - 1
-					for i, r := range rlRunes {
-						remaining[insertAt+i] = r
-					}
-				}
-			}
-			newTop = append(newTop, remaining...)
-			lines[0] = string(newTop)
-		}
+	// Build the top border line manually: ╭─ title ─────── rightLabel ─╮
+	topLeft := DimStyle.Render("╭─")
+	topRight := DimStyle.Render("─╮")
+	titleStr := ""
+	if title != "" {
+		titleStr = " " + TitleStyle.Render(title) + " "
+	}
+	rightStr := ""
+	if rightLabel != "" {
+		rightStr = " " + DimStyle.Render(rightLabel) + " "
 	}
 
-	rendered = strings.Join(lines, "\n")
+	titleW := lipgloss.Width(titleStr)
+	rightW := lipgloss.Width(rightStr)
+	topLeftW := lipgloss.Width(topLeft)
+	topRightW := lipgloss.Width(topRight)
+	fillW := w - topLeftW - titleW - rightW - topRightW
+	if fillW < 0 {
+		fillW = 0
+	}
+
+	topLine := topLeft + titleStr + DimStyle.Render(strings.Repeat("─", fillW)) + rightStr + topRight
+
+	// Build body with side borders
+	bodyLines := strings.Split(body, "\n")
+	var middle strings.Builder
+	for _, line := range bodyLines {
+		lineW := lipgloss.Width(line)
+		pad := innerW - lineW
+		if pad < 0 {
+			pad = 0
+		}
+		middle.WriteString(DimStyle.Render("│") + "  " + line + strings.Repeat(" ", pad) + "  " + DimStyle.Render("│") + "\n")
+	}
+
+	// Empty padding line top and bottom inside box
+	emptyLine := DimStyle.Render("│") + strings.Repeat(" ", innerW+4) + DimStyle.Render("│")
+
+	// Bottom border
+	bottomLine := DimStyle.Render("╰" + strings.Repeat("─", w-2) + "╯")
+
+	rendered := topLine + "\n" + emptyLine + "\n" + middle.String() + emptyLine + "\n" + bottomLine
 
 	// Horizontal centering
-	renderedWidth := lipgloss.Width(rendered)
+	renderedWidth := lipgloss.Width(topLine) // use top line as width reference
 	leftPad := 0
 	if termWidth > renderedWidth {
 		leftPad = (termWidth - renderedWidth) / 2
 	}
 	if leftPad > 0 {
 		padStr := strings.Repeat(" ", leftPad)
-		padded := make([]string, len(lines))
-		for i, line := range strings.Split(rendered, "\n") {
-			padded[i] = padStr + line
+		lines := strings.Split(rendered, "\n")
+		for i, line := range lines {
+			lines[i] = padStr + line
 		}
-		rendered = strings.Join(padded, "\n")
+		rendered = strings.Join(lines, "\n")
 	}
 
 	return rendered

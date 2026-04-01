@@ -4,8 +4,10 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"io"
 
 	"github.com/docker/docker/api/types/container"
+	dockerimage "github.com/docker/docker/api/types/image"
 	"github.com/docker/docker/client"
 	"github.com/docker/docker/pkg/stdcopy"
 )
@@ -27,6 +29,18 @@ func NewDockerSandbox(ctx context.Context, image string) (*DockerSandbox, error)
 	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 	if err != nil {
 		return nil, fmt.Errorf("docker client: %w", err)
+	}
+
+	// Auto-pull image if not present locally
+	_, _, inspectErr := cli.ImageInspectWithRaw(ctx, image)
+	if inspectErr != nil {
+		reader, pullErr := cli.ImagePull(ctx, image, dockerimage.PullOptions{})
+		if pullErr != nil {
+			cli.Close()
+			return nil, fmt.Errorf("image pull %s: %w", image, pullErr)
+		}
+		io.Copy(io.Discard, reader)
+		reader.Close()
 	}
 
 	resp, err := cli.ContainerCreate(ctx,
