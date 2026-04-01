@@ -1,4 +1,5 @@
 #!/bin/bash
+mkdir -p /home/learner
 cat > /home/learner/users.txt << 'EOF'
 alice 25 admin
 bob 17 user

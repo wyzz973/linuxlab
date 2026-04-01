@@ -1,4 +1,5 @@
 #!/bin/bash
+mkdir -p /home/learner
 cat > /home/learner/calculations.txt << 'EOF'
 10 + 5
 20 - 8

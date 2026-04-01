@@ -1,4 +1,5 @@
 #!/bin/bash
+mkdir -p /home/learner
 cat > /home/learner/scores.txt << 'EOF'
 95
 82

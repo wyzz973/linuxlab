@@ -1,4 +1,5 @@
 #!/bin/bash
+mkdir -p /home/learner
 cat > /home/learner/data.csv << 'EOF'
 name,age,city
 Alice,28,Beijing

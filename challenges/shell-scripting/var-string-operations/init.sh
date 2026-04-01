@@ -1,4 +1,5 @@
 #!/bin/bash
+mkdir -p /home/learner
 cat > /home/learner/solution.sh << 'EOF'
 #!/bin/bash
 url="https://www.runoob.com/linux/linux-shell.html"

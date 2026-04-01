@@ -14,7 +14,7 @@ description: |
   3. 查找字符 'l' 第一次出现的位置（使用 expr index）
   
   期望输出：
-  46
+  45
   runoob
   (一个数字，表示位置)
 hints:

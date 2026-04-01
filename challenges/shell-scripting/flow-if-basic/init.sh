@@ -1,4 +1,5 @@
 #!/bin/bash
+mkdir -p /home/learner
 echo "42" > /home/learner/number.txt
 cat > /home/learner/solution.sh << 'EOF'
 #!/bin/bash

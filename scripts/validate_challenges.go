@@ -103,6 +103,9 @@ func validateChallenge(ch *challenge.Challenge) validateResult {
 	}
 	defer sb.Destroy(ctx)
 
+	// Ensure /home/learner exists before init.sh runs
+	sb.Exec(ctx, "mkdir -p /home/learner")
+
 	// Run init.sh if exists (ignore exit code for process-management challenges)
 	initPath := filepath.Join(ch.Dir, "init.sh")
 	if data, err := os.ReadFile(initPath); err == nil {
@@ -115,8 +118,10 @@ func validateChallenge(ch *challenge.Challenge) validateResult {
 		if dir != "." && dir != "/" {
 			sb.Exec(ctx, "mkdir -p '"+dir+"'")
 		}
-		escaped := strings.ReplaceAll(sf.Content, "'", "'\"'\"'")
-		sb.Exec(ctx, "cat > '"+sf.Path+"' << 'SETUP_EOF'\n"+escaped+"\nSETUP_EOF")
+		// Quoted heredoc ('SETUP_EOF') prevents shell expansion, so no escaping needed.
+		// Trim trailing newline to avoid an extra blank line before the delimiter.
+		content := strings.TrimRight(sf.Content, "\n")
+		sb.Exec(ctx, "cat > '"+sf.Path+"' << 'SETUP_EOF'\n"+content+"\nSETUP_EOF")
 	}
 
 	// Run solution.sh
@@ -130,8 +135,8 @@ func validateChallenge(ch *challenge.Challenge) validateResult {
 	// because check.sh typically runs `bash /home/learner/solution.sh`
 	if ch.Category == "shell-scripting" {
 		sb.Exec(ctx, "mkdir -p /home/learner")
-		escaped := strings.ReplaceAll(string(solData), "'", "'\"'\"'")
-		sb.Exec(ctx, "cat > /home/learner/solution.sh << 'SOL_EOF'\n"+escaped+"\nSOL_EOF")
+		// Use quoted heredoc delimiter so content is taken literally — no escaping needed
+		sb.Exec(ctx, "cat > /home/learner/solution.sh << 'SOL_EOF'\n"+string(solData)+"\nSOL_EOF")
 		sb.Exec(ctx, "chmod +x /home/learner/solution.sh")
 	}
 

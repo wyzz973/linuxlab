@@ -1,4 +1,5 @@
 #!/bin/bash
+mkdir -p /home/learner
 cat > /home/learner/files.txt << 'EOF'
 setup.sh
 readme.md
