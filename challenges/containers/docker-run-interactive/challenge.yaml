@@ -1,0 +1,26 @@
+id: docker-run-interactive
+title: "Docker 交互式容器"
+difficulty: 2
+category: containers
+subcategory: docker-basics
+tags: [docker, run, interactive]
+description: |
+  使用 -it 参数可以以交互模式运行容器（-i 保持标准输入打开，-t 分配伪终端）。
+  
+  请完成以下任务：
+  1. 使用交互模式运行一个 ubuntu 容器，在容器内执行以下命令：
+     - 创建文件 /data/hello.txt，内容为 "interactive mode"
+  2. 容器名称设置为 interactive-ubuntu
+  
+  提示：你可以使用 docker run 直接执行命令而不需要真正交互
+requires_docker: true
+hints:
+  - level: 1
+    text: "docker run -it 可以进入容器的交互模式"
+  - level: 2
+    text: "也可以直接在 run 后面跟命令：docker run --name interactive-ubuntu ubuntu bash -c '...'"
+  - level: 3
+    text: "docker run --name interactive-ubuntu ubuntu bash -c 'mkdir -p /data && echo interactive mode > /data/hello.txt'"
+verify:
+  - type: script
+    path: check.sh

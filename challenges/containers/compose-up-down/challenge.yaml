@@ -1,0 +1,24 @@
+id: compose-up-down
+title: "Docker Compose 启动与停止"
+difficulty: 2
+category: containers
+subcategory: docker-compose
+tags: [docker, compose, up, down]
+description: |
+  docker compose up -d 启动所有服务，docker compose down 停止并删除所有服务。
+  
+  请完成以下任务：
+  1. 查看提供的 docker-compose.yaml，包含 web 和 redis 两个服务
+  2. 使用 docker compose up -d 启动所有服务
+  3. 确认两个服务都在运行
+  4. 将 docker compose ps 的输出保存到 /tmp/compose-status.txt
+requires_docker: true
+compose_file: docker-compose.yaml
+hints:
+  - level: 1
+    text: "docker compose up -d 在后台启动"
+  - level: 2
+    text: "docker compose ps 查看服务状态"
+verify:
+  - type: script
+    path: check.sh

@@ -1,0 +1,25 @@
+id: docker-logs-inspect
+title: "Docker 日志查看与容器详情"
+difficulty: 2
+category: containers
+subcategory: docker-basics
+tags: [docker, logs, inspect]
+description: |
+  docker logs 查看容器的日志输出，docker inspect 查看容器的详细配置信息。
+  
+  请完成以下任务：
+  1. 运行一个后台 nginx 容器，名为 log-demo，映射端口 8082:80
+  2. 使用 curl 访问一次 http://localhost:8082
+  3. 将容器日志保存到 /tmp/container-logs.txt
+  4. 将容器的 IP 地址信息保存到 /tmp/container-ip.txt
+requires_docker: true
+hints:
+  - level: 1
+    text: "docker logs 容器名 查看日志"
+  - level: 2
+    text: "docker inspect 容器名 查看详细信息"
+  - level: 3
+    text: "docker inspect --format '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' log-demo"
+verify:
+  - type: script
+    path: check.sh

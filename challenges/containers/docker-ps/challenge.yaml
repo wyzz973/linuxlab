@@ -1,0 +1,25 @@
+id: docker-ps
+title: "Docker 容器状态查看"
+difficulty: 1
+category: containers
+subcategory: docker-basics
+tags: [docker, ps]
+description: |
+  docker ps 用于查看正在运行的容器，docker ps -a 可以查看所有容器（包括已停止的）。
+  
+  请完成以下任务：
+  1. 运行一个后台 nginx 容器，名为 running-web
+  2. 运行一个 alpine 容器执行 echo "done" 后退出，名为 stopped-task
+  3. 将所有容器（包括已停止的）列表保存到 /tmp/all-containers.txt
+  4. 将仅运行中的容器列表保存到 /tmp/running-containers.txt
+requires_docker: true
+hints:
+  - level: 1
+    text: "docker ps 显示运行中的容器，docker ps -a 显示所有容器"
+  - level: 2
+    text: "先创建两个容器，一个运行中一个已停止"
+  - level: 3
+    text: "docker run -d --name running-web nginx && docker run --name stopped-task alpine echo done"
+verify:
+  - type: script
+    path: check.sh

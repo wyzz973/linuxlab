@@ -1,0 +1,29 @@
+id: compose-env
+title: "Docker Compose 环境变量"
+difficulty: 3
+category: containers
+subcategory: docker-compose
+tags: [docker, compose, env]
+description: |
+  Docker Compose 支持通过 environment 字段或 .env 文件设置环境变量。
+  
+  请完成以下任务：
+  1. 在 /tmp/compose-env/ 目录下创建 .env 文件，内容为：
+     MYSQL_ROOT_PASSWORD=rootpass123
+     MYSQL_DATABASE=mydb
+  2. 创建 docker-compose.yaml，定义一个 MySQL 服务：
+     - 使用 mysql:8.0 镜像
+     - 使用 .env 文件中的变量（通过 ${VARIABLE} 引用）
+     - 容器名为 compose-mysql
+  3. 启动服务
+requires_docker: true
+hints:
+  - level: 1
+    text: "在 docker-compose.yaml 中用 ${VAR} 引用 .env 文件中的变量"
+  - level: 2
+    text: "environment 字段可以使用 - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}"
+  - level: 3
+    text: "或直接使用 env_file: .env"
+verify:
+  - type: script
+    path: check.sh

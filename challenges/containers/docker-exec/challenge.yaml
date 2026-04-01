@@ -1,0 +1,24 @@
+id: docker-exec
+title: "Docker 容器内执行命令"
+difficulty: 2
+category: containers
+subcategory: docker-basics
+tags: [docker, exec]
+description: |
+  docker exec 可以在运行中的容器内执行命令，常用于调试和管理。
+  
+  请完成以下任务：
+  1. 运行一个后台 nginx 容器，名为 exec-demo
+  2. 使用 docker exec 在容器内创建文件 /tmp/exec-test.txt，内容为 "executed inside container"
+  3. 使用 docker exec 查看容器内的进程列表，保存到主机的 /tmp/container-processes.txt
+requires_docker: true
+hints:
+  - level: 1
+    text: "docker exec 容器名 命令 可以在运行中的容器内执行命令"
+  - level: 2
+    text: "docker exec exec-demo bash -c 'echo ... > /tmp/exec-test.txt'"
+  - level: 3
+    text: "docker exec exec-demo ps aux > /tmp/container-processes.txt"
+verify:
+  - type: script
+    path: check.sh

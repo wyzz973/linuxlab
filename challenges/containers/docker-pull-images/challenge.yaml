@@ -1,0 +1,24 @@
+id: docker-pull-images
+title: "Docker 镜像管理 - 拉取与查看"
+difficulty: 1
+category: containers
+subcategory: docker-basics
+tags: [docker, pull, images]
+description: |
+  docker pull 用于从镜像仓库拉取镜像，docker images 用于列出本地镜像。
+  
+  请完成以下任务：
+  1. 拉取 redis:7-alpine 镜像
+  2. 拉取 nginx:1.25 镜像
+  3. 将本地所有镜像列表保存到 /tmp/image-list.txt
+requires_docker: true
+hints:
+  - level: 1
+    text: "使用 docker pull 镜像名:标签 拉取镜像"
+  - level: 2
+    text: "使用 docker images 查看本地镜像"
+  - level: 3
+    text: "docker pull redis:7-alpine && docker pull nginx:1.25 && docker images > /tmp/image-list.txt"
+verify:
+  - type: script
+    path: check.sh

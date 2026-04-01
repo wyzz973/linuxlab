@@ -1,0 +1,26 @@
+id: dockerfile-build-tag
+title: "Docker 镜像构建与标签管理"
+difficulty: 2
+category: containers
+subcategory: dockerfile
+tags: [docker, build, tag]
+description: |
+  docker build -t 用于构建并打标签，docker tag 可以给已有镜像添加标签。
+  
+  请完成以下任务：
+  1. 在 /tmp/tagdemo/ 目录下创建 Dockerfile（基于 alpine，CMD ["echo", "tag demo"]）
+  2. 构建镜像并打标签为 tagdemo:v1
+  3. 使用 docker tag 给镜像添加标签 tagdemo:latest
+  4. 使用 docker tag 给镜像添加标签 myregistry/tagdemo:v1
+  5. 将所有 tagdemo 相关的镜像列表保存到 /tmp/tag-list.txt
+requires_docker: true
+hints:
+  - level: 1
+    text: "docker tag 源镜像 目标镜像 添加标签"
+  - level: 2
+    text: "docker tag tagdemo:v1 tagdemo:latest"
+  - level: 3
+    text: "docker images tagdemo > /tmp/tag-list.txt"
+verify:
+  - type: script
+    path: check.sh

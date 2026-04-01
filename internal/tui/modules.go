@@ -46,6 +46,8 @@ type ModulesModel struct {
 	modules []moduleEntry
 	cursor  int
 	store   *progress.Store
+	width   int
+	height  int
 }
 
 // NewModulesModel creates a new module selection screen.
@@ -76,6 +78,10 @@ func (m ModulesModel) Init() tea.Cmd { return nil }
 
 func (m ModulesModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
+	case tea.WindowSizeMsg:
+		m.width = msg.Width
+		m.height = msg.Height
+		return m, nil
 	case tea.KeyMsg:
 		switch {
 		case msg.Type == tea.KeyUp || (msg.Type == tea.KeyRunes && string(msg.Runes) == "k"):
@@ -99,10 +105,10 @@ func (m ModulesModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m ModulesModel) View() string {
-	var b strings.Builder
-	b.WriteString(TitleStyle.Render("  选择学习模块"))
-	b.WriteString("\n\n")
+	header := headerView("LinuxLab · 选择学习模块", m.width)
+	footer := footerView("↑/k 上移 · ↓/j 下移 · Enter 选择 · Esc 返回", m.width)
 
+	var b strings.Builder
 	for i, mod := range m.modules {
 		cursor := "  "
 		style := DimStyle
@@ -116,11 +122,11 @@ func (m ModulesModel) View() string {
 			pct = float64(mod.passed) / float64(mod.total)
 		}
 		bar := ProgressBar(pct, 10)
-		b.WriteString(fmt.Sprintf("%s%s  %s  %d/%d\n", cursor, style.Render(mod.label), bar, mod.passed, mod.total))
+		b.WriteString(fmt.Sprintf("%s%-16s  %s  %d/%d\n", cursor, style.Render(mod.label), bar, mod.passed, mod.total))
 	}
 
-	b.WriteString("\n")
-	b.WriteString(HelpStyle.Render("↑/k 上移 · ↓/j 下移 · Enter 选择 · Esc 返回"))
+	contentHeight := maxInt(1, m.height-2)
+	content := fillContent(b.String(), m.width, contentHeight)
 
-	return BoxStyle.Render(b.String())
+	return header + "\n" + content + "\n" + footer
 }

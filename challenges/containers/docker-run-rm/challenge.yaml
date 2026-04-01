@@ -1,0 +1,22 @@
+id: docker-run-rm
+title: "Docker 容器自动清理"
+difficulty: 1
+category: containers
+subcategory: docker-basics
+tags: [docker, run, rm]
+description: |
+  --rm 参数使容器在退出后自动删除，适合一次性任务。
+  
+  请完成以下任务：
+  1. 使用 --rm 参数运行一个 alpine 容器，执行 cat /etc/os-release
+  2. 将输出保存到 /tmp/os-release.txt
+  3. 确保容器已被自动删除（使用 docker ps -a 验证）
+requires_docker: true
+hints:
+  - level: 1
+    text: "--rm 参数会在容器退出后自动删除容器"
+  - level: 2
+    text: "docker run --rm alpine cat /etc/os-release > /tmp/os-release.txt"
+verify:
+  - type: script
+    path: check.sh

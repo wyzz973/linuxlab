@@ -1,14 +1,18 @@
 package tui
 
 import (
+	"context"
 	"fmt"
+	"os"
 	"os/exec"
+	"path/filepath"
 	"strings"
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/sd3/linuxlab/internal/challenge"
 	"github.com/sd3/linuxlab/internal/progress"
 	"github.com/sd3/linuxlab/internal/reference"
+	"github.com/sd3/linuxlab/internal/sandbox"
 	"github.com/sd3/linuxlab/internal/verify"
 )
 
@@ -41,6 +45,9 @@ type AppModel struct {
 	currentCat     string
 	currentChallenge *challenge.Challenge
 
+	width  int
+	height int
+
 	menu       tea.Model
 	modules    tea.Model
 	challenges tea.Model
@@ -67,8 +74,49 @@ func (m AppModel) Init() tea.Cmd {
 	return m.menu.Init()
 }
 
+// sizeModel sends a WindowSizeMsg to a sub-model so it knows the terminal dimensions.
+func (m AppModel) sizeModel(sub tea.Model) tea.Model {
+	sized, _ := sub.Update(tea.WindowSizeMsg{Width: m.width, Height: m.height})
+	return sized
+}
+
 func (m AppModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
+	case tea.WindowSizeMsg:
+		m.width = msg.Width
+		m.height = msg.Height
+		// Pass to active sub-model
+		var cmd tea.Cmd
+		switch m.screen {
+		case screenMenu:
+			m.menu, cmd = m.menu.Update(msg)
+		case screenModules:
+			if m.modules != nil {
+				m.modules, cmd = m.modules.Update(msg)
+			}
+		case screenChallenges:
+			if m.challenges != nil {
+				m.challenges, cmd = m.challenges.Update(msg)
+			}
+		case screenDetail:
+			if m.detail != nil {
+				m.detail, cmd = m.detail.Update(msg)
+			}
+		case screenSkillMap:
+			if m.skillmap != nil {
+				m.skillmap, cmd = m.skillmap.Update(msg)
+			}
+		case screenRecommend:
+			if m.recommend != nil {
+				m.recommend, cmd = m.recommend.Update(msg)
+			}
+		case screenReference:
+			if m.refModel != nil {
+				m.refModel, cmd = m.refModel.Update(msg)
+			}
+		}
+		return m, cmd
+
 	case tea.KeyMsg:
 		if msg.Type == tea.KeyCtrlC {
 			return m, tea.Quit
@@ -78,11 +126,11 @@ func (m AppModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		switch msg.Choice {
 		case "practice":
 			m.screen = screenModules
-			m.modules = NewModulesModel(m.categories, m.store)
+			m.modules = m.sizeModel(NewModulesModel(m.categories, m.store))
 			return m, nil
 		case "skillmap":
 			m.screen = screenSkillMap
-			m.skillmap = NewSkillMapModel(m.store)
+			m.skillmap = m.sizeModel(NewSkillMapModel(m.store))
 			return m, nil
 		case "recommend":
 			var all []*challenge.Challenge
@@ -91,12 +139,12 @@ func (m AppModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 			recs := progress.RecommendMultiple(m.store, all, 5)
 			m.screen = screenRecommend
-			m.recommend = NewRecommendModel(recs)
+			m.recommend = m.sizeModel(NewRecommendModel(recs))
 			return m, nil
 		case "reference":
 			if m.refs != nil {
 				m.screen = screenReference
-				m.refModel = NewReferenceModel(m.refs)
+				m.refModel = m.sizeModel(NewReferenceModel(m.refs))
 				return m, nil
 			}
 			return m, nil
@@ -106,13 +154,13 @@ func (m AppModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case ModuleSelectedMsg:
 		m.screen = screenChallenges
 		m.currentCat = msg.Category
-		m.challenges = NewChallengesModel(msg.Category, m.categories[msg.Category], m.store)
+		m.challenges = m.sizeModel(NewChallengesModel(msg.Category, m.categories[msg.Category], m.store))
 		return m, nil
 
 	case ChallengeSelectedMsg:
 		m.screen = screenDetail
 		m.currentChallenge = msg.Challenge
-		m.detail = NewDetailModel(msg.Challenge)
+		m.detail = m.sizeModel(NewDetailModel(msg.Challenge))
 		return m, nil
 
 	case LaunchChallengeMsg:
@@ -134,11 +182,11 @@ func (m AppModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.screen = screenMenu
 		case screenChallenges:
 			m.screen = screenModules
-			m.modules = NewModulesModel(m.categories, m.store)
+			m.modules = m.sizeModel(NewModulesModel(m.categories, m.store))
 		case screenDetail:
 			m.screen = screenChallenges
 			if m.currentCat != "" {
-				m.challenges = NewChallengesModel(m.currentCat, m.categories[m.currentCat], m.store)
+				m.challenges = m.sizeModel(NewChallengesModel(m.currentCat, m.categories[m.currentCat], m.store))
 			}
 		case screenSkillMap:
 			m.screen = screenMenu
@@ -149,7 +197,7 @@ func (m AppModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case screenResult:
 			m.screen = screenChallenges
 			if m.currentCat != "" {
-				m.challenges = NewChallengesModel(m.currentCat, m.categories[m.currentCat], m.store)
+				m.challenges = m.sizeModel(NewChallengesModel(m.currentCat, m.categories[m.currentCat], m.store))
 			}
 		}
 		return m, nil
@@ -227,23 +275,104 @@ func (m AppModel) launchChallenge(msg LaunchChallengeMsg) tea.Cmd {
 	hintsUsed := msg.HintsUsed
 
 	if ch.Category == "vim" {
-		// Vim challenge - launch vim
-		var filePath string
-		if len(ch.SetupFiles) > 0 {
-			filePath = ch.SetupFiles[0].Path
+		return m.launchVim(ch, hintsUsed)
+	}
+	return m.launchSandbox(ch, hintsUsed)
+}
+
+func (m AppModel) launchVim(ch *challenge.Challenge, hintsUsed int) tea.Cmd {
+	if len(ch.SetupFiles) == 0 {
+		return func() tea.Msg {
+			return ChallengeResultMsg{
+				Passed:  false,
+				Results: []verify.Result{{Message: "题目缺少 setup_files 配置"}},
+			}
 		}
-		c := exec.Command("vim", filePath)
-		return tea.ExecProcess(c, func(err error) tea.Msg {
-			results := verify.RunAll(ch.Verify)
-			passed := verify.AllPassed(results)
-			return ChallengeResultMsg{Passed: passed, Results: results, HintsUsed: hintsUsed}
-		})
 	}
 
-	// Docker challenge - use interactive shell
-	// containerID would be set up elsewhere; for now use a placeholder
-	c := exec.Command("docker", "exec", "-it", "linuxlab-sandbox", "/bin/bash")
+	// Prepare files in temp dir
+	runner := &sandbox.VimRunner{WorkDir: os.TempDir()}
+	paths, err := runner.PrepareFiles(ch.SetupFiles)
+	if err != nil {
+		return func() tea.Msg {
+			return ChallengeResultMsg{Passed: false, Results: []verify.Result{{Message: fmt.Sprintf("准备文件失败: %v", err)}}}
+		}
+	}
+
+	// Build verify rules with absolute paths
+	rules := make([]challenge.VerifyRule, len(ch.Verify))
+	copy(rules, ch.Verify)
+	for i := range rules {
+		if rules[i].Path != "" && len(paths) > 0 {
+			// Map relative path to the prepared file path
+			for _, p := range paths {
+				if strings.HasSuffix(p, rules[i].Path) {
+					rules[i].Path = p
+					break
+				}
+			}
+		}
+	}
+
+	c := exec.Command("vim", paths[0])
 	return tea.ExecProcess(c, func(err error) tea.Msg {
+		results := verify.RunAll(rules)
+		passed := verify.AllPassed(results)
+		return ChallengeResultMsg{Passed: passed, Results: results, HintsUsed: hintsUsed}
+	})
+}
+
+func (m AppModel) launchSandbox(ch *challenge.Challenge, hintsUsed int) tea.Cmd {
+	ctx := context.Background()
+	sb, err := sandbox.NewSandbox(ctx, ch)
+	if err != nil {
+		return func() tea.Msg {
+			return ChallengeResultMsg{
+				Passed:    false,
+				Results:   []verify.Result{{Passed: false, Message: fmt.Sprintf("沙盒创建失败: %v", err)}},
+				HintsUsed: hintsUsed,
+			}
+		}
+	}
+
+	// Run init.sh if it exists
+	initScript := filepath.Join(ch.Dir, "init.sh")
+	if data, err := os.ReadFile(initScript); err == nil {
+		sb.Exec(ctx, string(data))
+	}
+
+	// Build the shell command with a welcome banner
+	banner := fmt.Sprintf(
+		`echo ""
+echo "══════════════════════════════════════════════════════"
+echo "  %s"
+echo "══════════════════════════════════════════════════════"
+echo ""
+echo "%s"
+echo ""
+echo "  输入 exit 完成挑战并检测结果"
+echo "══════════════════════════════════════════════════════"
+echo ""`,
+		ch.Title,
+		strings.ReplaceAll(strings.TrimSpace(ch.Description), "\n", "\n  "),
+	)
+
+	// Execute banner inside sandbox, then launch interactive shell
+	sb.Exec(ctx, banner)
+
+	args := sb.InteractiveShellArgs()
+	c := exec.Command(args[0], args[1:]...)
+	return tea.ExecProcess(c, func(err error) tea.Msg {
+		// Run check.sh if it exists, for script-type verification
+		checkScript := filepath.Join(ch.Dir, "check.sh")
+		if _, statErr := os.Stat(checkScript); statErr == nil {
+			// For Docker/Compose sandbox, run check.sh inside the container
+			if scriptData, readErr := os.ReadFile(checkScript); readErr == nil {
+				sb.Exec(ctx, string(scriptData))
+			}
+		}
+
+		defer sb.Destroy(ctx)
 		results := verify.RunAll(ch.Verify)
 		passed := verify.AllPassed(results)
 		return ChallengeResultMsg{Passed: passed, Results: results, HintsUsed: hintsUsed}
@@ -251,16 +380,23 @@ func (m AppModel) launchChallenge(msg LaunchChallengeMsg) tea.Cmd {
 }
 
 func (m AppModel) resultView() string {
-	var b strings.Builder
-
 	if m.lastResult == nil {
-		return BoxStyle.Render("无结果")
+		header := headerView("LinuxLab · 检测结果", m.width)
+		footer := footerView("Esc 返回列表 · q 退出", m.width)
+		contentHeight := maxInt(1, m.height-2)
+		content := fillContent("无结果", m.width, contentHeight)
+		return header + "\n" + content + "\n" + footer
 	}
 
+	header := headerView("LinuxLab · 检测结果", m.width)
+	footer := footerView("Esc 返回列表 · q 退出", m.width)
+
+	var b strings.Builder
+
 	if m.lastResult.Passed {
-		b.WriteString(TitleStyle.Render("  " + PassedIcon + " 挑战通过!"))
+		b.WriteString(TitleStyle.Render(PassedIcon + " 挑战通过!"))
 	} else {
-		b.WriteString(ErrorStyle.Render("  " + FailedIcon + " 挑战未通过"))
+		b.WriteString(ErrorStyle.Render(FailedIcon + " 挑战未通过"))
 	}
 	b.WriteString("\n\n")
 
@@ -269,15 +405,15 @@ func (m AppModel) resultView() string {
 		if !r.Passed {
 			icon = FailedIcon
 		}
-		b.WriteString(fmt.Sprintf("  %s 检查 %d: %s\n", icon, i+1, r.Message))
+		b.WriteString(fmt.Sprintf("%s 检查 %d: %s\n", icon, i+1, r.Message))
 	}
 
 	if m.lastResult.HintsUsed > 0 {
 		b.WriteString(fmt.Sprintf("\n使用提示: %d\n", m.lastResult.HintsUsed))
 	}
 
-	b.WriteString("\n")
-	b.WriteString(HelpStyle.Render("Esc 返回列表 · q 退出"))
+	contentHeight := maxInt(1, m.height-2)
+	content := fillContent(b.String(), m.width, contentHeight)
 
-	return BoxStyle.Render(b.String())
+	return header + "\n" + content + "\n" + footer
 }

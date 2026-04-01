@@ -1,0 +1,30 @@
+id: dockerfile-cmd-entrypoint
+title: "Dockerfile CMD 与 ENTRYPOINT"
+difficulty: 3
+category: containers
+subcategory: dockerfile
+tags: [docker, dockerfile, cmd, entrypoint]
+description: |
+  CMD 和 ENTRYPOINT 都用于指定容器启动时执行的命令：
+  - CMD：可以被 docker run 命令行参数覆盖
+  - ENTRYPOINT：不会被覆盖，命令行参数会作为附加参数传入
+  
+  请完成以下任务：
+  1. 在 /tmp/greeter/ 目录下创建一个 Dockerfile
+  2. 基于 alpine 镜像
+  3. 使用 ENTRYPOINT 设置为 ["echo", "Hello"]
+  4. 使用 CMD 设置默认参数为 ["World"]
+  5. 构建镜像，标签为 greeter:v1
+  6. 验证：docker run greeter:v1 应输出 "Hello World"
+  7. 验证：docker run greeter:v1 Docker 应输出 "Hello Docker"
+requires_docker: true
+hints:
+  - level: 1
+    text: "ENTRYPOINT 定义固定的执行命令，CMD 定义默认参数"
+  - level: 2
+    text: "使用 JSON 数组格式：ENTRYPOINT [\"echo\", \"Hello\"] 和 CMD [\"World\"]"
+  - level: 3
+    text: "docker run greeter:v1 Docker 会覆盖 CMD 部分"
+verify:
+  - type: script
+    path: check.sh

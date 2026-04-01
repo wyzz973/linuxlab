@@ -1,0 +1,25 @@
+id: volume-run
+title: "Docker 数据卷持久化"
+difficulty: 3
+category: containers
+subcategory: docker-volume
+tags: [docker, volume, persistence]
+description: |
+  数据卷的重要特性是数据持久化——即使容器被删除，卷中的数据仍然保留。
+  
+  请完成以下任务：
+  1. 创建命名卷 persist-data
+  2. 运行容器 writer，使用 persist-data 卷挂载到 /data，写入文件 /data/message.txt 内容 "data survives"
+  3. 删除 writer 容器
+  4. 运行新容器 reader，使用相同的 persist-data 卷，读取 /data/message.txt 并保存到 /tmp/persist-check.txt
+requires_docker: true
+hints:
+  - level: 1
+    text: "数据卷在容器删除后仍然存在"
+  - level: 2
+    text: "新容器挂载同一卷即可读取之前写入的数据"
+  - level: 3
+    text: "docker run --rm -v persist-data:/data alpine cat /data/message.txt > /tmp/persist-check.txt"
+verify:
+  - type: script
+    path: check.sh

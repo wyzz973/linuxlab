@@ -1,0 +1,24 @@
+id: compose-ps-logs
+title: "Docker Compose 日志与状态"
+difficulty: 2
+category: containers
+subcategory: docker-compose
+tags: [docker, compose, logs, ps]
+description: |
+  docker compose ps 查看服务状态，docker compose logs 查看服务日志。
+  
+  请完成以下任务：
+  1. 使用提供的 docker-compose.yaml 启动服务
+  2. 使用 curl 访问 http://localhost:8092 生成一些日志
+  3. 将 web 服务的日志保存到 /tmp/compose-web-logs.txt
+  4. 将所有服务状态保存到 /tmp/compose-ps.txt
+requires_docker: true
+compose_file: docker-compose.yaml
+hints:
+  - level: 1
+    text: "docker compose logs 服务名 查看特定服务日志"
+  - level: 2
+    text: "docker compose logs web > /tmp/compose-web-logs.txt 2>&1"
+verify:
+  - type: script
+    path: check.sh

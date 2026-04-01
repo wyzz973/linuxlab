@@ -14,6 +14,8 @@ type SkillMapModel struct {
 	skillMap *progress.SkillMap
 	cursor   int
 	expanded map[int]bool
+	width    int
+	height   int
 }
 
 // NewSkillMapModel creates a new skill map view.
@@ -31,6 +33,10 @@ func (m SkillMapModel) Init() tea.Cmd { return nil }
 
 func (m SkillMapModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
+	case tea.WindowSizeMsg:
+		m.width = msg.Width
+		m.height = msg.Height
+		return m, nil
 	case tea.KeyMsg:
 		switch {
 		case msg.Type == tea.KeyUp || (msg.Type == tea.KeyRunes && string(msg.Runes) == "k"):
@@ -66,10 +72,10 @@ func (m SkillMapModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m SkillMapModel) View() string {
-	var b strings.Builder
+	header := headerView("LinuxLab · 能力图谱", m.width)
+	footer := footerView("↑/k 上移 · ↓/j 下移 · Enter 展开/折叠 · Esc 返回", m.width)
 
-	b.WriteString(TitleStyle.Render("  能力图谱"))
-	b.WriteString("\n\n")
+	var b strings.Builder
 
 	if m.skillMap.TotalCount > 0 {
 		pct := m.skillMap.OverallScore
@@ -108,8 +114,8 @@ func (m SkillMapModel) View() string {
 		}
 	}
 
-	b.WriteString("\n")
-	b.WriteString(HelpStyle.Render("↑/k 上移 · ↓/j 下移 · Enter 展开/折叠 · Esc 返回"))
+	contentHeight := maxInt(1, m.height-2)
+	content := fillContent(b.String(), m.width, contentHeight)
 
-	return BoxStyle.Render(b.String())
+	return header + "\n" + content + "\n" + footer
 }

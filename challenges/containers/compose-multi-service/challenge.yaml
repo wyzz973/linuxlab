@@ -1,0 +1,27 @@
+id: compose-multi-service
+title: "Docker Compose 多服务部署"
+difficulty: 3
+category: containers
+subcategory: docker-compose
+tags: [docker, compose, multi-service]
+description: |
+  Docker Compose 的强大之处在于可以同时管理多个相关服务。
+  
+  请完成以下任务：
+  1. 创建 /tmp/multi-app/docker-compose.yaml 文件
+  2. 定义三个服务：
+     - web: 使用 nginx:alpine，端口 8093:80
+     - api: 使用 node:18-alpine，命令为 "node -e \"require('http').createServer((req,res)=>{res.end('API OK')}).listen(3000)\"" 端口 3000:3000
+     - db: 使用 redis:7-alpine，端口 6379:6379
+  3. 启动所有服务
+requires_docker: true
+hints:
+  - level: 1
+    text: "在 services 下定义多个服务"
+  - level: 2
+    text: "每个服务指定 image、ports 等配置"
+  - level: 3
+    text: "docker compose -f /tmp/multi-app/docker-compose.yaml up -d"
+verify:
+  - type: script
+    path: check.sh

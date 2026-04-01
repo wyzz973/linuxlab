@@ -1,0 +1,29 @@
+id: dockerfile-multistage
+title: "Dockerfile 多阶段构建"
+difficulty: 4
+category: containers
+subcategory: dockerfile
+tags: [docker, dockerfile, multistage]
+description: |
+  多阶段构建（multi-stage build）可以在一个 Dockerfile 中使用多个 FROM，
+  只将最终需要的文件复制到最终镜像中，大幅减小镜像体积。
+  
+  请完成以下任务：
+  1. 在 /tmp/multistage/ 目录下创建一个 hello.c 文件：
+     #include <stdio.h>
+     int main() { printf("Hello from multi-stage!\n"); return 0; }
+  2. 创建多阶段 Dockerfile：
+     - 第一阶段：使用 gcc:12 编译 hello.c
+     - 第二阶段：使用 alpine，仅复制编译后的二进制文件
+  3. 构建镜像，标签为 multistage:v1
+requires_docker: true
+hints:
+  - level: 1
+    text: "第一阶段用 FROM gcc:12 AS builder"
+  - level: 2
+    text: "第二阶段用 COPY --from=builder 复制文件"
+  - level: 3
+    text: "gcc -static -o hello hello.c 编译静态链接二进制"
+verify:
+  - type: script
+    path: check.sh

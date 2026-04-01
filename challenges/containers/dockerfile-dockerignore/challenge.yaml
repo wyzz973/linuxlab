@@ -1,0 +1,29 @@
+id: dockerfile-dockerignore
+title: "Dockerfile .dockerignore 文件"
+difficulty: 2
+category: containers
+subcategory: dockerfile
+tags: [docker, dockerfile, dockerignore]
+description: |
+  .dockerignore 文件用于排除不需要的文件，减小构建上下文大小，加快构建速度。
+  
+  请完成以下任务：
+  1. 在 /tmp/ignore-demo/ 目录下创建以下文件：
+     - app.sh（内容：echo "production app"）
+     - test.sh（测试文件，不应包含在镜像中）
+     - README.md（文档文件，不应包含在镜像中）
+     - logs/ 目录下创建 debug.log
+  2. 创建 .dockerignore 文件，排除 *.md、test.sh 和 logs/ 目录
+  3. 创建 Dockerfile（基于 alpine），将所有文件复制到 /app
+  4. 构建镜像，标签为 ignore-demo:v1
+requires_docker: true
+hints:
+  - level: 1
+    text: ".dockerignore 语法类似 .gitignore"
+  - level: 2
+    text: "在 .dockerignore 中写入 *.md、test.sh 和 logs/"
+  - level: 3
+    text: "构建后验证镜像中不包含被忽略的文件"
+verify:
+  - type: script
+    path: check.sh

@@ -1,0 +1,28 @@
+id: volume-named-bind
+title: "Docker 命名卷与绑定挂载对比"
+difficulty: 3
+category: containers
+subcategory: docker-volume
+tags: [docker, volume, bind-mount]
+description: |
+  Docker 有两种主要的数据持久化方式：
+  - 命名卷（Named Volume）：由 Docker 管理，存储在 Docker 目录下
+  - 绑定挂载（Bind Mount）：直接映射主机目录
+  
+  请完成以下任务：
+  1. 创建命名卷 named-vol
+  2. 使用命名卷运行容器 vol-container-1，将 named-vol 挂载到 /data
+  3. 在容器中写入文件 /data/test.txt，内容为 "named volume data"
+  4. 使用绑定挂载运行容器 vol-container-2，将 /tmp/bind-data 挂载到 /data
+  5. 在容器中写入文件 /data/test.txt，内容为 "bind mount data"
+requires_docker: true
+hints:
+  - level: 1
+    text: "命名卷：-v 卷名:/path，绑定挂载：-v /主机路径:/path"
+  - level: 2
+    text: "docker run -v named-vol:/data --name vol-container-1 alpine ..."
+  - level: 3
+    text: "docker run -v /tmp/bind-data:/data --name vol-container-2 alpine ..."
+verify:
+  - type: script
+    path: check.sh

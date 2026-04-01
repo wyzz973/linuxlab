@@ -1,0 +1,26 @@
+id: dockerfile-arg-label
+title: "Dockerfile ARG 和 LABEL 指令"
+difficulty: 3
+category: containers
+subcategory: dockerfile
+tags: [docker, dockerfile, arg, label]
+description: |
+  ARG 定义构建时的变量（仅在构建阶段可用），LABEL 添加镜像元数据。
+  
+  请完成以下任务：
+  1. 在 /tmp/labeled-app/ 目录下创建 Dockerfile
+  2. 基于 alpine 镜像
+  3. 使用 ARG 定义构建参数 APP_VERSION，默认值为 1.0
+  4. 添加 LABEL：maintainer="student@example.com" 和 version（使用 ARG 的值）
+  5. 使用 --build-arg APP_VERSION=2.0 构建镜像，标签为 labeled-app:v2
+requires_docker: true
+hints:
+  - level: 1
+    text: "ARG 变量名=默认值 定义构建参数"
+  - level: 2
+    text: "LABEL key=value 添加元数据"
+  - level: 3
+    text: "docker build --build-arg APP_VERSION=2.0 -t labeled-app:v2 /tmp/labeled-app/"
+verify:
+  - type: script
+    path: check.sh

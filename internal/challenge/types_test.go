@@ -62,6 +62,33 @@ verify:
 	}
 }
 
+func TestChallengeUnmarshalComposeFields(t *testing.T) {
+	data := []byte(`
+id: compose-test
+title: "Compose 测试"
+difficulty: 2
+category: containers
+subcategory: docker-compose
+tags: [docker-compose]
+description: "测试"
+compose_file: docker-compose.yaml
+requires_docker: true
+verify:
+  - type: script
+    path: check.sh
+`)
+	var c Challenge
+	if err := yaml.Unmarshal(data, &c); err != nil {
+		t.Fatalf("unmarshal: %v", err)
+	}
+	if c.ComposeFile != "docker-compose.yaml" {
+		t.Errorf("ComposeFile = %q", c.ComposeFile)
+	}
+	if !c.RequiresDocker {
+		t.Error("RequiresDocker should be true")
+	}
+}
+
 func TestVimChallengeUnmarshalYAML(t *testing.T) {
 	data := []byte(`
 id: vim-batch-replace

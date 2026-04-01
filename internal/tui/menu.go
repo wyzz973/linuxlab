@@ -21,6 +21,8 @@ type menuItem struct {
 type MenuModel struct {
 	items  []menuItem
 	cursor int
+	width  int
+	height int
 }
 
 // NewMenuModel creates a new main menu.
@@ -40,6 +42,10 @@ func (m MenuModel) Init() tea.Cmd { return nil }
 
 func (m MenuModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
+	case tea.WindowSizeMsg:
+		m.width = msg.Width
+		m.height = msg.Height
+		return m, nil
 	case tea.KeyMsg:
 		switch {
 		case msg.Type == tea.KeyUp || (msg.Type == tea.KeyRunes && string(msg.Runes) == "k"):
@@ -63,10 +69,10 @@ func (m MenuModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m MenuModel) View() string {
-	var b strings.Builder
-	b.WriteString(TitleStyle.Render("  LinuxLab - Linux 命令行学习"))
-	b.WriteString("\n\n")
+	header := headerView("LinuxLab", m.width)
+	footer := footerView("↑/k 上移 · ↓/j 下移 · Enter 选择 · q 退出", m.width)
 
+	var b strings.Builder
 	for i, item := range m.items {
 		cursor := "  "
 		style := DimStyle
@@ -77,8 +83,8 @@ func (m MenuModel) View() string {
 		b.WriteString(fmt.Sprintf("%s%s\n", cursor, style.Render(item.label)))
 	}
 
-	b.WriteString("\n")
-	b.WriteString(HelpStyle.Render("↑/k 上移 · ↓/j 下移 · Enter 选择 · q 退出"))
+	contentHeight := maxInt(1, m.height-2)
+	content := fillContent(b.String(), m.width, contentHeight)
 
-	return BoxStyle.Render(b.String())
+	return header + "\n" + content + "\n" + footer
 }

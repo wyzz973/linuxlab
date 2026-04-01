@@ -16,8 +16,8 @@ func TestE2E_LoadChallengesAndCreateApp(t *testing.T) {
 		t.Fatalf("LoadAllByCategory failed: %v", err)
 	}
 
-	if len(byCategory) < 4 {
-		t.Errorf("expected at least 4 categories, got %d", len(byCategory))
+	if len(byCategory) < 5 {
+		t.Errorf("expected at least 5 categories, got %d", len(byCategory))
 	}
 
 	for _, tc := range []struct {
@@ -28,6 +28,7 @@ func TestE2E_LoadChallengesAndCreateApp(t *testing.T) {
 		{"vim", 30},
 		{"shell-scripting", 40},
 		{"ops", 40},
+		{"containers", 35},
 	} {
 		if len(byCategory[tc.cat]) < tc.min {
 			t.Errorf("%s has %d challenges, want >= %d", tc.cat, len(byCategory[tc.cat]), tc.min)

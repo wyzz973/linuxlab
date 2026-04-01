@@ -10,6 +10,7 @@ import (
 	"github.com/sd3/linuxlab/internal/reference"
 )
 
+
 // ReferenceModel is the command reference TUI screen with search and detail modes.
 type ReferenceModel struct {
 	commands    []reference.CommandRef
@@ -18,6 +19,8 @@ type ReferenceModel struct {
 	cursor      int
 	showDetail  bool
 	detailIndex int
+	width       int
+	height      int
 }
 
 // NewReferenceModel creates a new reference browser model.
@@ -35,6 +38,10 @@ func (m ReferenceModel) Init() tea.Cmd { return nil }
 
 func (m ReferenceModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
+	case tea.WindowSizeMsg:
+		m.width = msg.Width
+		m.height = msg.Height
+		return m, nil
 	case tea.KeyMsg:
 		if m.showDetail {
 			return m.updateDetail(msg)
@@ -114,10 +121,10 @@ func (m ReferenceModel) View() string {
 }
 
 func (m ReferenceModel) listView() string {
-	var b strings.Builder
+	header := headerView("LinuxLab · 命令速查", m.width)
+	footer := footerView("↑/k 上移 · ↓/j 下移 · Enter 查看详情 · Esc 返回", m.width)
 
-	b.WriteString(TitleStyle.Render("  命令速查"))
-	b.WriteString("\n\n")
+	var b strings.Builder
 
 	// Search box
 	searchIcon := "🔍 "
@@ -125,11 +132,14 @@ func (m ReferenceModel) listView() string {
 	if queryDisplay == "" {
 		queryDisplay = DimStyle.Render("输入命令名搜索...")
 	}
-	b.WriteString(fmt.Sprintf("  %s%s\n", searchIcon, queryDisplay))
-	b.WriteString("  " + DimStyle.Render(strings.Repeat("─", 30)) + "\n\n")
+	b.WriteString(fmt.Sprintf("%s%s\n", searchIcon, queryDisplay))
+	b.WriteString(DimStyle.Render(strings.Repeat("─", 30)) + "\n\n")
 
 	// Command list
-	maxVisible := 15
+	maxVisible := m.height - 8
+	if maxVisible < 5 {
+		maxVisible = 5
+	}
 	count := len(m.filtered)
 	if count > maxVisible {
 		count = maxVisible
@@ -147,17 +157,17 @@ func (m ReferenceModel) listView() string {
 	}
 
 	if len(m.filtered) > maxVisible {
-		b.WriteString(fmt.Sprintf("\n  %s\n", DimStyle.Render(fmt.Sprintf("... 还有 %d 个命令", len(m.filtered)-maxVisible))))
+		b.WriteString(fmt.Sprintf("\n%s\n", DimStyle.Render(fmt.Sprintf("... 还有 %d 个命令", len(m.filtered)-maxVisible))))
 	}
 
 	if len(m.filtered) == 0 && m.query != "" {
-		b.WriteString("  " + DimStyle.Render("未找到匹配的命令") + "\n")
+		b.WriteString(DimStyle.Render("未找到匹配的命令") + "\n")
 	}
 
-	b.WriteString("\n")
-	b.WriteString(HelpStyle.Render("↑/k 上移 · ↓/j 下移 · Enter 查看详情 · Esc 返回"))
+	contentHeight := maxInt(1, m.height-2)
+	content := fillContent(b.String(), m.width, contentHeight)
 
-	return BoxStyle.Render(b.String())
+	return header + "\n" + content + "\n" + footer
 }
 
 func (m ReferenceModel) detailView() string {
@@ -166,15 +176,16 @@ func (m ReferenceModel) detailView() string {
 	}
 
 	cmd := m.filtered[m.detailIndex]
+	header := headerView("LinuxLab · "+cmd.Name, m.width)
+	footer := footerView("Esc 返回列表", m.width)
+
 	var b strings.Builder
 
-	b.WriteString(TitleStyle.Render("  " + cmd.Name))
-	b.WriteString("\n")
-	b.WriteString("  " + cmd.Brief)
+	b.WriteString(cmd.Brief)
 	b.WriteString("\n\n")
 
 	if len(cmd.Examples) > 0 {
-		b.WriteString(SelectedStyle.Render("  示例:"))
+		b.WriteString(SelectedStyle.Render("示例:"))
 		b.WriteString("\n\n")
 		for _, ex := range cmd.Examples {
 			b.WriteString(fmt.Sprintf("  %s %s\n", DimStyle.Render("▸"), ex.Desc))
@@ -183,13 +194,13 @@ func (m ReferenceModel) detailView() string {
 	}
 
 	if len(cmd.RelatedChallenges) > 0 {
-		b.WriteString(SelectedStyle.Render("  相关挑战: "))
+		b.WriteString(SelectedStyle.Render("相关挑战: "))
 		b.WriteString(DimStyle.Render(strings.Join(cmd.RelatedChallenges, ", ")))
 		b.WriteString("\n")
 	}
 
-	b.WriteString("\n")
-	b.WriteString(HelpStyle.Render("Esc 返回列表"))
+	contentHeight := maxInt(1, m.height-2)
+	content := fillContent(b.String(), m.width, contentHeight)
 
-	return BoxStyle.Render(b.String())
+	return header + "\n" + content + "\n" + footer
 }

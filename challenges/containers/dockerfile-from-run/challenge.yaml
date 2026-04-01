@@ -1,0 +1,25 @@
+id: dockerfile-from-run
+title: "Dockerfile 基础 - FROM 和 RUN"
+difficulty: 2
+category: containers
+subcategory: dockerfile
+tags: [docker, dockerfile, from, run]
+description: |
+  Dockerfile 是构建 Docker 镜像的文本文件。FROM 指定基础镜像，RUN 执行构建命令。
+  
+  请完成以下任务：
+  1. 在 /tmp/myapp/ 目录下创建一个 Dockerfile
+  2. 使用 ubuntu:22.04 作为基础镜像
+  3. 使用 RUN 安装 curl 包（apt-get update && apt-get install -y curl）
+  4. 构建镜像，标签为 myapp:v1
+requires_docker: true
+hints:
+  - level: 1
+    text: "FROM 指定基础镜像，RUN 执行命令"
+  - level: 2
+    text: "Dockerfile 中使用 FROM ubuntu:22.04 和 RUN apt-get update && apt-get install -y curl"
+  - level: 3
+    text: "docker build -t myapp:v1 /tmp/myapp/"
+verify:
+  - type: script
+    path: check.sh

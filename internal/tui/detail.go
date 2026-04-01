@@ -6,6 +6,7 @@ import (
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/sd3/linuxlab/internal/challenge"
+	"github.com/sd3/linuxlab/internal/sandbox"
 )
 
 // LaunchChallengeMsg is sent when the user wants to start a challenge.
@@ -16,15 +17,19 @@ type LaunchChallengeMsg struct {
 
 // DetailModel is the challenge detail screen with progressive hints.
 type DetailModel struct {
-	challenge *challenge.Challenge
-	hintLevel int
+	challenge       *challenge.Challenge
+	hintLevel       int
+	dockerAvailable bool
+	width           int
+	height          int
 }
 
 // NewDetailModel creates a new challenge detail screen.
 func NewDetailModel(ch *challenge.Challenge) tea.Model {
 	return DetailModel{
-		challenge: ch,
-		hintLevel: 0,
+		challenge:       ch,
+		hintLevel:       0,
+		dockerAvailable: sandbox.DockerAvailable(),
 	}
 }
 
@@ -32,6 +37,10 @@ func (m DetailModel) Init() tea.Cmd { return nil }
 
 func (m DetailModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
+	case tea.WindowSizeMsg:
+		m.width = msg.Width
+		m.height = msg.Height
+		return m, nil
 	case tea.KeyMsg:
 		switch {
 		case msg.Type == tea.KeyEnter:
@@ -53,15 +62,28 @@ func (m DetailModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 func (m DetailModel) View() string {
 	ch := m.challenge
-	var b strings.Builder
+	header := headerView("LinuxLab · "+ch.Title, m.width)
 
-	b.WriteString(TitleStyle.Render("  " + ch.Title))
-	b.WriteString("\n\n")
+	hintInfo := ""
+	if m.hintLevel < len(ch.Hints) {
+		hintInfo = fmt.Sprintf(" · h 查看提示 (%d/%d)", m.hintLevel, len(ch.Hints))
+	} else if len(ch.Hints) > 0 {
+		hintInfo = fmt.Sprintf(" · 已显示全部提示 (%d/%d)", m.hintLevel, len(ch.Hints))
+	}
+	footer := footerView("Enter 开始挑战 · Esc 返回"+hintInfo, m.width)
+
+	var b strings.Builder
 
 	b.WriteString(fmt.Sprintf("难度: %s\n", DifficultyStars(ch.Difficulty)))
 
 	if len(ch.Tags) > 0 {
 		b.WriteString(fmt.Sprintf("标签: %s\n", DimStyle.Render(strings.Join(ch.Tags, ", "))))
+	}
+
+	if ch.RequiresDocker && !m.dockerAvailable {
+		b.WriteString("\n")
+		b.WriteString(WarningStyle.Render("!! 需要 Docker (当前不可用，将使用本地模式)"))
+		b.WriteString("\n")
 	}
 
 	b.WriteString("\n")
@@ -77,14 +99,8 @@ func (m DetailModel) View() string {
 		}
 	}
 
-	b.WriteString("\n")
-	hintInfo := ""
-	if m.hintLevel < len(ch.Hints) {
-		hintInfo = fmt.Sprintf(" · h 查看提示 (%d/%d)", m.hintLevel, len(ch.Hints))
-	} else if len(ch.Hints) > 0 {
-		hintInfo = fmt.Sprintf(" · 已显示全部提示 (%d/%d)", m.hintLevel, len(ch.Hints))
-	}
-	b.WriteString(HelpStyle.Render("Enter 开始挑战 · Esc 返回" + hintInfo))
+	contentHeight := maxInt(1, m.height-2)
+	content := fillContent(b.String(), m.width, contentHeight)
 
-	return BoxStyle.Render(b.String())
+	return header + "\n" + content + "\n" + footer
 }
