@@ -1,0 +1,26 @@
+id: volume-backup
+title: "Docker 数据卷备份与恢复"
+difficulty: 4
+category: containers
+subcategory: docker-volume
+tags: [docker, volume, backup, restore]
+description: |
+  数据卷的备份和恢复是重要的运维技能。可以通过临时容器来完成。
+  
+  请完成以下任务：
+  1. 创建命名卷 backup-source，并写入一些测试数据
+  2. 使用临时容器将卷数据备份为 tar 文件到 /tmp/volume-backup.tar
+  3. 创建新的命名卷 backup-restore
+  4. 将备份文件恢复到新卷中
+  5. 验证恢复的数据与原始数据一致
+requires_docker: true
+hints:
+  - level: 1
+    text: "使用临时容器挂载卷和主机目录，然后用 tar 打包"
+  - level: 2
+    text: "docker run --rm -v backup-source:/source -v /tmp:/backup alpine tar czf /backup/volume-backup.tar -C /source ."
+  - level: 3
+    text: "恢复：docker run --rm -v backup-restore:/target -v /tmp:/backup alpine tar xzf /backup/volume-backup.tar -C /target"
+verify:
+  - type: script
+    path: check.sh

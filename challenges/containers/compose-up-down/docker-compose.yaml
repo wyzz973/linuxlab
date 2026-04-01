@@ -1,0 +1,10 @@
+version: "3.8"
+services:
+  web:
+    image: nginx:alpine
+    ports:
+      - "8091:80"
+    container_name: updown-web
+  cache:
+    image: redis:7-alpine
+    container_name: updown-cache

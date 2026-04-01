@@ -1,0 +1,26 @@
+id: volume-share
+title: "Docker 容器间共享数据卷"
+difficulty: 3
+category: containers
+subcategory: docker-volume
+tags: [docker, volume, share]
+description: |
+  多个容器可以同时挂载同一个数据卷，实现数据共享。
+  
+  请完成以下任务：
+  1. 创建命名卷 shared-data
+  2. 运行容器 producer（alpine），挂载 shared-data 到 /shared，
+     每隔1秒写入当前时间到 /shared/timestamp.txt（使用后台运行）
+  3. 运行容器 consumer（alpine），挂载相同的 shared-data 到 /shared，保持运行
+  4. 从 consumer 容器读取 /shared/timestamp.txt，保存到 /tmp/shared-data.txt
+requires_docker: true
+hints:
+  - level: 1
+    text: "多个容器可以挂载同一个卷"
+  - level: 2
+    text: "producer: docker run -d -v shared-data:/shared alpine sh -c 'while true; do date > /shared/timestamp.txt; sleep 1; done'"
+  - level: 3
+    text: "docker exec consumer cat /shared/timestamp.txt > /tmp/shared-data.txt"
+verify:
+  - type: script
+    path: check.sh

@@ -1,0 +1,27 @@
+id: network-connect
+title: "Docker 网络连接与断开"
+difficulty: 3
+category: containers
+subcategory: docker-network
+tags: [docker, network, connect, disconnect]
+description: |
+  docker network connect/disconnect 可以动态地将容器连接到或从网络中断开。
+  一个容器可以同时连接到多个网络。
+  
+  请完成以下任务：
+  1. 创建两个网络：frontend 和 backend
+  2. 运行容器 proxy-server（使用 nginx），连接到 frontend 网络
+  3. 运行容器 app-server（使用 alpine sleep 3600），连接到 backend 网络
+  4. 将 proxy-server 同时连接到 backend 网络（使用 docker network connect）
+  5. 验证 proxy-server 可以从两个网络访问
+requires_docker: true
+hints:
+  - level: 1
+    text: "docker network connect 网络名 容器名"
+  - level: 2
+    text: "一个容器可以连接到多个网络"
+  - level: 3
+    text: "docker network connect backend proxy-server"
+verify:
+  - type: script
+    path: check.sh

@@ -1,0 +1,23 @@
+id: docker-run-basic
+title: "Docker 容器入门 - 运行第一个容器"
+difficulty: 1
+category: containers
+subcategory: docker-basics
+tags: [docker, run]
+description: |
+  Docker 是一个开源的容器化平台，可以让你在容器中运行应用程序。
+  
+  docker run 是最基本的 Docker 命令，用于创建并启动一个新容器。
+  
+  请完成以下任务：
+  1. 使用 docker run 命令运行 hello-world 镜像
+  2. 将 docker run hello-world 的输出保存到 /tmp/hello-docker.txt
+requires_docker: true
+hints:
+  - level: 1
+    text: "使用 docker run hello-world 运行容器"
+  - level: 2
+    text: "使用重定向将输出保存到文件：docker run hello-world > /tmp/hello-docker.txt 2>&1"
+verify:
+  - type: script
+    path: check.sh

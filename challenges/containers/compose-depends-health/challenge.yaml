@@ -1,0 +1,26 @@
+id: compose-depends-health
+title: "Docker Compose 依赖与健康检查"
+difficulty: 4
+category: containers
+subcategory: docker-compose
+tags: [docker, compose, depends_on, healthcheck]
+description: |
+  depends_on 定义服务启动顺序，healthcheck 定义健康检查确保服务可用。
+  
+  请完成以下任务：
+  1. 在 /tmp/compose-health/ 目录下创建 docker-compose.yaml
+  2. 定义两个服务：
+     - db: 使用 redis:7-alpine，添加健康检查（redis-cli ping），容器名 health-db
+     - web: 使用 nginx:alpine，依赖 db 服务（condition: service_healthy），容器名 health-web
+  3. 启动所有服务
+requires_docker: true
+hints:
+  - level: 1
+    text: "healthcheck 包含 test、interval、timeout、retries 字段"
+  - level: 2
+    text: "depends_on 中使用 condition: service_healthy"
+  - level: 3
+    text: "healthcheck test: ['CMD', 'redis-cli', 'ping']"
+verify:
+  - type: script
+    path: check.sh

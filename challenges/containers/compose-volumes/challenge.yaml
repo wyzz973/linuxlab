@@ -1,0 +1,30 @@
+id: compose-volumes
+title: "Docker Compose 数据卷"
+difficulty: 3
+category: containers
+subcategory: docker-compose
+tags: [docker, compose, volumes]
+description: |
+  Docker Compose 中可以使用 volumes 来持久化数据和共享文件。
+  
+  请完成以下任务：
+  1. 在 /tmp/compose-vol/ 目录下创建 docker-compose.yaml
+  2. 定义一个 nginx 服务：
+     - 使用命名卷 web-data 挂载到 /usr/share/nginx/html
+     - 使用绑定挂载将 /tmp/compose-vol/config 挂载到 /etc/nginx/conf.d
+     - 端口映射 8094:80
+     - 容器名为 vol-web
+  3. 在顶层声明命名卷 web-data
+  4. 创建 /tmp/compose-vol/config 目录（可为空）
+  5. 启动服务
+requires_docker: true
+hints:
+  - level: 1
+    text: "在 services 中用 volumes 定义挂载，在顶层用 volumes 声明命名卷"
+  - level: 2
+    text: "绑定挂载格式：./config:/etc/nginx/conf.d"
+  - level: 3
+    text: "命名卷格式：web-data:/usr/share/nginx/html"
+verify:
+  - type: script
+    path: check.sh

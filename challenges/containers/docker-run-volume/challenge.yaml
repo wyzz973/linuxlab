@@ -1,0 +1,24 @@
+id: docker-run-volume
+title: "Docker 挂载目录"
+difficulty: 2
+category: containers
+subcategory: docker-basics
+tags: [docker, run, volume]
+description: |
+  使用 -v 参数可以将主机目录挂载到容器中，格式为 -v 主机路径:容器路径。
+  
+  请完成以下任务：
+  1. 在主机上创建目录 /tmp/web-content，并在其中创建 index.html 文件，内容为 "Hello Docker"
+  2. 运行一个 nginx 容器，将 /tmp/web-content 挂载到容器的 /usr/share/nginx/html
+  3. 容器名称设置为 web-mount，在后台运行，端口映射 8081:80
+requires_docker: true
+hints:
+  - level: 1
+    text: "先创建目录和文件，再用 -v 挂载"
+  - level: 2
+    text: "mkdir -p /tmp/web-content && echo 'Hello Docker' > /tmp/web-content/index.html"
+  - level: 3
+    text: "docker run -d --name web-mount -p 8081:80 -v /tmp/web-content:/usr/share/nginx/html nginx"
+verify:
+  - type: script
+    path: check.sh

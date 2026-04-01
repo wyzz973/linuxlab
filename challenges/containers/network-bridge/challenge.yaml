@@ -1,0 +1,25 @@
+id: network-bridge
+title: "Docker 默认桥接网络"
+difficulty: 2
+category: containers
+subcategory: docker-network
+tags: [docker, network, bridge]
+description: |
+  Docker 默认创建三种网络：bridge、host、none。
+  默认桥接网络（bridge）是最常用的网络模式。
+  
+  请完成以下任务：
+  1. 查看默认 bridge 网络的详细信息，保存到 /tmp/bridge-info.txt
+  2. 运行两个容器（bridge-test-1 和 bridge-test-2），使用默认网络
+  3. 将两个容器的 IP 地址保存到 /tmp/container-ips.txt
+requires_docker: true
+hints:
+  - level: 1
+    text: "docker network inspect bridge 查看网络详情"
+  - level: 2
+    text: "使用 docker inspect 获取容器 IP"
+  - level: 3
+    text: "docker inspect --format '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' 容器名"
+verify:
+  - type: script
+    path: check.sh

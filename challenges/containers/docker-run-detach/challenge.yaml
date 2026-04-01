@@ -1,0 +1,24 @@
+id: docker-run-detach
+title: "Docker 后台运行容器"
+difficulty: 1
+category: containers
+subcategory: docker-basics
+tags: [docker, run, detach]
+description: |
+  使用 -d 参数可以让容器在后台运行（detached 模式）。
+  
+  请完成以下任务：
+  1. 使用后台模式运行一个 nginx 容器
+  2. 容器名称设置为 my-nginx
+  3. 确保容器正在运行
+requires_docker: true
+hints:
+  - level: 1
+    text: "使用 docker run -d 在后台运行容器"
+  - level: 2
+    text: "使用 --name 指定容器名称"
+  - level: 3
+    text: "docker run -d --name my-nginx nginx"
+verify:
+  - type: script
+    path: check.sh

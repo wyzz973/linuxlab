@@ -1,0 +1,22 @@
+id: docker-run-port
+title: "Docker 端口映射"
+difficulty: 2
+category: containers
+subcategory: docker-basics
+tags: [docker, run, port]
+description: |
+  使用 -p 参数可以将容器内部端口映射到主机端口，格式为 -p 主机端口:容器端口。
+  
+  请完成以下任务：
+  1. 运行一个 nginx 容器，将容器的 80 端口映射到主机的 8080 端口
+  2. 容器名称设置为 web-server
+  3. 容器在后台运行
+requires_docker: true
+hints:
+  - level: 1
+    text: "使用 -p 8080:80 进行端口映射"
+  - level: 2
+    text: "docker run -d --name web-server -p 8080:80 nginx"
+verify:
+  - type: script
+    path: check.sh

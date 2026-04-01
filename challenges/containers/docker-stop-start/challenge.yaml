@@ -1,0 +1,25 @@
+id: docker-stop-start
+title: "Docker 容器启停管理"
+difficulty: 2
+category: containers
+subcategory: docker-basics
+tags: [docker, stop, start, restart]
+description: |
+  docker stop 停止容器，docker start 启动已停止的容器，docker restart 重启容器。
+  
+  请完成以下任务：
+  1. 运行一个后台 nginx 容器，名为 lifecycle-test
+  2. 停止该容器
+  3. 重新启动该容器
+  4. 确保容器最终处于运行状态
+requires_docker: true
+hints:
+  - level: 1
+    text: "docker stop 容器名 停止容器"
+  - level: 2
+    text: "docker start 容器名 启动已停止的容器"
+  - level: 3
+    text: "docker run -d --name lifecycle-test nginx && docker stop lifecycle-test && docker start lifecycle-test"
+verify:
+  - type: script
+    path: check.sh

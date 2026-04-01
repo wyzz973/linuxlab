@@ -1,0 +1,22 @@
+id: docker-run-name
+title: "Docker 容器命名与自动删除"
+difficulty: 1
+category: containers
+subcategory: docker-basics
+tags: [docker, run, name, rm]
+description: |
+  使用 --name 参数可以给容器指定名称，使用 --rm 参数可以在容器退出后自动删除。
+  
+  请完成以下任务：
+  1. 运行一个名为 temp-container 的 alpine 容器，使用 --rm 参数
+  2. 在容器中执行命令 echo "container test"，并将输出保存到 /tmp/container-test.txt
+  3. 确认容器运行后已被自动删除
+requires_docker: true
+hints:
+  - level: 1
+    text: "使用 --rm 参数让容器退出后自动删除"
+  - level: 2
+    text: "docker run --rm --name temp-container alpine echo 'container test' > /tmp/container-test.txt"
+verify:
+  - type: script
+    path: check.sh

@@ -1,0 +1,26 @@
+id: dockerfile-copy-add
+title: "Dockerfile COPY 和 ADD 指令"
+difficulty: 2
+category: containers
+subcategory: dockerfile
+tags: [docker, dockerfile, copy, add]
+description: |
+  COPY 将本地文件复制到镜像中，ADD 功能类似但支持自动解压和远程 URL。
+  推荐优先使用 COPY，更明确且可预测。
+  
+  请完成以下任务：
+  1. 在 /tmp/webapp/ 目录下创建 index.html，内容为 "<h1>Docker Web App</h1>"
+  2. 创建 Dockerfile，基于 nginx:alpine
+  3. 使用 COPY 将 index.html 复制到 /usr/share/nginx/html/
+  4. 构建镜像，标签为 webapp:v1
+requires_docker: true
+hints:
+  - level: 1
+    text: "COPY 源文件 目标路径"
+  - level: 2
+    text: "COPY index.html /usr/share/nginx/html/"
+  - level: 3
+    text: "创建 Dockerfile 并用 docker build -t webapp:v1 构建"
+verify:
+  - type: script
+    path: check.sh

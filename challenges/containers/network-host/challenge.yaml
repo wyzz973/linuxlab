@@ -1,0 +1,25 @@
+id: network-host
+title: "Docker Host 网络模式"
+difficulty: 3
+category: containers
+subcategory: docker-network
+tags: [docker, network, host]
+description: |
+  使用 --network host 模式，容器直接使用主机网络栈，不需要端口映射。
+  注意：host 模式仅在 Linux 上完全支持。
+  
+  请完成以下任务：
+  1. 使用 host 网络模式运行一个 nginx 容器，名为 host-nginx
+  2. 将容器的网络模式信息保存到 /tmp/host-network-info.txt
+  3. 验证 nginx 直接在主机的 80 端口可访问
+requires_docker: true
+hints:
+  - level: 1
+    text: "使用 --network host 指定主机网络模式"
+  - level: 2
+    text: "docker run -d --network host --name host-nginx nginx"
+  - level: 3
+    text: "docker inspect host-nginx --format '{{.HostConfig.NetworkMode}}'"
+verify:
+  - type: script
+    path: check.sh

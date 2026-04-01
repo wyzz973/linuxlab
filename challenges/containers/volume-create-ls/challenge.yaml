@@ -1,0 +1,26 @@
+id: volume-create-ls
+title: "Docker 数据卷基础管理"
+difficulty: 2
+category: containers
+subcategory: docker-volume
+tags: [docker, volume, create, ls]
+description: |
+  Docker 数据卷（Volume）用于持久化和共享容器数据。
+  docker volume create 创建卷，docker volume ls 列出所有卷。
+  
+  请完成以下任务：
+  1. 创建名为 app-data 的数据卷
+  2. 创建名为 db-data 的数据卷
+  3. 使用 docker volume inspect 查看 app-data 的详情，保存到 /tmp/volume-info.txt
+  4. 将所有卷的列表保存到 /tmp/volume-list.txt
+requires_docker: true
+hints:
+  - level: 1
+    text: "docker volume create 卷名"
+  - level: 2
+    text: "docker volume inspect 卷名 查看详情"
+  - level: 3
+    text: "docker volume ls 列出所有卷"
+verify:
+  - type: script
+    path: check.sh

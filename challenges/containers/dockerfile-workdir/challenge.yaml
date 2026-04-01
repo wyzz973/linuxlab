@@ -1,0 +1,28 @@
+id: dockerfile-workdir
+title: "Dockerfile WORKDIR 工作目录"
+difficulty: 2
+category: containers
+subcategory: dockerfile
+tags: [docker, dockerfile, workdir]
+description: |
+  WORKDIR 设置容器内的工作目录，后续的 RUN、CMD、COPY 等指令都在该目录下执行。
+  
+  请完成以下任务：
+  1. 在 /tmp/workdir-app/ 下创建 app.sh 文件，内容为 echo "app is running"
+  2. 创建 Dockerfile，基于 alpine
+  3. 设置 WORKDIR 为 /app
+  4. 将 app.sh 复制到工作目录
+  5. 使用 RUN chmod +x app.sh
+  6. CMD 为 ["./app.sh"]
+  7. 构建镜像，标签为 workdir-app:v1
+requires_docker: true
+hints:
+  - level: 1
+    text: "WORKDIR /app 设置工作目录"
+  - level: 2
+    text: "COPY app.sh . 将文件复制到 WORKDIR"
+  - level: 3
+    text: "构建后运行 docker run --rm workdir-app:v1 应输出 app is running"
+verify:
+  - type: script
+    path: check.sh

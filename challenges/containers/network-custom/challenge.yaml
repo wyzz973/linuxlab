@@ -1,0 +1,26 @@
+id: network-custom
+title: "Docker 自定义网络与容器通信"
+difficulty: 3
+category: containers
+subcategory: docker-network
+tags: [docker, network, custom, dns]
+description: |
+  自定义桥接网络支持容器间通过名称直接通信（自动 DNS 解析），
+  这是默认 bridge 网络不具备的功能。
+  
+  请完成以下任务：
+  1. 创建自定义网络 app-network
+  2. 在 app-network 上运行 nginx 容器，名为 web-app
+  3. 在 app-network 上运行 alpine 容器，名为 test-client，保持运行
+  4. 从 test-client 容器中 ping web-app（通过容器名），将结果保存到 /tmp/ping-result.txt
+requires_docker: true
+hints:
+  - level: 1
+    text: "使用 --network 参数指定容器的网络"
+  - level: 2
+    text: "docker run -d --network app-network --name web-app nginx"
+  - level: 3
+    text: "docker exec test-client ping -c 3 web-app > /tmp/ping-result.txt"
+verify:
+  - type: script
+    path: check.sh
