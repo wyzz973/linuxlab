@@ -70,5 +70,5 @@ func (s *ComposeSandbox) Destroy(ctx context.Context) error {
 
 // InteractiveShellArgs returns arguments to open an interactive shell in the primary service.
 func (s *ComposeSandbox) InteractiveShellArgs() []string {
-	return []string{"docker", "compose", "-f", s.composeFile, "exec", "-it", s.service, "/bin/sh"}
+	return []string{"docker", "compose", "-f", s.composeFile, "exec", "-it", s.service, "/bin/bash", "--rcfile", "/tmp/.linuxlab_bashrc"}
 }

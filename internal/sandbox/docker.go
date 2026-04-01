@@ -115,6 +115,7 @@ func (s *DockerSandbox) Destroy(ctx context.Context) error {
 }
 
 // InteractiveShellArgs returns the command arguments to open an interactive shell in the container.
+// Uses /tmp/.linuxlab_bashrc if it exists (injected by the TUI before launch).
 func (s *DockerSandbox) InteractiveShellArgs() []string {
-	return []string{"docker", "exec", "-it", s.containerID, "/bin/bash"}
+	return []string{"docker", "exec", "-it", s.containerID, "/bin/bash", "--rcfile", "/tmp/.linuxlab_bashrc"}
 }

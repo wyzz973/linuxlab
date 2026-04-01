@@ -353,24 +353,81 @@ func (m AppModel) launchSandbox(ch *challenge.Challenge, hintsUsed int) tea.Cmd 
 		sb.Exec(ctx, string(data))
 	}
 
-	// Build the shell command with a welcome banner
-	banner := fmt.Sprintf(
-		`echo ""
-echo "══════════════════════════════════════════════════════"
-echo "  %s"
-echo "══════════════════════════════════════════════════════"
-echo ""
-echo "%s"
-echo ""
-echo "  输入 exit 完成挑战并检测结果"
-echo "══════════════════════════════════════════════════════"
-echo ""`,
-		ch.Title,
-		strings.ReplaceAll(strings.TrimSpace(ch.Description), "\n", "\n  "),
+	// Escape single quotes in strings for shell embedding
+	escapeShell := func(s string) string {
+		return strings.ReplaceAll(s, "'", "'\"'\"'")
+	}
+
+	// Build hints array for the hint command
+	hintsArray := ""
+	for i, h := range ch.Hints {
+		hintsArray += fmt.Sprintf("_HINTS[%d]='%s'\n", i, escapeShell(h.Text))
+	}
+
+	// Inject helper commands (.bashrc) into the sandbox
+	desc := strings.TrimSpace(ch.Description)
+	bashrc := fmt.Sprintf(`
+# LinuxLab challenge helpers
+_TITLE='%s'
+_DESC='%s'
+_HINT_COUNT=%d
+_HINT_SHOWN=0
+%s
+
+task() {
+  echo ""
+  echo -e "\033[1;34m══════════════════════════════════════════════════════\033[0m"
+  echo -e "\033[1;34m  $_TITLE\033[0m"
+  echo -e "\033[1;34m══════════════════════════════════════════════════════\033[0m"
+  echo ""
+  echo -e "  $_DESC" | sed 's/^/  /'
+  echo ""
+  echo -e "\033[2m  输入 hint 查看提示 · exit 完成挑战\033[0m"
+  echo -e "\033[1;34m══════════════════════════════════════════════════════\033[0m"
+  echo ""
+}
+
+hint() {
+  if [ $_HINT_COUNT -eq 0 ]; then
+    echo -e "\033[33m  本题没有提示\033[0m"
+    return
+  fi
+  if [ $_HINT_SHOWN -ge $_HINT_COUNT ]; then
+    echo -e "\033[33m  已显示全部提示 ($_HINT_COUNT/$_HINT_COUNT)\033[0m"
+    echo ""
+    for i in $(seq 0 $((_HINT_COUNT-1))); do
+      echo -e "\033[33m  $((i+1)). ${_HINTS[$i]}\033[0m"
+    done
+    return
+  fi
+  echo -e "\033[33m  提示 $((_HINT_SHOWN+1))/$_HINT_COUNT: ${_HINTS[$_HINT_SHOWN]}\033[0m"
+  _HINT_SHOWN=$((_HINT_SHOWN+1))
+}
+
+help() {
+  echo ""
+  echo -e "\033[1m  可用命令:\033[0m"
+  echo -e "    \033[1;34mtask\033[0m     查看任务描述"
+  echo -e "    \033[1;33mhint\033[0m     查看下一条提示 (共 $_HINT_COUNT 条)"
+  echo -e "    \033[1mhelp\033[0m     显示此帮助"
+  echo -e "    \033[1mexit\033[0m     完成挑战并检测结果"
+  echo ""
+}
+
+# Custom prompt
+export PS1='\[\033[1;34m\][linuxlab]\[\033[0m\] \w\$ '
+
+# Show task on entry
+task
+`,
+		escapeShell(ch.Title),
+		escapeShell(desc),
+		len(ch.Hints),
+		hintsArray,
 	)
 
-	// Execute banner inside sandbox, then launch interactive shell
-	sb.Exec(ctx, banner)
+	// Write .bashrc into the sandbox
+	sb.Exec(ctx, "cat > /tmp/.linuxlab_bashrc << 'LINUXLAB_EOF'\n"+bashrc+"\nLINUXLAB_EOF")
 
 	args := sb.InteractiveShellArgs()
 	c := exec.Command(args[0], args[1:]...)

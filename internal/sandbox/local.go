@@ -42,6 +42,7 @@ func (s *LocalSandbox) Destroy(_ context.Context) error {
 }
 
 // InteractiveShellArgs returns arguments to open an interactive shell in the working directory.
+// Uses /tmp/.linuxlab_bashrc if it exists (injected by the TUI before launch).
 func (s *LocalSandbox) InteractiveShellArgs() []string {
-	return []string{"bash", "--norc", "-c", "cd '" + s.workDir + "' && exec bash"}
+	return []string{"bash", "-c", "cd '" + s.workDir + "' && exec bash --rcfile /tmp/.linuxlab_bashrc"}
 }
