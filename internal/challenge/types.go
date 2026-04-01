@@ -12,7 +12,9 @@ type Challenge struct {
 	Hints       []Hint       `yaml:"hints,omitempty"`
 	Verify      []VerifyRule `yaml:"verify"`
 	SetupFiles  []SetupFile  `yaml:"setup_files,omitempty"`
-	Dir         string       `yaml:"-"`
+	ComposeFile    string       `yaml:"compose_file,omitempty"`
+	RequiresDocker bool         `yaml:"requires_docker,omitempty"`
+	Dir            string       `yaml:"-"`
 }
 
 // Hint provides a progressive hint for solving a challenge.
