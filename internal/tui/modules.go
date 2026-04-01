@@ -35,10 +35,10 @@ func CategoryLabel(category string) string {
 }
 
 type moduleEntry struct {
-	category   string
-	label      string
-	total      int
-	passed     int
+	category string
+	label    string
+	total    int
+	passed   int
 }
 
 // ModulesModel is the module selection screen.
@@ -105,32 +105,35 @@ func (m ModulesModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m ModulesModel) View() string {
-	header := headerView("LinuxLab · 选择学习模块", m.width)
-	footer := footerView("↑/k 上移 · ↓/j 下移 · Enter 选择 · Esc 返回", m.width)
+	var body strings.Builder
 
-	var b strings.Builder
 	for i, mod := range m.modules {
-		cursor := "  "
-		style := DimStyle
-		if i == m.cursor {
-			cursor = CurrentIcon + " "
-			style = SelectedStyle
-		}
-
 		pct := 0.0
 		if mod.total > 0 {
 			pct = float64(mod.passed) / float64(mod.total)
 		}
-		bar := ProgressBar(pct, 20)
+
+		// Module name line
+		if i == m.cursor {
+			body.WriteString(fmt.Sprintf("%s %s\n", CurrentIcon, SelectedStyle.Render(mod.label)))
+		} else {
+			body.WriteString(fmt.Sprintf("  %s\n", DimStyle.Render(mod.label)))
+		}
+
+		// Progress bar line (indented under name)
+		bar := ProgressBar(pct, 30)
+		countStr := fmt.Sprintf("%d/%d", mod.passed, mod.total)
 		pctStr := fmt.Sprintf("%3.0f%%", pct*100)
-		b.WriteString(fmt.Sprintf("%s%-18s %s  %d/%-5d %s\n", cursor, style.Render(mod.label), bar, mod.passed, mod.total, DimStyle.Render(pctStr)))
+		body.WriteString(fmt.Sprintf("  %s  %s  %s\n", bar, DimStyle.Render(countStr), DimStyle.Render(pctStr)))
+
+		// Spacing between modules
 		if i < len(m.modules)-1 {
-			b.WriteString("\n")
+			body.WriteString("\n")
 		}
 	}
 
-	contentHeight := maxInt(1, m.height-6)
-	content := fillContent(b.String(), m.width, contentHeight)
+	box := contentBox("选择学习模块", body.String(), m.width, m.height, "")
+	status := statusBar("选择学习模块", "↑↓ 选择 · Enter 确认 · Esc 返回", m.width)
 
-	return header + "\n" + content + "\n" + footer
+	return verticalCenter(box, status, m.height)
 }

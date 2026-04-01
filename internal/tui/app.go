@@ -463,40 +463,38 @@ echo ""`,
 }
 
 func (m AppModel) resultView() string {
+	var body strings.Builder
+
 	if m.lastResult == nil {
-		header := headerView("LinuxLab · 检测结果", m.width)
-		footer := footerView("Esc 返回列表 · q 退出", m.width)
-		contentHeight := maxInt(1, m.height-6)
-		content := fillContent("无结果", m.width, contentHeight)
-		return header + "\n" + content + "\n" + footer
+		body.WriteString(DimStyle.Render("无结果"))
+		body.WriteString("\n")
+
+		box := contentBox("检测结果", body.String(), m.width, m.height, "")
+		status := statusBar("", "Esc 返回 · q 退出", m.width)
+		return verticalCenter(box, status, m.height)
 	}
-
-	header := headerView("LinuxLab · 检测结果", m.width)
-	footer := footerView("Esc 返回列表 · q 退出", m.width)
-
-	var b strings.Builder
 
 	if m.lastResult.Passed {
-		b.WriteString(TitleStyle.Render(PassedIcon + " 挑战通过!"))
+		body.WriteString(SuccessStyle.Render("● 挑战通过！"))
 	} else {
-		b.WriteString(ErrorStyle.Render(FailedIcon + " 挑战未通过"))
+		body.WriteString(ErrorStyle.Render("● 挑战未通过"))
 	}
-	b.WriteString("\n\n")
+	body.WriteString("\n\n")
 
 	for i, r := range m.lastResult.Results {
 		icon := PassedIcon
 		if !r.Passed {
 			icon = FailedIcon
 		}
-		b.WriteString(fmt.Sprintf("%s 检查 %d: %s\n", icon, i+1, r.Message))
+		body.WriteString(fmt.Sprintf("%s  检查 %d: %s\n", icon, i+1, r.Message))
 	}
 
 	if m.lastResult.HintsUsed > 0 {
-		b.WriteString(fmt.Sprintf("\n使用提示: %d\n", m.lastResult.HintsUsed))
+		body.WriteString(fmt.Sprintf("\n%s\n", DimStyle.Render(fmt.Sprintf("使用提示: %d", m.lastResult.HintsUsed))))
 	}
 
-	contentHeight := maxInt(1, m.height-6)
-	content := fillContent(b.String(), m.width, contentHeight)
+	box := contentBox("检测结果", body.String(), m.width, m.height, "")
+	status := statusBar("", "Esc 返回 · q 退出", m.width)
 
-	return header + "\n" + content + "\n" + footer
+	return verticalCenter(box, status, m.height)
 }

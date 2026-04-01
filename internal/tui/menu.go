@@ -14,15 +14,16 @@ type MenuChoiceMsg struct {
 
 type menuItem struct {
 	label string
+	desc  string
 	key   string
 }
 
 // MenuModel is the main menu screen.
 type MenuModel struct {
-	items          []menuItem
-	cursor         int
-	width          int
-	height         int
+	items           []menuItem
+	cursor          int
+	width           int
+	height          int
 	totalChallenges int
 	totalModules    int
 }
@@ -31,10 +32,10 @@ type MenuModel struct {
 func NewMenuModel() tea.Model {
 	return MenuModel{
 		items: []menuItem{
-			{label: "开始练习", key: "practice"},
-			{label: "能力图谱", key: "skillmap"},
-			{label: "薄弱推荐", key: "recommend"},
-			{label: "命令速查", key: "reference"},
+			{label: "开始练习", desc: "选择模块开始学习", key: "practice"},
+			{label: "能力图谱", desc: "查看各项技能掌握程度", key: "skillmap"},
+			{label: "薄弱推荐", desc: "针对薄弱环节推荐练习", key: "recommend"},
+			{label: "命令速查", desc: "快速查阅常用命令用法", key: "reference"},
 		},
 		cursor: 0,
 	}
@@ -44,10 +45,10 @@ func NewMenuModel() tea.Model {
 func NewMenuModelWithStats(totalChallenges, totalModules int) tea.Model {
 	return MenuModel{
 		items: []menuItem{
-			{label: "开始练习", key: "practice"},
-			{label: "能力图谱", key: "skillmap"},
-			{label: "薄弱推荐", key: "recommend"},
-			{label: "命令速查", key: "reference"},
+			{label: "开始练习", desc: "选择模块开始学习", key: "practice"},
+			{label: "能力图谱", desc: "查看各项技能掌握程度", key: "skillmap"},
+			{label: "薄弱推荐", desc: "针对薄弱环节推荐练习", key: "recommend"},
+			{label: "命令速查", desc: "快速查阅常用命令用法", key: "reference"},
 		},
 		cursor:          0,
 		totalChallenges: totalChallenges,
@@ -86,31 +87,35 @@ func (m MenuModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m MenuModel) View() string {
-	header := headerView("LinuxLab", m.width)
-	footer := footerView("↑/k 上移 · ↓/j 下移 · Enter 选择 · q 退出", m.width)
+	var body strings.Builder
 
-	var b strings.Builder
+	// Welcome message
+	body.WriteString(DimStyle.Render("欢迎来到 LinuxLab！在真实终端中掌握 Linux 技能。"))
+	body.WriteString("\n\n")
+
+	// Menu items with descriptions
 	for i, item := range m.items {
-		cursor := "  "
-		style := DimStyle
 		if i == m.cursor {
-			cursor = CurrentIcon + " "
-			style = SelectedStyle
+			body.WriteString(fmt.Sprintf("%s %s", CurrentIcon, SelectedStyle.Render(item.label)))
+			body.WriteString("          ")
+			body.WriteString(DimStyle.Render(item.desc))
+			body.WriteString("\n")
+		} else {
+			body.WriteString(fmt.Sprintf("  %s", DimStyle.Render(item.label)))
+			body.WriteString("          ")
+			body.WriteString(SubtleStyle.Render(item.desc))
+			body.WriteString("\n")
 		}
-		b.WriteString(fmt.Sprintf("%s%s\n", cursor, style.Render(item.label)))
 	}
 
-	// Stats line
-	b.WriteString("\n")
+	box := contentBox("LinuxLab", body.String(), m.width, m.height, "")
+
+	// Stats in status bar
+	leftStatus := ""
 	if m.totalChallenges > 0 {
-		b.WriteString(DimStyle.Render(fmt.Sprintf("  %d 道挑战 · %d 个模块 · v0.1.0", m.totalChallenges, m.totalModules)))
-	} else {
-		b.WriteString(DimStyle.Render("  v0.1.0"))
+		leftStatus = fmt.Sprintf("%d 道挑战 · %d 个模块", m.totalChallenges, m.totalModules)
 	}
-	b.WriteString("\n")
+	status := statusBar(leftStatus, "↑↓ 选择 · Enter 确认 · q 退出", m.width)
 
-	contentHeight := maxInt(1, m.height-6)
-	content := fillContent(b.String(), m.width, contentHeight)
-
-	return header + "\n" + content + "\n" + footer
+	return verticalCenter(box, status, m.height)
 }

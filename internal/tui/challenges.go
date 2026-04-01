@@ -39,7 +39,9 @@ func NewChallengesModel(category string, challenges []*challenge.Challenge, stor
 func (m ChallengesModel) Init() tea.Cmd { return nil }
 
 func (m ChallengesModel) maxVisible() int {
-	v := m.height - 4 // header + footer + 2 padding lines
+	// Box has ~2 lines border + 2 lines padding, status bar 1 line, vertical centering
+	// Each challenge is 1 line; leave room for scroll indicators
+	v := m.height - 12
 	if v < 5 {
 		v = 5
 	}
@@ -91,10 +93,16 @@ func (m ChallengesModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 func (m ChallengesModel) View() string {
 	label := CategoryLabel(m.category)
-	header := headerView("LinuxLab · "+label, m.width)
-	footer := footerView(fmt.Sprintf("%d/%d · ↑/k ↓/j 选择 · Enter 确认 · Esc 返回", m.cursor+1, len(m.challenges)), m.width)
 
-	var b strings.Builder
+	// Count passed
+	passedCount := 0
+	for _, ch := range m.challenges {
+		if entry, exists := m.store.Data.Challenges[ch.ID]; exists && entry.Status == "passed" {
+			passedCount++
+		}
+	}
+
+	var body strings.Builder
 
 	maxVis := m.maxVisible()
 	end := m.offset + maxVis
@@ -102,12 +110,7 @@ func (m ChallengesModel) View() string {
 		end = len(m.challenges)
 	}
 
-	if m.offset > 0 {
-		b.WriteString(DimStyle.Render("  ▲ 上滑查看更多"))
-		b.WriteString("\n")
-	}
-
-	// Calculate max title width for alignment
+	// Calculate max title width for right-alignment of stars
 	maxTitleW := 0
 	for i := m.offset; i < end; i++ {
 		tw := lipgloss.Width(m.challenges[i].Title)
@@ -115,20 +118,14 @@ func (m ChallengesModel) View() string {
 			maxTitleW = tw
 		}
 	}
-	// Cap to a reasonable width to avoid overly wide layouts
 	if maxTitleW > 40 {
 		maxTitleW = 40
 	}
 
 	for i := m.offset; i < end; i++ {
 		ch := m.challenges[i]
-		cursor := "  "
-		style := DimStyle
-		if i == m.cursor {
-			cursor = CurrentIcon + " "
-			style = SelectedStyle
-		}
 
+		// Status icon
 		icon := PendingIcon
 		if entry, exists := m.store.Data.Challenges[ch.ID]; exists {
 			switch entry.Status {
@@ -139,23 +136,36 @@ func (m ChallengesModel) View() string {
 			}
 		}
 
+		// Cursor and styling
+		cursor := "  "
+		style := DimStyle
+		if i == m.cursor {
+			cursor = CurrentIcon + " "
+			style = SelectedStyle
+			icon = CurrentIcon
+		}
+
 		title := style.Render(ch.Title)
 		titleW := lipgloss.Width(ch.Title)
 		pad := ""
 		if maxTitleW > titleW {
 			pad = strings.Repeat(" ", maxTitleW-titleW)
 		}
+
 		stars := DifficultyStars(ch.Difficulty)
-		b.WriteString(fmt.Sprintf("%s%s  %s%s  %s\n", cursor, icon, title, pad, stars))
+		body.WriteString(fmt.Sprintf("%s %s  %s%s  %s\n", cursor, icon, title, pad, stars))
 	}
 
+	// Scroll indicator
 	if end < len(m.challenges) {
-		b.WriteString(DimStyle.Render(fmt.Sprintf("  ▼ 下滑查看更多 (%d/%d)", end, len(m.challenges))))
-		b.WriteString("\n")
+		remaining := len(m.challenges) - end
+		body.WriteString(DimStyle.Render(fmt.Sprintf("%s%s", strings.Repeat(" ", maxTitleW-2), fmt.Sprintf("▼ 还有 %d 题", remaining))))
+		body.WriteString("\n")
 	}
 
-	contentHeight := maxInt(1, m.height-6)
-	content := fillContent(b.String(), m.width, contentHeight)
+	rightLabel := fmt.Sprintf("%d/%d", passedCount, len(m.challenges))
+	box := contentBox(label, body.String(), m.width, m.height, rightLabel)
+	status := statusBar(label, "↑↓ 选择 · Enter 确认 · Esc 返回", m.width)
 
-	return header + "\n" + content + "\n" + footer
+	return verticalCenter(box, status, m.height)
 }

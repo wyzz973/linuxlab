@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
 	"github.com/sd3/linuxlab/internal/challenge"
 )
 
@@ -25,7 +26,7 @@ func NewRecommendModel(challenges []*challenge.Challenge) tea.Model {
 func (m RecommendModel) Init() tea.Cmd { return nil }
 
 func (m RecommendModel) maxVisible() int {
-	v := m.height - 4 // header + footer + 2 padding lines
+	v := m.height - 12
 	if v < 5 {
 		v = 5
 	}
@@ -83,18 +84,15 @@ func (m RecommendModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m RecommendModel) View() string {
-	header := headerView("LinuxLab · 薄弱推荐", m.width)
-	footer := footerView("↑/k 上移 · ↓/j 下移 · Enter 选择 · Esc 返回", m.width)
-
-	var b strings.Builder
+	var body strings.Builder
 
 	if len(m.challenges) == 0 {
-		b.WriteString(DimStyle.Render("暂无推荐。完成一些题目后再来看看！"))
-		b.WriteString("\n")
+		body.WriteString(DimStyle.Render("暂无推荐。完成一些题目后再来看看！"))
+		body.WriteString("\n")
 
-		contentHeight := maxInt(1, m.height-6)
-		content := fillContent(b.String(), m.width, contentHeight)
-		return header + "\n" + content + "\n" + footer
+		box := contentBox("薄弱推荐", body.String(), m.width, m.height, "")
+		status := statusBar("薄弱推荐", "Esc 返回", m.width)
+		return verticalCenter(box, status, m.height)
 	}
 
 	maxVis := m.maxVisible()
@@ -103,9 +101,16 @@ func (m RecommendModel) View() string {
 		end = len(m.challenges)
 	}
 
-	if m.offset > 0 {
-		b.WriteString(DimStyle.Render("  ▲ 上滑查看更多"))
-		b.WriteString("\n")
+	// Calculate max title width for alignment
+	maxTitleW := 0
+	for i := m.offset; i < end; i++ {
+		tw := lipgloss.Width(m.challenges[i].Title)
+		if tw > maxTitleW {
+			maxTitleW = tw
+		}
+	}
+	if maxTitleW > 30 {
+		maxTitleW = 30
 	}
 
 	for i := m.offset; i < end; i++ {
@@ -116,18 +121,26 @@ func (m RecommendModel) View() string {
 			cursor = CurrentIcon + " "
 			style = SelectedStyle
 		}
+
+		title := style.Render(ch.Title)
+		titleW := lipgloss.Width(ch.Title)
+		pad := ""
+		if maxTitleW > titleW {
+			pad = strings.Repeat(" ", maxTitleW-titleW)
+		}
+
 		cat := CategoryLabel(ch.Category)
 		stars := DifficultyStars(ch.Difficulty)
-		b.WriteString(fmt.Sprintf("%s%-24s %s  %s\n", cursor, style.Render(ch.Title), stars, DimStyle.Render(cat)))
+		body.WriteString(fmt.Sprintf("%s%s%s  %s  %s\n", cursor, title, pad, stars, DimStyle.Render(cat)))
 	}
 
 	if end < len(m.challenges) {
-		b.WriteString(DimStyle.Render(fmt.Sprintf("  ▼ 下滑查看更多 (%d/%d)", end, len(m.challenges))))
-		b.WriteString("\n")
+		body.WriteString(DimStyle.Render(fmt.Sprintf("  ▼ 还有 %d 题", len(m.challenges)-end)))
+		body.WriteString("\n")
 	}
 
-	contentHeight := maxInt(1, m.height-6)
-	content := fillContent(b.String(), m.width, contentHeight)
+	box := contentBox("薄弱推荐", body.String(), m.width, m.height, "")
+	status := statusBar("薄弱推荐", "↑↓ 选择 · Enter 确认 · Esc 返回", m.width)
 
-	return header + "\n" + content + "\n" + footer
+	return verticalCenter(box, status, m.height)
 }

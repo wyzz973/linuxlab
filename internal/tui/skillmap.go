@@ -72,21 +72,20 @@ func (m SkillMapModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m SkillMapModel) View() string {
-	header := headerView("LinuxLab · 能力图谱", m.width)
-	footer := footerView("↑/k 上移 · ↓/j 下移 · Enter 展开/折叠 · Esc 返回", m.width)
+	var body strings.Builder
 
-	var b strings.Builder
-
+	// Overall progress
 	if m.skillMap.TotalCount > 0 {
 		pct := m.skillMap.OverallScore
-		bar := ProgressBar(pct, 20)
-		b.WriteString(fmt.Sprintf("  总进度  %s  %3.0f%%  (%d/%d)\n\n",
+		bar := ProgressBar(pct, 30)
+		body.WriteString(fmt.Sprintf("总进度  %s  %3.0f%%  (%d/%d)\n\n",
 			bar, pct*100, m.skillMap.TotalPassed, m.skillMap.TotalCount))
 	} else {
-		b.WriteString(DimStyle.Render("  暂无学习记录"))
-		b.WriteString("\n\n")
+		body.WriteString(DimStyle.Render("暂无学习记录"))
+		body.WriteString("\n\n")
 	}
 
+	// Category list
 	for i, cat := range m.skillMap.Categories {
 		cursor := "  "
 		style := DimStyle
@@ -101,22 +100,22 @@ func (m SkillMapModel) View() string {
 		}
 
 		label := CategoryLabel(cat.Name)
-
-		bar := ProgressBar(cat.Score, 15)
-		b.WriteString(fmt.Sprintf("%s%s %-18s  %s  %3.0f%%\n", cursor, arrow, style.Render(label), bar, cat.Score*100))
+		bar := ProgressBar(cat.Score, 20)
+		body.WriteString(fmt.Sprintf("%s%s %s  %s  %3.0f%%\n",
+			cursor, arrow, style.Render(fmt.Sprintf("%-18s", label)), bar, cat.Score*100))
 
 		if m.expanded[i] {
 			for _, sub := range cat.Subcategories {
-				subBar := ProgressBar(sub.Score, 10)
-				b.WriteString(fmt.Sprintf("       %-16s  %s  %d/%d\n",
+				subBar := ProgressBar(sub.Score, 12)
+				body.WriteString(fmt.Sprintf("      %-18s  %s  %d/%d\n",
 					DimStyle.Render(sub.Name), subBar, sub.Passed, sub.Total))
 			}
-			b.WriteString("\n")
+			body.WriteString("\n")
 		}
 	}
 
-	contentHeight := maxInt(1, m.height-6)
-	content := fillContent(b.String(), m.width, contentHeight)
+	box := contentBox("能力图谱", body.String(), m.width, m.height, "")
+	status := statusBar("能力图谱", "↑↓ 选择 · Enter 展开/折叠 · Esc 返回", m.width)
 
-	return header + "\n" + content + "\n" + footer
+	return verticalCenter(box, status, m.height)
 }

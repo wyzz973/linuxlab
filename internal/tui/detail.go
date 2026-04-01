@@ -62,51 +62,51 @@ func (m DetailModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 func (m DetailModel) View() string {
 	ch := m.challenge
-	header := headerView("LinuxLab · "+ch.Title, m.width)
 
-	hintInfo := ""
-	if m.hintLevel < len(ch.Hints) {
-		hintInfo = fmt.Sprintf(" · h 查看提示 (%d/%d)", m.hintLevel, len(ch.Hints))
-	} else if len(ch.Hints) > 0 {
-		hintInfo = fmt.Sprintf(" · 已显示全部提示 (%d/%d)", m.hintLevel, len(ch.Hints))
-	}
-	footer := footerView("Enter 开始挑战 · Esc 返回"+hintInfo, m.width)
+	var body strings.Builder
 
-	var b strings.Builder
-
-	b.WriteString(fmt.Sprintf("  难度  %s\n", DifficultyStars(ch.Difficulty)))
+	// Metadata
+	body.WriteString(fmt.Sprintf("难度  %s\n", DifficultyStars(ch.Difficulty)))
 
 	if len(ch.Tags) > 0 {
-		b.WriteString(fmt.Sprintf("  标签  %s\n", DimStyle.Render(strings.Join(ch.Tags, ", "))))
+		body.WriteString(fmt.Sprintf("标签  %s\n", DimStyle.Render(strings.Join(ch.Tags, ", "))))
 	}
 
 	if ch.RequiresDocker && !m.dockerAvailable {
-		b.WriteString("\n")
-		b.WriteString(WarningStyle.Render("  !! 需要 Docker (当前不可用，将使用本地模式)"))
-		b.WriteString("\n")
+		body.WriteString("\n")
+		body.WriteString(WarningStyle.Render("!! 需要 Docker (当前不可用，将使用本地模式)"))
+		body.WriteString("\n")
 	}
 
-	b.WriteString("\n")
-	b.WriteString(sectionTitle("任务描述", m.width))
-	b.WriteString("\n\n")
-	b.WriteString("  " + strings.ReplaceAll(ch.Description, "\n", "\n  "))
-	b.WriteString("\n")
+	// Task description section
+	body.WriteString("\n")
+	body.WriteString(sectionTitle("任务描述", m.width))
+	body.WriteString("\n\n")
+	body.WriteString(strings.ReplaceAll(ch.Description, "\n", "\n"))
+	body.WriteString("\n")
 
-	b.WriteString("\n")
-	b.WriteString(sectionTitle(fmt.Sprintf("提示 (%d/%d)", m.hintLevel, len(ch.Hints)), m.width))
-	b.WriteString("\n\n")
+	// Hints section
+	body.WriteString("\n")
+	body.WriteString(sectionTitle(fmt.Sprintf("提示 (%d/%d)", m.hintLevel, len(ch.Hints)), m.width))
+	body.WriteString("\n\n")
 
 	if m.hintLevel > 0 {
 		for i := 0; i < m.hintLevel && i < len(ch.Hints); i++ {
-			b.WriteString(fmt.Sprintf("  %d. %s\n", i+1, ch.Hints[i].Text))
+			body.WriteString(fmt.Sprintf("%d. %s\n", i+1, ch.Hints[i].Text))
 		}
 	} else if len(ch.Hints) > 0 {
-		b.WriteString(DimStyle.Render("  按 h 查看提示"))
-		b.WriteString("\n")
+		body.WriteString(DimStyle.Render("按 h 解锁下一条提示"))
+		body.WriteString("\n")
 	}
 
-	contentHeight := maxInt(1, m.height-6)
-	content := fillContent(b.String(), m.width, contentHeight)
+	box := contentBox(ch.Title, body.String(), m.width, m.height, "")
 
-	return header + "\n" + content + "\n" + footer
+	// Status bar
+	rightHelp := "Enter 开始挑战 · h 查看提示 · Esc 返回"
+	if m.hintLevel >= len(ch.Hints) && len(ch.Hints) > 0 {
+		rightHelp = "Enter 开始挑战 · Esc 返回"
+	}
+	status := statusBar("", rightHelp, m.width)
+
+	return verticalCenter(box, status, m.height)
 }

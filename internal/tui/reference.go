@@ -10,7 +10,6 @@ import (
 	"github.com/sd3/linuxlab/internal/reference"
 )
 
-
 // ReferenceModel is the command reference TUI screen with search and detail modes.
 type ReferenceModel struct {
 	commands    []reference.CommandRef
@@ -121,22 +120,18 @@ func (m ReferenceModel) View() string {
 }
 
 func (m ReferenceModel) listView() string {
-	header := headerView("LinuxLab · 命令速查", m.width)
-	footer := footerView("↑/k 上移 · ↓/j 下移 · Enter 查看详情 · Esc 返回", m.width)
-
-	var b strings.Builder
+	var body strings.Builder
 
 	// Search box
-	searchIcon := "🔍 "
 	queryDisplay := m.query
 	if queryDisplay == "" {
 		queryDisplay = DimStyle.Render("输入命令名搜索...")
 	}
-	b.WriteString(fmt.Sprintf("%s%s\n", searchIcon, queryDisplay))
-	b.WriteString(DimStyle.Render(strings.Repeat("─", 30)) + "\n\n")
+	body.WriteString(fmt.Sprintf("/ %s\n", queryDisplay))
+	body.WriteString(DimStyle.Render(strings.Repeat("─", 30)) + "\n\n")
 
 	// Command list
-	maxVisible := m.height - 8
+	maxVisible := m.height - 12
 	if maxVisible < 5 {
 		maxVisible = 5
 	}
@@ -153,21 +148,21 @@ func (m ReferenceModel) listView() string {
 			cursor = CurrentIcon + " "
 			style = SelectedStyle
 		}
-		b.WriteString(fmt.Sprintf("%s%-12s %s\n", cursor, style.Render(cmd.Name), DimStyle.Render(cmd.Brief)))
+		body.WriteString(fmt.Sprintf("%s%-12s %s\n", cursor, style.Render(cmd.Name), DimStyle.Render(cmd.Brief)))
 	}
 
 	if len(m.filtered) > maxVisible {
-		b.WriteString(fmt.Sprintf("\n%s\n", DimStyle.Render(fmt.Sprintf("... 还有 %d 个命令", len(m.filtered)-maxVisible))))
+		body.WriteString(fmt.Sprintf("\n%s\n", DimStyle.Render(fmt.Sprintf("... 还有 %d 个命令", len(m.filtered)-maxVisible))))
 	}
 
 	if len(m.filtered) == 0 && m.query != "" {
-		b.WriteString(DimStyle.Render("未找到匹配的命令") + "\n")
+		body.WriteString(DimStyle.Render("未找到匹配的命令") + "\n")
 	}
 
-	contentHeight := maxInt(1, m.height-6)
-	content := fillContent(b.String(), m.width, contentHeight)
+	box := contentBox("命令速查", body.String(), m.width, m.height, "")
+	status := statusBar("输入搜索 · ↑↓ 选择", "Enter 查看详情 · Esc 返回", m.width)
 
-	return header + "\n" + content + "\n" + footer
+	return verticalCenter(box, status, m.height)
 }
 
 func (m ReferenceModel) detailView() string {
@@ -176,32 +171,30 @@ func (m ReferenceModel) detailView() string {
 	}
 
 	cmd := m.filtered[m.detailIndex]
-	header := headerView("LinuxLab · "+cmd.Name, m.width)
-	footer := footerView("Esc 返回列表", m.width)
 
-	var b strings.Builder
+	var body strings.Builder
 
-	b.WriteString("  " + cmd.Brief)
-	b.WriteString("\n\n")
+	body.WriteString(cmd.Brief)
+	body.WriteString("\n\n")
 
 	if len(cmd.Examples) > 0 {
-		b.WriteString(sectionTitle("示例", m.width))
-		b.WriteString("\n\n")
+		body.WriteString(sectionTitle("示例", m.width))
+		body.WriteString("\n\n")
 		for _, ex := range cmd.Examples {
-			b.WriteString(fmt.Sprintf("  %s %s\n", DimStyle.Render("▸"), ex.Desc))
-			b.WriteString(fmt.Sprintf("    $ %s\n\n", highlightPlaceholders(ex.Cmd)))
+			body.WriteString(fmt.Sprintf("%s %s\n", DimStyle.Render("▸"), ex.Desc))
+			body.WriteString(fmt.Sprintf("  $ %s\n\n", highlightPlaceholders(ex.Cmd)))
 		}
 	}
 
 	if len(cmd.RelatedChallenges) > 0 {
-		b.WriteString(sectionTitle("相关挑战", m.width))
-		b.WriteString("\n\n")
-		b.WriteString("  " + DimStyle.Render(strings.Join(cmd.RelatedChallenges, ", ")))
-		b.WriteString("\n")
+		body.WriteString(sectionTitle("相关挑战", m.width))
+		body.WriteString("\n\n")
+		body.WriteString(DimStyle.Render(strings.Join(cmd.RelatedChallenges, ", ")))
+		body.WriteString("\n")
 	}
 
-	contentHeight := maxInt(1, m.height-6)
-	content := fillContent(b.String(), m.width, contentHeight)
+	box := contentBox(cmd.Name, body.String(), m.width, m.height, "")
+	status := statusBar("", "Esc 返回列表", m.width)
 
-	return header + "\n" + content + "\n" + footer
+	return verticalCenter(box, status, m.height)
 }
