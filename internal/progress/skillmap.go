@@ -131,6 +131,55 @@ func RecommendWeakest(store *Store, challenges []*challenge.Challenge) *challeng
 	return nil
 }
 
+// RecommendMultiple returns up to limit unpassed challenges from the weakest subcategories.
+func RecommendMultiple(store *Store, challenges []*challenge.Challenge, limit int) []*challenge.Challenge {
+	sm := BuildSkillMap(store)
+	if len(sm.Categories) == 0 || len(challenges) == 0 {
+		return nil
+	}
+
+	// Collect all subcategories sorted by score (ascending = weakest first)
+	type subKey struct{ cat, sub string }
+	type scored struct {
+		key   subKey
+		score float64
+	}
+	var subs []scored
+	for _, cat := range sm.Categories {
+		for _, sub := range cat.Subcategories {
+			subs = append(subs, scored{key: subKey{cat.Name, sub.Name}, score: sub.Score})
+		}
+	}
+	sort.Slice(subs, func(i, j int) bool { return subs[i].score < subs[j].score })
+
+	var result []*challenge.Challenge
+	seen := make(map[string]bool)
+
+	for _, s := range subs {
+		if len(result) >= limit {
+			break
+		}
+		for _, ch := range challenges {
+			if len(result) >= limit {
+				break
+			}
+			if ch.Category != s.key.cat || ch.Subcategory != s.key.sub {
+				continue
+			}
+			if seen[ch.ID] {
+				continue
+			}
+			entry := store.Data.Challenges[ch.ID]
+			if entry != nil && entry.Status == "passed" {
+				continue
+			}
+			result = append(result, ch)
+			seen[ch.ID] = true
+		}
+	}
+	return result
+}
+
 // ScoreWithHints calculates a score penalty for hint usage.
 // Each hint multiplies the score by 0.8.
 func ScoreWithHints(hintsUsed int) float64 {

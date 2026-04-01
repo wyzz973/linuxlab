@@ -104,6 +104,81 @@ func TestRecommendWeakest(t *testing.T) {
 	}
 }
 
+func TestRecommendMultiple(t *testing.T) {
+	store := &Store{
+		Data: ProgressData{
+			Skills: map[string]*SkillEntry{
+				"linux-basics.file-operations": {Total: 10, Passed: 8, Score: 0.8},
+				"linux-basics.permissions":     {Total: 5, Passed: 1, Score: 0.2},
+				"vim.navigation":               {Total: 8, Passed: 3, Score: 0.375},
+				"vim.editing":                   {Total: 10, Passed: 2, Score: 0.2},
+			},
+			Challenges: map[string]*ChallengeEntry{
+				"perm-01": {Status: "passed"},
+			},
+		},
+	}
+
+	challenges := []*challenge.Challenge{
+		{ID: "perm-01", Category: "linux-basics", Subcategory: "permissions"},
+		{ID: "perm-02", Category: "linux-basics", Subcategory: "permissions"},
+		{ID: "perm-03", Category: "linux-basics", Subcategory: "permissions"},
+		{ID: "vedit-01", Category: "vim", Subcategory: "editing"},
+		{ID: "vedit-02", Category: "vim", Subcategory: "editing"},
+		{ID: "vnav-01", Category: "vim", Subcategory: "navigation"},
+		{ID: "file-01", Category: "linux-basics", Subcategory: "file-operations"},
+	}
+
+	recs := RecommendMultiple(store, challenges, 3)
+
+	if len(recs) != 3 {
+		t.Fatalf("got %d recommendations, want 3", len(recs))
+	}
+
+	// Should not include already-passed challenges (perm-01)
+	for _, rec := range recs {
+		if rec.ID == "perm-01" {
+			t.Error("should not recommend already-passed challenge perm-01")
+		}
+	}
+}
+
+func TestRecommendMultiple_Empty(t *testing.T) {
+	store := &Store{
+		Data: ProgressData{
+			Skills:     make(map[string]*SkillEntry),
+			Challenges: make(map[string]*ChallengeEntry),
+		},
+	}
+
+	recs := RecommendMultiple(store, nil, 5)
+	if len(recs) != 0 {
+		t.Errorf("expected 0, got %d", len(recs))
+	}
+}
+
+func TestRecommendMultiple_AllPassed(t *testing.T) {
+	store := &Store{
+		Data: ProgressData{
+			Skills: map[string]*SkillEntry{
+				"linux-basics.file-operations": {Total: 1, Passed: 1, Score: 1.0},
+			},
+			Challenges: map[string]*ChallengeEntry{
+				"file-01": {Status: "passed"},
+			},
+		},
+	}
+
+	challenges := []*challenge.Challenge{
+		{ID: "file-01", Category: "linux-basics", Subcategory: "file-operations"},
+	}
+
+	recs := RecommendMultiple(store, challenges, 5)
+	if len(recs) != 0 {
+		t.Errorf("expected 0 (all passed), got %d", len(recs))
+	}
+}
+
 func TestScoreWithHints(t *testing.T) {
 	tests := []struct {
 		hints int
