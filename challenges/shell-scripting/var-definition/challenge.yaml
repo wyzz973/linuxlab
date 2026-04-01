@@ -1,0 +1,26 @@
+id: var-definition
+title: "Shell 变量定义与使用"
+difficulty: 1
+category: shell-scripting
+subcategory: variables
+tags: [variable, assignment, echo]
+description: |
+  学习 Shell 变量的基本定义和使用方法。
+  
+  请编写一个脚本 /home/learner/solution.sh，完成以下任务：
+  1. 定义一个变量 name，值为 "LinuxLab"
+  2. 定义一个变量 version，值为 3
+  3. 使用 echo 输出 "Welcome to LinuxLab v3"
+  
+  注意：变量名和等号之间不能有空格！
+hints:
+  - level: 1
+    text: "使用 变量名=值 的形式定义变量，注意等号两边不能有空格"
+  - level: 2
+    text: "使用 $变量名 或 ${变量名} 来引用变量的值"
+  - level: 3
+    text: "echo \"Welcome to ${name} v${version}\""
+verify:
+  - type: command_output
+    command: "bash /home/learner/solution.sh"
+    expect: "Welcome to LinuxLab v3"

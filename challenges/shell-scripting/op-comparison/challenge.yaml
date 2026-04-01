@@ -1,0 +1,36 @@
+id: op-comparison
+title: "数值比较运算符"
+difficulty: 2
+category: shell-scripting
+subcategory: operators
+tags: [comparison, test, operators]
+description: |
+  学习 Shell 数值比较运算符 -eq -ne -gt -lt -ge -le。
+  
+  请编写脚本 /home/learner/solution.sh，完成以下任务：
+  给定 a=15 和 b=20：
+  1. 判断 a 是否等于 b，输出 "a == b: true" 或 "a == b: false"
+  2. 判断 a 是否不等于 b
+  3. 判断 a 是否大于 b
+  4. 判断 a 是否小于 b
+  5. 判断 a 是否大于等于 10
+  6. 判断 b 是否小于等于 20
+  
+  期望输出：
+  a == b: false
+  a != b: true
+  a > b: false
+  a < b: true
+  a >= 10: true
+  b <= 20: true
+hints:
+  - level: 1
+    text: "在 [ ] 中使用 -eq -ne -gt -lt -ge -le 进行数值比较"
+  - level: 2
+    text: "if [ $a -eq $b ]; then echo 'true'; else echo 'false'; fi"
+  - level: 3
+    text: "也可以用 && 和 || 简写：[ $a -eq $b ] && echo 'true' || echo 'false'"
+verify:
+  - type: command_output
+    command: "bash /home/learner/solution.sh"
+    expect: "a == b: false\na != b: true\na > b: false\na < b: true\na >= 10: true\nb <= 20: true"

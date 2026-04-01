@@ -1,0 +1,32 @@
+id: arr-slicing
+title: "数组切片与操作"
+difficulty: 3
+category: shell-scripting
+subcategory: arrays
+tags: [array, slicing, append]
+description: |
+  学习数组切片和高级操作。
+  
+  请编写脚本 /home/learner/solution.sh，完成以下任务：
+  1. 定义数组 nums=(10 20 30 40 50 60 70 80 90 100)
+  2. 输出从索引2开始的3个元素（30 40 50）
+  3. 向数组追加元素 110
+  4. 输出数组长度
+  5. 删除索引为0的元素
+  6. 输出剩余的所有元素
+  
+  期望输出：
+  30 40 50
+  11
+  20 30 40 50 60 70 80 90 100 110
+hints:
+  - level: 1
+    text: "数组切片语法：${arr[@]:offset:length}"
+  - level: 2
+    text: "追加元素：arr+=(value)"
+  - level: 3
+    text: "删除元素：unset arr[0]"
+verify:
+  - type: command_output
+    command: "bash /home/learner/solution.sh"
+    expect: "30 40 50\n11\n20 30 40 50 60 70 80 90 100 110"

@@ -1,0 +1,30 @@
+id: str-pattern-left
+title: "字符串模式匹配 - 左侧删除"
+difficulty: 3
+category: shell-scripting
+subcategory: strings
+tags: [string, pattern, prefix-removal]
+description: |
+  学习 Shell 字符串左侧模式匹配删除。
+  
+  请编写脚本 /home/learner/solution.sh，完成以下任务：
+  给定变量 filepath="/home/user/documents/report.tar.gz"
+  1. 使用 ${var#pattern} 删除最短左匹配：删除第一个 / 及之前内容，输出结果
+  2. 使用 ${var##pattern} 删除最长左匹配：删除最后一个 / 及之前内容（获取文件名），输出结果
+  3. 给定 filename="report.tar.gz"，使用 ## 获取最终扩展名，输出结果
+  
+  期望输出：
+  home/user/documents/report.tar.gz
+  report.tar.gz
+  gz
+hints:
+  - level: 1
+    text: "# 从左侧删除最短匹配，## 从左侧删除最长匹配"
+  - level: 2
+    text: "使用 */ 模式匹配到斜杠"
+  - level: 3
+    text: "echo ${filepath#/}; echo ${filepath##*/}; echo ${filename##*.}"
+verify:
+  - type: command_output
+    command: "bash /home/learner/solution.sh"
+    expect: "home/user/documents/report.tar.gz\nreport.tar.gz\ngz"

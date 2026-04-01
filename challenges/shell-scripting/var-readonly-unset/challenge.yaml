@@ -1,0 +1,27 @@
+id: var-readonly-unset
+title: "只读变量与删除变量"
+difficulty: 1
+category: shell-scripting
+subcategory: variables
+tags: [readonly, unset, variable]
+description: |
+  学习 Shell 中只读变量（readonly）和删除变量（unset）的用法。
+  
+  请编写脚本 /home/learner/solution.sh，完成以下任务：
+  1. 定义变量 site="runoob.com"
+  2. 将 site 设置为只读变量
+  3. 定义变量 temp="temporary"
+  4. 使用 unset 删除 temp 变量
+  5. 输出 site 的值（应为 "runoob.com"）
+  6. 输出 temp 的值（应为空行）
+hints:
+  - level: 1
+    text: "readonly 命令可以将变量设置为只读"
+  - level: 2
+    text: "unset 命令可以删除变量，但不能删除只读变量"
+  - level: 3
+    text: "readonly site; unset temp; echo $site; echo $temp"
+verify:
+  - type: command_output
+    command: "bash /home/learner/solution.sh"
+    expect: "runoob.com\n"

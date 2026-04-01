@@ -1,0 +1,36 @@
+id: op-arithmetic
+title: "算术运算符与 expr"
+difficulty: 1
+category: shell-scripting
+subcategory: operators
+tags: [arithmetic, expr, operators]
+description: |
+  学习 Shell 算术运算符和 expr 命令。
+  
+  请编写脚本 /home/learner/solution.sh，完成以下任务：
+  给定 a=10 和 b=3：
+  1. 使用 expr 计算并输出 a + b
+  2. 使用 expr 计算并输出 a - b
+  3. 使用 expr 计算并输出 a \* b（注意转义）
+  4. 使用 expr 计算并输出 a / b
+  5. 使用 expr 计算并输出 a % b
+  6. 使用 $(()) 计算 (a + b) * 2 并输出
+  
+  期望输出：
+  13
+  7
+  30
+  3
+  1
+  26
+hints:
+  - level: 1
+    text: "expr 命令中运算符两边必须有空格"
+  - level: 2
+    text: "乘法在 expr 中需要转义：expr $a \\* $b"
+  - level: 3
+    text: "$(()) 支持直接的算术表达式，不需要转义"
+verify:
+  - type: command_output
+    command: "bash /home/learner/solution.sh"
+    expect: "13\n7\n30\n3\n1\n26"

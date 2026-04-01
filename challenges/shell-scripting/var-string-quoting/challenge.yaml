@@ -1,0 +1,28 @@
+id: var-string-quoting
+title: "Shell 字符串引号规则"
+difficulty: 2
+category: shell-scripting
+subcategory: variables
+tags: [string, quoting, single-quote, double-quote]
+description: |
+  学习 Shell 中单引号和双引号的区别。
+  
+  请编写脚本 /home/learner/solution.sh，完成以下任务：
+  1. 定义变量 lang="Shell"
+  2. 使用双引号输出 "Hello, Shell!"（双引号内变量会展开）
+  3. 使用单引号输出 'Hello, $lang!'（单引号内变量不会展开）
+  
+  脚本应输出两行：
+  Hello, Shell!
+  Hello, $lang!
+hints:
+  - level: 1
+    text: "单引号中的内容会原样输出，不会进行变量替换"
+  - level: 2
+    text: "双引号中可以使用 $变量名 进行变量替换"
+  - level: 3
+    text: "echo \"Hello, $lang!\"; echo 'Hello, $lang!'"
+verify:
+  - type: command_output
+    command: "bash /home/learner/solution.sh"
+    expect: "Hello, Shell!\nHello, $lang!"

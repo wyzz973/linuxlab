@@ -1,0 +1,38 @@
+id: arr-length-iteration
+title: "数组长度与遍历"
+difficulty: 2
+category: shell-scripting
+subcategory: arrays
+tags: [array, length, iteration, for-loop]
+description: |
+  学习获取数组长度和遍历数组的方法。
+  
+  请编写脚本 /home/learner/solution.sh，完成以下任务：
+  1. 定义数组 colors=(red green blue yellow purple)
+  2. 输出数组长度
+  3. 使用 for 循环遍历数组，每行输出一个元素
+  4. 使用带索引的 for 循环，输出 "索引: 元素" 格式
+  
+  期望输出：
+  5
+  red
+  green
+  blue
+  yellow
+  purple
+  0: red
+  1: green
+  2: blue
+  3: yellow
+  4: purple
+hints:
+  - level: 1
+    text: "使用 ${#arr[@]} 获取数组长度"
+  - level: 2
+    text: "for item in ${arr[@]} 遍历所有元素"
+  - level: 3
+    text: "for i in $(seq 0 $((${#arr[@]}-1))); do echo \"$i: ${arr[$i]}\"; done"
+verify:
+  - type: command_output
+    command: "bash /home/learner/solution.sh | head -1"
+    expect: "5"

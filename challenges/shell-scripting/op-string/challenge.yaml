@@ -1,0 +1,34 @@
+id: op-string
+title: "字符串运算符"
+difficulty: 2
+category: shell-scripting
+subcategory: operators
+tags: [string, operators, test]
+description: |
+  学习 Shell 字符串运算符 = != -z -n。
+  
+  请编写脚本 /home/learner/solution.sh，完成以下任务：
+  给定 str1="hello" str2="world" str3=""：
+  1. 判断 str1 是否等于 str2，输出 "equal" 或 "not equal"
+  2. 判断 str1 是否不等于 str2，输出 "different" 或 "same"
+  3. 判断 str3 是否为空（-z），输出 "str3 is empty" 或 "str3 is not empty"
+  4. 判断 str1 是否非空（-n），输出 "str1 is not empty" 或 "str1 is empty"
+  5. 判断 str1 是否为非空字符串，输出 "str1 has value" 或 "str1 has no value"
+  
+  期望输出：
+  not equal
+  different
+  str3 is empty
+  str1 is not empty
+  str1 has value
+hints:
+  - level: 1
+    text: "字符串比较使用 = 和 !=，不是 -eq 和 -ne"
+  - level: 2
+    text: "-z 检查字符串长度是否为0，-n 检查字符串长度是否非0"
+  - level: 3
+    text: "[ \"$str1\" = \"$str2\" ] 注意引号和空格"
+verify:
+  - type: command_output
+    command: "bash /home/learner/solution.sh"
+    expect: "not equal\ndifferent\nstr3 is empty\nstr1 is not empty\nstr1 has value"

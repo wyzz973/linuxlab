@@ -1,0 +1,30 @@
+id: var-string-operations
+title: "字符串变量综合操作"
+difficulty: 3
+category: shell-scripting
+subcategory: variables
+tags: [string, length, substring, variable-expansion]
+description: |
+  综合练习字符串变量的各种操作。
+  
+  请编写脚本 /home/learner/solution.sh，完成以下任务：
+  给定变量 url="https://www.runoob.com/linux/linux-shell.html"
+  1. 输出字符串长度
+  2. 提取 "runoob" 子串（提示：从第12个字符开始，长度6）
+  3. 查找字符 'l' 第一次出现的位置（使用 expr index）
+  
+  期望输出：
+  46
+  runoob
+  (一个数字，表示位置)
+hints:
+  - level: 1
+    text: "字符串长度用 ${#var}，子串提取用 ${var:start:length}"
+  - level: 2
+    text: "注意 Shell 中字符串索引从0开始"
+  - level: 3
+    text: "echo ${#url}; echo ${url:12:6}; expr index \"$url\" l"
+verify:
+  - type: command_output
+    command: "bash /home/learner/solution.sh | head -2"
+    expect: "46\nrunoob"

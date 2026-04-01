@@ -1,0 +1,34 @@
+id: var-scope
+title: "变量作用域：local 与 global"
+difficulty: 3
+category: shell-scripting
+subcategory: variables
+tags: [scope, local, global, function]
+description: |
+  学习 Shell 变量的作用域（全局变量和局部变量）。
+  
+  请编写脚本 /home/learner/solution.sh，完成以下任务：
+  1. 定义全局变量 global_var="I am global"
+  2. 定义一个函数 test_scope，在函数内：
+     - 使用 local 定义局部变量 local_var="I am local"
+     - 修改 global_var="Modified in function"
+     - 输出 local_var 的值
+  3. 调用 test_scope 函数
+  4. 输出 global_var 的值（应被函数修改）
+  5. 输出 local_var 的值（应为空，因为是局部变量）
+  
+  期望输出：
+  I am local
+  Modified in function
+  (空行)
+hints:
+  - level: 1
+    text: "函数内不用 local 声明的变量默认是全局变量"
+  - level: 2
+    text: "使用 local 关键字可以在函数内定义局部变量"
+  - level: 3
+    text: "local local_var=\"I am local\" 定义局部变量"
+verify:
+  - type: command_output
+    command: "bash /home/learner/solution.sh"
+    expect: "I am local\nModified in function\n"

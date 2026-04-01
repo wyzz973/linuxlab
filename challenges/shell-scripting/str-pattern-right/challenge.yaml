@@ -1,0 +1,30 @@
+id: str-pattern-right
+title: "字符串模式匹配 - 右侧删除"
+difficulty: 3
+category: shell-scripting
+subcategory: strings
+tags: [string, pattern, suffix-removal]
+description: |
+  学习 Shell 字符串右侧模式匹配删除。
+  
+  请编写脚本 /home/learner/solution.sh，完成以下任务：
+  给定变量 filepath="/home/user/documents/report.tar.gz"
+  1. 使用 ${var%pattern} 删除最短右匹配：删除最后一个 .* 获取去扩展名路径
+  2. 使用 ${var%%pattern} 删除最长右匹配：删除第一个 .* 获取基础路径
+  3. 使用 % 获取目录路径（删除最后一个 /* 部分）
+  
+  期望输出：
+  /home/user/documents/report.tar
+  /home/user/documents/report
+  /home/user/documents
+hints:
+  - level: 1
+    text: "% 从右侧删除最短匹配，%% 从右侧删除最长匹配"
+  - level: 2
+    text: "模式 .* 匹配点号及其后的内容"
+  - level: 3
+    text: "echo ${filepath%.*}; echo ${filepath%%.*}; echo ${filepath%/*}"
+verify:
+  - type: command_output
+    command: "bash /home/learner/solution.sh"
+    expect: "/home/user/documents/report.tar\n/home/user/documents/report\n/home/user/documents"

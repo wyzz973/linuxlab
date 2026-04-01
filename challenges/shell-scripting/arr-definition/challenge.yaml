@@ -1,0 +1,33 @@
+id: arr-definition
+title: "数组定义与访问"
+difficulty: 1
+category: shell-scripting
+subcategory: arrays
+tags: [array, definition, access]
+description: |
+  学习 Shell 数组的定义和访问方法。
+  
+  请编写脚本 /home/learner/solution.sh，完成以下任务：
+  1. 使用括号方式定义数组 fruits=(apple banana cherry date elderberry)
+  2. 输出第一个元素
+  3. 输出第三个元素
+  4. 输出所有元素（用空格分隔）
+  5. 修改第二个元素为 "blueberry"
+  6. 输出修改后的所有元素
+  
+  期望输出：
+  apple
+  cherry
+  apple banana cherry date elderberry
+  apple blueberry cherry date elderberry
+hints:
+  - level: 1
+    text: "数组索引从0开始，使用 ${arr[index]} 访问"
+  - level: 2
+    text: "使用 ${arr[@]} 获取所有元素"
+  - level: 3
+    text: "fruits[1]=\"blueberry\" 修改第二个元素"
+verify:
+  - type: command_output
+    command: "bash /home/learner/solution.sh"
+    expect: "apple\ncherry\napple banana cherry date elderberry\napple blueberry cherry date elderberry"

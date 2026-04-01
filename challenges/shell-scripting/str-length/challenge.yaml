@@ -1,0 +1,32 @@
+id: str-length
+title: "获取字符串长度"
+difficulty: 1
+category: shell-scripting
+subcategory: strings
+tags: [string, length]
+description: |
+  学习获取 Shell 字符串长度的方法。
+  
+  请编写脚本 /home/learner/solution.sh，读取文件 /home/learner/words.txt 的每一行，
+  输出每行字符串及其长度，格式为 "字符串: 长度"。
+  
+  例如 words.txt 内容：
+  hello
+  world
+  shell
+  
+  期望输出：
+  hello: 5
+  world: 5
+  shell: 5
+hints:
+  - level: 1
+    text: "使用 ${#var} 获取字符串长度"
+  - level: 2
+    text: "用 while read line 逐行读取文件"
+  - level: 3
+    text: "while read line; do echo \"$line: ${#line}\"; done < file"
+verify:
+  - type: command_output
+    command: "bash /home/learner/solution.sh"
+    expect: "hello: 5\nworld: 5\nshell: 5"

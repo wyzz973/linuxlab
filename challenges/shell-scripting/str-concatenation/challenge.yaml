@@ -1,0 +1,31 @@
+id: str-concatenation
+title: "字符串拼接"
+difficulty: 1
+category: shell-scripting
+subcategory: strings
+tags: [string, concatenation]
+description: |
+  学习 Shell 字符串拼接的方法。
+  
+  请编写脚本 /home/learner/solution.sh，完成以下任务：
+  1. 定义 first="Hello"
+  2. 定义 second="World"
+  3. 使用双引号拼接输出 "Hello, World!"
+  4. 使用直接拼接（无引号变量紧挨）输出 "HelloWorld"
+  5. 使用 ${var} 形式拼接输出 "Hello_Script"（将 second 替换为 "Script"）
+  
+  期望输出：
+  Hello, World!
+  HelloWorld
+  Hello_Script
+hints:
+  - level: 1
+    text: "Shell 中字符串拼接直接写在一起即可，不需要 + 运算符"
+  - level: 2
+    text: "双引号中可以混合字符串和变量"
+  - level: 3
+    text: "echo \"${first}, ${second}!\"; echo $first$second"
+verify:
+  - type: command_output
+    command: "bash /home/learner/solution.sh"
+    expect: "Hello, World!\nHelloWorld\nHello_Script"

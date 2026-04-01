@@ -1,0 +1,35 @@
+id: arr-operations
+title: "数组综合练习 - 成绩统计"
+difficulty: 4
+category: shell-scripting
+subcategory: arrays
+tags: [array, loop, arithmetic]
+description: |
+  综合运用数组知识完成一个成绩统计脚本。
+  
+  请编写脚本 /home/learner/solution.sh，完成以下任务：
+  1. 定义数组 scores=(85 92 78 95 88 76 90 82 97 70)
+  2. 计算并输出：
+     - 学生人数
+     - 最高分
+     - 最低分
+     - 总分
+     - 平均分（整数，使用整除）
+  
+  期望输出：
+  Students: 10
+  Highest: 97
+  Lowest: 70
+  Total: 853
+  Average: 85
+hints:
+  - level: 1
+    text: "遍历数组，用变量记录最大值、最小值、总和"
+  - level: 2
+    text: "使用 $(( )) 进行算术运算"
+  - level: 3
+    text: "初始化 max 和 min 为第一个元素，然后逐个比较"
+verify:
+  - type: command_output
+    command: "bash /home/learner/solution.sh"
+    expect: "Students: 10\nHighest: 97\nLowest: 70\nTotal: 853\nAverage: 85"

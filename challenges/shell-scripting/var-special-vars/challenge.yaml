@@ -1,0 +1,27 @@
+id: var-special-vars
+title: "特殊变量 $0 $# $? $$"
+difficulty: 2
+category: shell-scripting
+subcategory: variables
+tags: [special-variables, dollar, exit-status]
+description: |
+  学习 Shell 特殊变量的含义和用法。
+  
+  请编写脚本 /home/learner/solution.sh，完成以下任务：
+  1. 输出 "Script name: $0"（脚本名称）
+  2. 输出 "PID: $$"（当前进程ID）
+  3. 执行 ls /nonexistent 2>/dev/null
+  4. 输出 "Exit status: $?"（上一条命令的退出状态，应该非0）
+  5. 执行 echo "test" > /dev/null
+  6. 输出 "Exit status: $?"（应该为0）
+hints:
+  - level: 1
+    text: "$0 是脚本名，$$ 是当前进程PID，$? 是上一条命令的退出状态"
+  - level: 2
+    text: "命令成功执行返回0，失败返回非0值"
+  - level: 3
+    text: "直接使用 echo \"Exit status: $?\" 即可获取上一条命令的退出码"
+verify:
+  - type: command_output
+    command: "bash /home/learner/solution.sh | grep -c '\\(Script name:\\|PID:\\|Exit status:\\)'"
+    expect: "4"

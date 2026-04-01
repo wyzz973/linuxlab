@@ -1,0 +1,27 @@
+id: var-command-substitution
+title: "命令替换 $() 和反引号"
+difficulty: 2
+category: shell-scripting
+subcategory: variables
+tags: [command-substitution, subshell]
+description: |
+  学习 Shell 命令替换的两种方式：$() 和反引号 ``。
+  
+  请编写脚本 /home/learner/solution.sh，完成以下任务：
+  1. 使用 $() 方式获取当前日期（date +%Y-%m-%d），存入变量 today
+  2. 使用 $() 方式获取当前用户名（whoami），存入变量 user
+  3. 使用 $() 方式统计 /etc/passwd 的行数（wc -l < /etc/passwd），存入变量 lines
+  4. 输出 "Today: <日期>"
+  5. 输出 "User: <用户名>"
+  6. 输出 "Lines in passwd: <行数>"
+hints:
+  - level: 1
+    text: "命令替换可以将命令的输出赋值给变量"
+  - level: 2
+    text: "推荐使用 $(command) 而非反引号，因为 $() 支持嵌套"
+  - level: 3
+    text: "today=$(date +%Y-%m-%d)"
+verify:
+  - type: command_output
+    command: "bash /home/learner/solution.sh | grep -c '^\\(Today:\\|User:\\|Lines in passwd:\\)'"
+    expect: "3"

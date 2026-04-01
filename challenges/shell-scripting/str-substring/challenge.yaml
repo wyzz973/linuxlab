@@ -1,0 +1,30 @@
+id: str-substring
+title: "子串提取 ${var:pos:len}"
+difficulty: 2
+category: shell-scripting
+subcategory: strings
+tags: [string, substring, extraction]
+description: |
+  学习 Shell 子串提取的方法。
+  
+  请编写脚本 /home/learner/solution.sh，完成以下任务：
+  给定变量 str="Shell Programming Language"
+  1. 提取前5个字符 "Shell"
+  2. 提取第7到第17个字符 "Programming"（索引从0开始）
+  3. 提取最后8个字符 "Language"
+  
+  期望输出：
+  Shell
+  Programming
+  Language
+hints:
+  - level: 1
+    text: "使用 ${var:position:length} 提取子串"
+  - level: 2
+    text: "负数索引从字符串末尾开始计算，如 ${var: -8}"
+  - level: 3
+    text: "echo ${str:0:5}; echo ${str:6:11}; echo ${str: -8}"
+verify:
+  - type: command_output
+    command: "bash /home/learner/solution.sh"
+    expect: "Shell\nProgramming\nLanguage"

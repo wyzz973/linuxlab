@@ -1,0 +1,30 @@
+id: str-replacement
+title: "字符串替换 ${var/old/new}"
+difficulty: 2
+category: shell-scripting
+subcategory: strings
+tags: [string, replacement, substitution]
+description: |
+  学习 Shell 字符串替换的方法。
+  
+  请编写脚本 /home/learner/solution.sh，完成以下任务：
+  给定变量 text="I love apple, apple is sweet"
+  1. 替换第一个 "apple" 为 "banana"，输出结果
+  2. 替换所有 "apple" 为 "orange"，输出结果
+  3. 给定 path="/home/user/documents/file.txt"，将所有 "/" 替换为 "-"，输出结果
+  
+  期望输出：
+  I love banana, apple is sweet
+  I love orange, orange is sweet
+  -home-user-documents-file.txt
+hints:
+  - level: 1
+    text: "${var/old/new} 替换第一个匹配，${var//old/new} 替换所有匹配"
+  - level: 2
+    text: "单斜杠替换第一个，双斜杠替换全部"
+  - level: 3
+    text: "echo ${text/apple/banana}; echo ${text//apple/orange}"
+verify:
+  - type: command_output
+    command: "bash /home/learner/solution.sh"
+    expect: "I love banana, apple is sweet\nI love orange, orange is sweet\n-home-user-documents-file.txt"

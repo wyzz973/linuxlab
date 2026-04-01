@@ -1,0 +1,30 @@
+id: var-environment
+title: "环境变量与 export"
+difficulty: 2
+category: shell-scripting
+subcategory: variables
+tags: [environment, export, env]
+description: |
+  学习环境变量和 export 命令的用法。
+  
+  请编写脚本 /home/learner/solution.sh，完成以下任务：
+  1. 使用 export 定义环境变量 MY_APP="LinuxLab"
+  2. 输出 HOME 环境变量的值
+  3. 输出 MY_APP 的值
+  4. 输出 PATH 中包含 "/usr/bin" 的确认信息
+  
+  脚本输出应为三行：
+  第一行：HOME 环境变量的值
+  第二行：LinuxLab
+  第三行：PATH contains /usr/bin
+hints:
+  - level: 1
+    text: "export 命令可以将变量导出为环境变量，子进程可以访问"
+  - level: 2
+    text: "使用 $HOME 访问 HOME 环境变量"
+  - level: 3
+    text: "可以用 [[ \"$PATH\" == *\"/usr/bin\"* ]] 来检查字符串包含"
+verify:
+  - type: command_output
+    command: "bash /home/learner/solution.sh | tail -2"
+    expect: "LinuxLab\nPATH contains /usr/bin"

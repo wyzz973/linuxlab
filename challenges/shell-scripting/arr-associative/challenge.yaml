@@ -1,0 +1,40 @@
+id: arr-associative
+title: "关联数组 (declare -A)"
+difficulty: 3
+category: shell-scripting
+subcategory: arrays
+tags: [array, associative, declare]
+description: |
+  学习 Bash 关联数组（类似于字典/哈希表）的使用。
+  
+  请编写脚本 /home/learner/solution.sh，完成以下任务：
+  1. 使用 declare -A 声明关联数组 capitals
+  2. 设置以下键值对：
+     - China -> Beijing
+     - Japan -> Tokyo
+     - France -> Paris
+  3. 输出 China 对应的值
+  4. 输出所有键（每行一个，按字母排序）
+  5. 输出所有值（每行一个，按字母排序）
+  6. 输出关联数组的大小
+  
+  期望输出：
+  Beijing
+  China
+  France
+  Japan
+  Beijing
+  Paris
+  Tokyo
+  3
+hints:
+  - level: 1
+    text: "关联数组必须先用 declare -A 声明"
+  - level: 2
+    text: "使用 ${!arr[@]} 获取所有键"
+  - level: 3
+    text: "for key in $(echo \"${!capitals[@]}\" | tr ' ' '\\n' | sort); do ..."
+verify:
+  - type: command_output
+    command: "bash /home/learner/solution.sh"
+    expect: "Beijing\nChina\nFrance\nJapan\nBeijing\nParis\nTokyo\n3"
