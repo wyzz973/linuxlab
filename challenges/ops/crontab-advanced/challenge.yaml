@@ -1,0 +1,23 @@
+id: crontab-advanced
+title: "crontab 高级定时任务"
+difficulty: 3
+category: ops
+subcategory: automation
+tags: [cron, crontab, scheduling]
+description: |
+  crontab 是 Linux 最经典的定时任务工具。
+
+  请完成以下任务：
+  1. 创建一个 crontab 文件 /tmp/my_crontab，包含以下任务：
+     - 每天凌晨 2 点执行数据库备份脚本 /usr/local/bin/backup_db.sh
+     - 每 5 分钟检查一次磁盘空间 /usr/local/bin/check_disk.sh
+     - 每周一上午 9 点发送周报 /usr/local/bin/weekly_report.sh
+     - 每月 1 号清理日志 /usr/local/bin/cleanup_logs.sh
+  2. 查看当前用户的 crontab，保存到 /tmp/current_cron.txt
+hints:
+  - level: 1
+    text: "cron 格式：分 时 日 月 周 命令"
+  - level: 2
+    text: "0 2 * * * 表示每天 2 点"
+  - level: 3
+    text: "*/5 * * * * 表示每 5 分钟"

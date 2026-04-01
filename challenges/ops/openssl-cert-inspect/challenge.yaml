@@ -1,0 +1,20 @@
+id: openssl-cert-inspect
+title: "OpenSSL 证书检查"
+difficulty: 4
+category: ops
+subcategory: security
+tags: [openssl, ssl, tls, certificate]
+description: |
+  OpenSSL 用于 SSL/TLS 证书的管理和检查。
+
+  请完成以下任务：
+  1. 生成一个自签名 SSL 证书（有效期 365 天），保存到 /tmp/server.crt，密钥保存到 /tmp/server.key
+  2. 查看证书的详细信息，保存到 /tmp/cert_info.txt
+  3. 验证证书和密钥是否匹配，将结果保存到 /tmp/cert_verify.txt
+hints:
+  - level: 1
+    text: "openssl req -x509 -newkey rsa:2048 生成自签名证书"
+  - level: 2
+    text: "openssl x509 -in cert -text -noout 查看证书信息"
+  - level: 3
+    text: "对比证书和密钥的 modulus MD5 判断是否匹配"

@@ -1,0 +1,21 @@
+id: systemd-troubleshoot-failed
+title: "排查 systemd 服务故障"
+difficulty: 5
+category: ops
+subcategory: systemd
+tags: [systemd, troubleshoot, debug]
+description: |
+  排查 systemd 服务启动失败是运维必备技能。
+
+  环境中有一个故意配置错误的服务 broken.service。请完成以下任务：
+  1. 查看 broken.service 的状态和错误信息，保存到 /tmp/broken_status.txt
+  2. 查看该服务的日志，保存到 /tmp/broken_logs.txt
+  3. 找出并修复错误（ExecStart 路径错误），使服务能正常加载
+  4. 修复后将正确的 unit 文件内容保存到 /tmp/fixed_service.txt
+hints:
+  - level: 1
+    text: "systemctl status broken 查看错误原因"
+  - level: 2
+    text: "journalctl -u broken 查看详细日志"
+  - level: 3
+    text: "检查 ExecStart 指向的文件是否存在"

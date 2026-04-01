@@ -1,0 +1,20 @@
+id: tcpdump-filter-host
+title: "tcpdump 按主机过滤"
+difficulty: 3
+category: ops
+subcategory: network-troubleshoot
+tags: [tcpdump, network, filter]
+description: |
+  在实际故障排查中，经常需要针对特定主机进行抓包分析。
+
+  请完成以下任务：
+  1. 使用 tcpdump 抓取与 127.0.0.1 通信的数据包，捕获 5 个包
+  2. 将结果保存到 /tmp/host_capture.pcap
+  3. 统计抓到的包数量，写入 /tmp/packet_count.txt（只写数字）
+hints:
+  - level: 1
+    text: "使用 tcpdump host 127.0.0.1 来过滤"
+  - level: 2
+    text: "tcpdump -i lo host 127.0.0.1 -c 5 -w /tmp/host_capture.pcap"
+  - level: 3
+    text: "用 tcpdump -r 读取后 wc -l 计数"

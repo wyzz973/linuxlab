@@ -1,0 +1,19 @@
+id: ss-listening-ports
+title: "ss 查看监听端口"
+difficulty: 2
+category: ops
+subcategory: network-troubleshoot
+tags: [ss, netstat, network]
+description: |
+  ss 是替代 netstat 的现代网络工具，用于查看套接字信息。
+
+  环境中运行着多个服务。请完成以下任务：
+  1. 使用 ss 命令列出所有 TCP 监听端口，保存到 /tmp/listening.txt
+  2. 从中提取出监听的端口号（每行一个），保存到 /tmp/ports.txt
+hints:
+  - level: 1
+    text: "ss -tlnp 列出 TCP 监听端口"
+  - level: 2
+    text: "ss -tlnp | tee /tmp/listening.txt"
+  - level: 3
+    text: "ss -tlnp | awk 获取端口列"

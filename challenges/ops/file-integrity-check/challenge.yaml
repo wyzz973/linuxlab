@@ -1,0 +1,20 @@
+id: file-integrity-check
+title: "文件完整性校验"
+difficulty: 2
+category: ops
+subcategory: security
+tags: [sha256sum, md5sum, integrity, security]
+description: |
+  文件完整性校验用于确保文件未被篡改。
+
+  请完成以下任务：
+  1. 计算 /etc/passwd 的 SHA256 校验和，保存到 /tmp/passwd_sha256.txt
+  2. 计算 /etc/passwd 的 MD5 校验和，保存到 /tmp/passwd_md5.txt
+  3. 对 /etc 目录下的所有 .conf 文件计算 SHA256 校验和，保存到 /tmp/conf_checksums.txt
+hints:
+  - level: 1
+    text: "sha256sum /etc/passwd 计算 SHA256"
+  - level: 2
+    text: "md5sum /etc/passwd 计算 MD5"
+  - level: 3
+    text: "find /etc -name \"*.conf\" -exec sha256sum {} \;"

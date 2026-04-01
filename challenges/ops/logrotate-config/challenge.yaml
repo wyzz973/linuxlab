@@ -1,0 +1,23 @@
+id: logrotate-config
+title: "logrotate 日志轮转配置"
+difficulty: 3
+category: ops
+subcategory: log-analysis
+tags: [logrotate, logs, configuration]
+description: |
+  logrotate 用于自动轮转、压缩和管理日志文件。
+
+  请完成以下任务：
+  1. 为 /var/log/myapp.log 创建 logrotate 配置文件 /etc/logrotate.d/myapp，要求：
+     - 每天轮转
+     - 保留 7 个旧日志
+     - 压缩旧日志
+     - 如果日志文件不存在不报错
+  2. 查看当前 logrotate 的状态文件，保存到 /tmp/logrotate_status.txt
+hints:
+  - level: 1
+    text: "logrotate 配置支持 daily、rotate、compress 等指令"
+  - level: 2
+    text: "missingok 指令可以忽略不存在的日志"
+  - level: 3
+    text: "配置文件格式：/path/to/log { daily rotate 7 compress missingok }"

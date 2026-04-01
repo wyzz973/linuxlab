@@ -1,0 +1,23 @@
+id: systemd-dependencies
+title: "systemd 服务依赖管理"
+difficulty: 4
+category: ops
+subcategory: systemd
+tags: [systemd, dependencies, requires, after]
+description: |
+  systemd 通过 Requires、After、Wants 等指令管理服务依赖。
+
+  请完成以下任务：
+  1. 创建 /etc/systemd/system/mydb.service 模拟数据库服务
+  2. 创建 /etc/systemd/system/webapp.service，要求：
+     - 依赖 mydb.service（Requires）
+     - 在 mydb.service 之后启动（After）
+     - 在 network.target 之后启动
+  3. 查看 webapp.service 的依赖树，保存到 /tmp/dep_tree.txt
+hints:
+  - level: 1
+    text: "Requires=mydb.service 设置强依赖"
+  - level: 2
+    text: "After=mydb.service network.target 设置启动顺序"
+  - level: 3
+    text: "systemctl list-dependencies webapp"

@@ -1,0 +1,19 @@
+id: tcpdump-capture-basics
+title: "tcpdump 抓包基础"
+difficulty: 2
+category: ops
+subcategory: network-troubleshoot
+tags: [tcpdump, network, packet-capture]
+description: |
+  tcpdump 是最常用的网络抓包工具。
+
+  请完成以下任务：
+  1. 使用 tcpdump 抓取 eth0 接口上的 5 个数据包，保存到 /tmp/capture.pcap
+  2. 将抓包文件的摘要信息（使用 tcpdump -r 读取）保存到 /tmp/capture_summary.txt
+hints:
+  - level: 1
+    text: "使用 tcpdump -i eth0 -c 5 -w 来捕获并保存"
+  - level: 2
+    text: "tcpdump -i eth0 -c 5 -w /tmp/capture.pcap"
+  - level: 3
+    text: "tcpdump -i eth0 -c 5 -w /tmp/capture.pcap && tcpdump -r /tmp/capture.pcap > /tmp/capture_summary.txt 2>&1"

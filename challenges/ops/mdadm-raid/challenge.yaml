@@ -1,0 +1,20 @@
+id: mdadm-raid
+title: "mdadm RAID 概念和基础操作"
+difficulty: 5
+category: ops
+subcategory: disk-ops
+tags: [mdadm, raid, disk, redundancy]
+description: |
+  RAID 提供磁盘冗余和性能提升。mdadm 是 Linux 软件 RAID 管理工具。
+
+  请完成以下任务：
+  1. 查看 mdadm 的帮助信息，保存到 /tmp/mdadm_help.txt
+  2. 查看当前系统的 RAID 状态（/proc/mdstat），保存到 /tmp/raid_status.txt
+  3. 创建一份 RAID 级别说明文档，写入 /tmp/raid_levels.txt（说明 RAID 0/1/5/10）
+hints:
+  - level: 1
+    text: "mdadm --help 查看帮助"
+  - level: 2
+    text: "cat /proc/mdstat 查看 RAID 状态"
+  - level: 3
+    text: "RAID 0 条带化、RAID 1 镜像、RAID 5 条带+校验、RAID 10 镜像+条带"

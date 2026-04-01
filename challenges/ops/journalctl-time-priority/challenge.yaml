@@ -1,0 +1,20 @@
+id: journalctl-time-priority
+title: "journalctl 按时间和优先级过滤"
+difficulty: 3
+category: ops
+subcategory: log-analysis
+tags: [journalctl, systemd, logs, filter]
+description: |
+  journalctl 支持按时间范围和日志优先级过滤。
+
+  请完成以下任务：
+  1. 查看今天的所有日志，保存到 /tmp/today_logs.txt
+  2. 查看所有错误级别（priority err）及以上的日志，保存到 /tmp/error_logs.txt
+  3. 查看最近 1 小时的日志，保存到 /tmp/hour_logs.txt
+hints:
+  - level: 1
+    text: "journalctl --since today"
+  - level: 2
+    text: "journalctl -p err 过滤错误级别"
+  - level: 3
+    text: "journalctl --since \"1 hour ago\""

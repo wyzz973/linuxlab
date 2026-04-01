@@ -1,0 +1,20 @@
+id: curl-post-json
+title: "curl 发送 POST 请求"
+difficulty: 3
+category: ops
+subcategory: network-troubleshoot
+tags: [curl, http, api]
+description: |
+  curl 是最常用的 HTTP 客户端工具，常用于 API 测试。
+
+  环境中运行着一个 HTTP 服务（端口 8080）。请完成以下任务：
+  1. 使用 curl 发送 GET 请求到 http://localhost:8080/，将响应体保存到 /tmp/get_response.txt
+  2. 使用 curl 发送 POST 请求（Content-Type: application/json，Body: {"name":"test"}），将响应保存到 /tmp/post_response.txt
+  3. 获取 HTTP 响应头，保存到 /tmp/response_headers.txt
+hints:
+  - level: 1
+    text: "curl -X POST -H 设置头部"
+  - level: 2
+    text: "curl -X POST -H \"Content-Type: application/json\" -d 发送数据"
+  - level: 3
+    text: "curl -I 或 curl -D- 获取响应头"

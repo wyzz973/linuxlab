@@ -1,0 +1,20 @@
+id: strace-trace-calls
+title: "strace 跟踪系统调用"
+difficulty: 4
+category: ops
+subcategory: system-monitoring
+tags: [strace, debug, system-calls]
+description: |
+  strace 用于跟踪进程的系统调用，是高级调试工具。
+
+  请完成以下任务：
+  1. 使用 strace 跟踪 ls / 命令的系统调用，保存到 /tmp/strace_ls.txt
+  2. 从输出中提取所有 open/openat 系统调用，保存到 /tmp/strace_open.txt
+  3. 统计各种系统调用的次数（使用 strace -c），保存到 /tmp/strace_summary.txt
+hints:
+  - level: 1
+    text: "strace -o 输出到文件"
+  - level: 2
+    text: "strace ls / 2> /tmp/strace_ls.txt"
+  - level: 3
+    text: "strace -c ls / 统计系统调用"

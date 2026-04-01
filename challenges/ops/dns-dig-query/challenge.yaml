@@ -1,0 +1,20 @@
+id: dns-dig-query
+title: "dig DNS 查询"
+difficulty: 2
+category: ops
+subcategory: network-troubleshoot
+tags: [dig, dns, network]
+description: |
+  dig 是最强大的 DNS 查询工具。
+
+  请完成以下任务：
+  1. 查看 /etc/resolv.conf 中配置的 DNS 服务器，保存到 /tmp/dns_servers.txt
+  2. 使用 dig 查询 localhost 的 A 记录，保存到 /tmp/dig_result.txt
+  3. 查看 /etc/hosts 文件内容，保存到 /tmp/hosts_content.txt
+hints:
+  - level: 1
+    text: "cat /etc/resolv.conf 查看 DNS 配置"
+  - level: 2
+    text: "dig localhost 查询 DNS"
+  - level: 3
+    text: "grep nameserver /etc/resolv.conf"

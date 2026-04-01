@@ -1,0 +1,20 @@
+id: vmstat-memory-analysis
+title: "vmstat 内存和交换分析"
+difficulty: 3
+category: ops
+subcategory: system-monitoring
+tags: [vmstat, memory, swap, monitoring]
+description: |
+  vmstat 提供系统虚拟内存、进程、CPU 活动的摘要信息。
+
+  请完成以下任务：
+  1. 使用 vmstat 采集 5 次系统状态（间隔 1 秒），保存到 /tmp/vmstat_output.txt
+  2. 查看系统内存详情（/proc/meminfo），提取总内存和可用内存，保存到 /tmp/mem_info.txt
+  3. 查看 swap 使用情况，保存到 /tmp/swap_info.txt
+hints:
+  - level: 1
+    text: "vmstat 1 5 采集 5 次"
+  - level: 2
+    text: "grep -E \"MemTotal|MemAvailable\" /proc/meminfo"
+  - level: 3
+    text: "free -h 或 swapon --show 查看 swap"

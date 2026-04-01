@@ -1,0 +1,21 @@
+id: fsck-repair
+title: "fsck 文件系统检查与修复"
+difficulty: 4
+category: ops
+subcategory: disk-ops
+tags: [fsck, filesystem, repair]
+description: |
+  fsck 用于检查和修复文件系统错误。
+
+  请完成以下任务：
+  1. 创建一个 50MB 的磁盘镜像文件 /tmp/test_disk.img
+  2. 在镜像上创建 ext4 文件系统
+  3. 对该文件系统进行检查（fsck），将结果保存到 /tmp/fsck_result.txt
+  4. 查看文件系统的详细信息（dumpe2fs/tune2fs），保存到 /tmp/fs_info.txt
+hints:
+  - level: 1
+    text: "dd if=/dev/zero 创建镜像文件"
+  - level: 2
+    text: "mkfs.ext4 /tmp/test_disk.img 创建文件系统"
+  - level: 3
+    text: "fsck.ext4 -n 以只读模式检查"

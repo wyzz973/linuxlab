@@ -1,0 +1,20 @@
+id: systemctl-status-journal
+title: "systemctl status 和 journalctl 排查"
+difficulty: 3
+category: ops
+subcategory: systemd
+tags: [systemctl, journalctl, troubleshoot]
+description: |
+  结合 systemctl status 和 journalctl -u 可以深入排查服务问题。
+
+  请完成以下任务：
+  1. 查看 cron 服务的详细状态（包含最近日志），保存到 /tmp/service_detail.txt
+  2. 使用 journalctl 查看 cron 服务最近 20 条日志，保存到 /tmp/service_logs.txt
+  3. 查看系统启动以来的所有服务错误，保存到 /tmp/service_errors.txt
+hints:
+  - level: 1
+    text: "systemctl status cron -l 显示完整日志"
+  - level: 2
+    text: "journalctl -u cron -n 20 最近 20 条"
+  - level: 3
+    text: "journalctl -p err -b 查看本次启动的错误"

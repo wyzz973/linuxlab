@@ -1,0 +1,20 @@
+id: tail-realtime-monitor
+title: "实时日志监控"
+difficulty: 2
+category: ops
+subcategory: log-analysis
+tags: [tail, grep, monitoring, logs]
+description: |
+  实时监控日志是排查线上问题的关键技能。
+
+  系统中有一个持续写入的日志 /var/log/live_sim.log。请完成以下任务：
+  1. 使用 tail 查看日志的最后 20 行，保存到 /tmp/tail_output.txt
+  2. 从日志中实时过滤出包含 ERROR 的行（监控 3 秒），保存到 /tmp/live_errors.txt
+  3. 统计当前日志文件的总行数，写入 /tmp/line_count.txt
+hints:
+  - level: 1
+    text: "tail -n 20 查看最后 20 行"
+  - level: 2
+    text: "timeout 3 tail -f ... | grep ERROR"
+  - level: 3
+    text: "wc -l 统计行数"

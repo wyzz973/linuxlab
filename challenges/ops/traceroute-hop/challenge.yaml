@@ -1,0 +1,19 @@
+id: traceroute-hop
+title: "traceroute 网络路径追踪"
+difficulty: 2
+category: ops
+subcategory: network-troubleshoot
+tags: [traceroute, mtr, network]
+description: |
+  traceroute 用于追踪数据包到达目标的路径。
+
+  请完成以下任务：
+  1. 对 127.0.0.1 进行路径追踪（最大3跳），保存到 /tmp/trace.txt
+  2. 查看本机路由表中的默认网关，写入 /tmp/gateway.txt
+hints:
+  - level: 1
+    text: "traceroute -m 3 设置最大跳数"
+  - level: 2
+    text: "traceroute -m 3 127.0.0.1"
+  - level: 3
+    text: "ip route | grep default | awk 获取网关"

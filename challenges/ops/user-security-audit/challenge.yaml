@@ -1,0 +1,21 @@
+id: user-security-audit
+title: "用户安全审计"
+difficulty: 4
+category: ops
+subcategory: security
+tags: [security, audit, suid, permissions]
+description: |
+  安全审计是运维的重要职责。
+
+  请完成以下任务：
+  1. 查找系统中所有 SUID 文件，保存到 /tmp/suid_files.txt
+  2. 检查 /etc/shadow 的权限，保存到 /tmp/shadow_perms.txt
+  3. 列出所有可以登录的用户（shell 不是 /bin/false 或 /usr/sbin/nologin），保存到 /tmp/login_users.txt
+  4. 查找无密码的用户账户，保存到 /tmp/no_password.txt
+hints:
+  - level: 1
+    text: "find / -perm -4000 查找 SUID 文件"
+  - level: 2
+    text: "ls -la /etc/shadow 查看权限"
+  - level: 3
+    text: "grep -v nologin /etc/passwd | grep -v /bin/false"

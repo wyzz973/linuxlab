@@ -1,0 +1,20 @@
+id: auth-log-failed-logins
+title: "分析认证日志 - 检测失败登录"
+difficulty: 4
+category: ops
+subcategory: log-analysis
+tags: [auth, security, log-analysis, grep]
+description: |
+  分析 auth 日志是安全运维的重要工作，可以发现暴力破解攻击。
+
+  系统中有一个模拟的 auth 日志文件 /var/log/auth_sim.log。请完成以下任务：
+  1. 统计失败登录的总次数，写入 /tmp/failed_count.txt
+  2. 找出尝试登录最多的 IP 地址，写入 /tmp/top_attacker.txt
+  3. 提取所有被尝试登录的用户名（去重），保存到 /tmp/attempted_users.txt
+hints:
+  - level: 1
+    text: "grep \"Failed password\" 过滤失败登录"
+  - level: 2
+    text: "grep -c 统计匹配行数"
+  - level: 3
+    text: "awk + sort + uniq -c 找出最多的 IP"

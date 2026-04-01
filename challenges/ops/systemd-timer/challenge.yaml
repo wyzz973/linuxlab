@@ -1,0 +1,21 @@
+id: systemd-timer
+title: "systemd 定时器（替代 cron）"
+difficulty: 4
+category: ops
+subcategory: systemd
+tags: [systemd, timer, cron]
+description: |
+  systemd timer 可以替代 cron，提供更灵活的定时任务管理。
+
+  请完成以下任务：
+  1. 创建一个 systemd service /etc/systemd/system/cleanup.service，执行 /usr/local/bin/cleanup.sh
+  2. 创建一个 systemd timer /etc/systemd/system/cleanup.timer，每小时触发一次
+  3. 创建 /usr/local/bin/cleanup.sh 脚本，清理 /tmp 下超过 7 天的文件
+  4. 列出当前所有活动的 timer，保存到 /tmp/active_timers.txt
+hints:
+  - level: 1
+    text: "Timer 文件需要 [Timer] 区段和 OnCalendar"
+  - level: 2
+    text: "OnCalendar=hourly 每小时运行"
+  - level: 3
+    text: "systemctl list-timers 列出定时器"

@@ -1,0 +1,22 @@
+id: systemd-timer-vs-cron
+title: "systemd timer 与 cron 对比"
+difficulty: 3
+category: ops
+subcategory: automation
+tags: [systemd, timer, cron, comparison]
+description: |
+  systemd timer 正在逐步替代 cron，提供更好的日志和依赖管理。
+
+  请完成以下任务：
+  1. 创建一个对比文档 /tmp/timer_vs_cron.txt，列出两者的优缺点
+  2. 创建一个 cron 任务等效的 systemd timer 配置：
+     - 服务文件 /etc/systemd/system/backup.service（执行 /usr/local/bin/backup.sh）
+     - 定时器文件 /etc/systemd/system/backup.timer（每天凌晨 3 点）
+  3. 列出系统中所有的 timer，保存到 /tmp/all_timers.txt
+hints:
+  - level: 1
+    text: "OnCalendar=*-*-* 03:00:00 表示每天 3 点"
+  - level: 2
+    text: "systemd timer 优势：更好的日志、依赖管理、错过执行时可补偿"
+  - level: 3
+    text: "systemctl list-timers --all 列出所有定时器"

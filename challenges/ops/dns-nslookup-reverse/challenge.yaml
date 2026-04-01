@@ -1,0 +1,20 @@
+id: dns-nslookup-reverse
+title: "nslookup 反向 DNS 查询"
+difficulty: 3
+category: ops
+subcategory: network-troubleshoot
+tags: [nslookup, dns, network]
+description: |
+  nslookup 可以进行正向和反向 DNS 查询。
+
+  请完成以下任务：
+  1. 使用 nslookup 查询 localhost，保存到 /tmp/nslookup_fwd.txt
+  2. 使用 host 命令查询 127.0.0.1 的反向记录，保存到 /tmp/reverse_dns.txt
+  3. 将 /etc/nsswitch.conf 中的 hosts 配置行保存到 /tmp/nsswitch_hosts.txt
+hints:
+  - level: 1
+    text: "nslookup localhost 进行正向查询"
+  - level: 2
+    text: "host 127.0.0.1 进行反向查询"
+  - level: 3
+    text: "grep hosts /etc/nsswitch.conf"

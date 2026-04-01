@@ -1,0 +1,23 @@
+id: script-automation-patterns
+title: "脚本自动化模式 - 锁文件和错误处理"
+difficulty: 4
+category: ops
+subcategory: automation
+tags: [bash, automation, lockfile, pidfile, error-handling]
+description: |
+  生产环境的自动化脚本需要防止重复运行和正确处理错误。
+
+  请完成以下任务：
+  1. 创建一个健壮的自动化脚本 /usr/local/bin/safe_backup.sh，包含：
+     - 锁文件机制（防止多实例运行）
+     - PID 文件管理
+     - 错误处理（set -e, trap）
+     - 日志记录
+  2. 创建锁文件测试脚本 /tmp/test_lock.sh，验证锁机制是否工作
+hints:
+  - level: 1
+    text: "使用 flock 或手动创建锁文件"
+  - level: 2
+    text: "trap 可以在脚本退出时清理锁文件"
+  - level: 3
+    text: "set -euo pipefail 启用严格模式"

@@ -1,0 +1,20 @@
+id: lsof-open-files
+title: "lsof 查看打开的文件和网络连接"
+difficulty: 3
+category: ops
+subcategory: system-monitoring
+tags: [lsof, files, network, process]
+description: |
+  lsof（List Open Files）显示进程打开的文件和网络连接。
+
+  环境中运行着一个 HTTP 服务。请完成以下任务：
+  1. 列出所有监听 TCP 端口的进程，保存到 /tmp/lsof_listen.txt
+  2. 列出某个进程（PID 1）打开的所有文件，保存到 /tmp/lsof_pid.txt
+  3. 列出所有被删除但仍被进程占用的文件，保存到 /tmp/lsof_deleted.txt
+hints:
+  - level: 1
+    text: "lsof -i TCP -sTCP:LISTEN 列出监听端口"
+  - level: 2
+    text: "lsof -p PID 列出特定进程的文件"
+  - level: 3
+    text: "lsof +L1 或 lsof | grep deleted"

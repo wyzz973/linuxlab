@@ -1,0 +1,20 @@
+id: ip-route-view
+title: "ip route 查看和管理路由"
+difficulty: 3
+category: ops
+subcategory: network-troubleshoot
+tags: [ip, route, network]
+description: |
+  ip route 命令用于查看和管理系统路由表。
+
+  请完成以下任务：
+  1. 查看当前路由表，保存到 /tmp/routes.txt
+  2. 查看到 8.8.8.8 的路由路径，保存到 /tmp/route_to_dns.txt
+  3. 查看所有网络接口的 IP 地址，保存到 /tmp/ip_addrs.txt
+hints:
+  - level: 1
+    text: "ip route show 查看路由表"
+  - level: 2
+    text: "ip route get 8.8.8.8 查看特定路由"
+  - level: 3
+    text: "ip addr show 查看 IP 地址"

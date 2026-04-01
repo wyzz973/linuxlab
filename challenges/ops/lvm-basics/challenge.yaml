@@ -1,0 +1,20 @@
+id: lvm-basics
+title: "LVM 逻辑卷管理基础"
+difficulty: 4
+category: ops
+subcategory: disk-ops
+tags: [lvm, pvcreate, vgcreate, lvcreate]
+description: |
+  LVM（Logical Volume Manager）提供灵活的磁盘管理。
+
+  请完成以下任务：
+  1. 查看 LVM 相关命令的帮助信息，保存到 /tmp/lvm_help.txt
+  2. 创建两个 100MB 的模拟磁盘文件 /tmp/disk1.img 和 /tmp/disk2.img
+  3. 列出 LVM 概念说明（PV、VG、LV 的关系），写入 /tmp/lvm_concepts.txt
+hints:
+  - level: 1
+    text: "dd if=/dev/zero of=/tmp/disk1.img bs=1M count=100"
+  - level: 2
+    text: "pvcreate, vgcreate, lvcreate 三步操作"
+  - level: 3
+    text: "man lvm 或 lvm help 查看帮助"

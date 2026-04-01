@@ -1,0 +1,20 @@
+id: fdisk-partition
+title: "fdisk 磁盘分区操作"
+difficulty: 4
+category: ops
+subcategory: disk-ops
+tags: [fdisk, parted, partition]
+description: |
+  fdisk 和 parted 是磁盘分区的核心工具。
+
+  请完成以下任务：
+  1. 创建一个 200MB 的磁盘镜像 /tmp/partition_disk.img
+  2. 使用 fdisk -l 查看该磁盘信息，保存到 /tmp/fdisk_info.txt
+  3. 查看系统当前的所有块设备，保存到 /tmp/block_devices.txt
+hints:
+  - level: 1
+    text: "dd if=/dev/zero 创建磁盘镜像"
+  - level: 2
+    text: "fdisk -l /tmp/partition_disk.img 查看分区表"
+  - level: 3
+    text: "lsblk 列出块设备"

@@ -1,0 +1,24 @@
+id: systemd-custom-service
+title: "编写自定义 systemd 服务"
+difficulty: 4
+category: ops
+subcategory: systemd
+tags: [systemd, unit-file, service]
+description: |
+  编写 systemd unit 文件是运维的重要技能。
+
+  请完成以下任务：
+  1. 创建一个脚本 /usr/local/bin/myapp.sh，功能是每秒向 /var/log/myapp.log 写入时间戳
+  2. 创建 systemd 服务文件 /etc/systemd/system/myapp.service，要求：
+     - Type=simple
+     - 使用 /usr/local/bin/myapp.sh 作为 ExecStart
+     - 设置 Restart=always
+     - 添加描述 Description=My Custom App
+  3. 重载 systemd 配置
+hints:
+  - level: 1
+    text: "[Unit] [Service] [Install] 三个区段"
+  - level: 2
+    text: "ExecStart=/usr/local/bin/myapp.sh"
+  - level: 3
+    text: "systemctl daemon-reload 重载配置"

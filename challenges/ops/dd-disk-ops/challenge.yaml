@@ -1,0 +1,20 @@
+id: dd-disk-ops
+title: "dd 磁盘操作"
+difficulty: 3
+category: ops
+subcategory: disk-ops
+tags: [dd, disk, backup, image]
+description: |
+  dd 是强大的磁盘操作工具，用于创建镜像和数据复制。
+
+  请完成以下任务：
+  1. 使用 dd 创建一个 10MB 的随机数据文件 /tmp/random.dat
+  2. 使用 dd 复制该文件到 /tmp/random_copy.dat
+  3. 使用 md5sum 验证两个文件一致，将结果保存到 /tmp/dd_verify.txt
+hints:
+  - level: 1
+    text: "dd if=/dev/urandom of=/tmp/random.dat bs=1M count=10"
+  - level: 2
+    text: "dd if=/tmp/random.dat of=/tmp/random_copy.dat"
+  - level: 3
+    text: "md5sum /tmp/random.dat /tmp/random_copy.dat 对比校验和"

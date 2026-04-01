@@ -1,0 +1,3 @@
+#!/bin/bash
+apt-get update -qq && apt-get install -y -qq ufw > /dev/null 2>&1
+rm -f /tmp/ufw_status.txt /tmp/ufw_setup.sh /tmp/ufw_apps.txt

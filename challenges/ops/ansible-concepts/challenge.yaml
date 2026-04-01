@@ -1,0 +1,22 @@
+id: ansible-concepts
+title: "Ansible 配置管理概念"
+difficulty: 3
+category: ops
+subcategory: automation
+tags: [ansible, configuration-management, automation]
+description: |
+  Ansible 是流行的配置管理和自动化工具。
+
+  请完成以下任务：
+  1. 安装 ansible（或确认已安装），将版本信息保存到 /tmp/ansible_version.txt
+  2. 创建一个示例 Ansible inventory 文件 /tmp/inventory.ini，包含：
+     - [webservers] 组（2个主机）
+     - [dbservers] 组（1个主机）
+  3. 创建一个简单的 Ansible playbook /tmp/setup.yml，任务包括安装 nginx
+hints:
+  - level: 1
+    text: "pip install ansible 或 apt install ansible"
+  - level: 2
+    text: "inventory 文件格式：[组名] 下列出主机"
+  - level: 3
+    text: "playbook 使用 YAML 格式"

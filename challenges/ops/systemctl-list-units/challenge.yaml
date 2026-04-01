@@ -1,0 +1,20 @@
+id: systemctl-list-units
+title: "systemctl 列出系统单元"
+difficulty: 2
+category: ops
+subcategory: systemd
+tags: [systemctl, systemd, units]
+description: |
+  systemctl 可以列出各种类型的系统单元。
+
+  请完成以下任务：
+  1. 列出所有已加载的服务单元，保存到 /tmp/loaded_services.txt
+  2. 列出所有失败的单元，保存到 /tmp/failed_units.txt
+  3. 列出所有 unit 文件及其状态，保存到 /tmp/unit_files.txt
+hints:
+  - level: 1
+    text: "systemctl list-units --type=service"
+  - level: 2
+    text: "systemctl --failed 列出失败单元"
+  - level: 3
+    text: "systemctl list-unit-files"

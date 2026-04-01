@@ -1,0 +1,20 @@
+id: systemctl-start-stop
+title: "systemctl 启动和停止服务"
+difficulty: 2
+category: ops
+subcategory: systemd
+tags: [systemctl, systemd, service]
+description: |
+  systemctl 是管理 systemd 服务的核心命令。
+
+  环境中有一个已安装的 cron 服务。请完成以下任务：
+  1. 查看 cron 服务的当前状态，保存到 /tmp/cron_status.txt
+  2. 如果 cron 服务未运行，启动它；如果已运行，重启它
+  3. 再次查看状态确认运行中，保存到 /tmp/cron_running.txt
+hints:
+  - level: 1
+    text: "systemctl status cron 查看状态"
+  - level: 2
+    text: "systemctl start cron 启动服务"
+  - level: 3
+    text: "systemctl restart cron 重启服务"

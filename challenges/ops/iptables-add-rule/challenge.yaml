@@ -1,0 +1,20 @@
+id: iptables-add-rule
+title: "iptables 添加和删除规则"
+difficulty: 4
+category: ops
+subcategory: network-troubleshoot
+tags: [iptables, firewall, network]
+description: |
+  掌握 iptables 规则的增删是运维必备技能。
+
+  请完成以下任务：
+  1. 添加一条规则：拒绝来自 192.168.100.0/24 的所有 TCP 流量
+  2. 添加一条规则：允许端口 3306（MySQL）的入站 TCP 连接
+  3. 将当前规则保存到 /tmp/final_rules.txt
+hints:
+  - level: 1
+    text: "iptables -A INPUT -s 源地址 -p tcp -j DROP"
+  - level: 2
+    text: "iptables -A INPUT -s 192.168.100.0/24 -p tcp -j DROP"
+  - level: 3
+    text: "iptables -A INPUT -p tcp --dport 3306 -j ACCEPT"

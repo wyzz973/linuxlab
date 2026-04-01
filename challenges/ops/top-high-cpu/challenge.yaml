@@ -1,0 +1,20 @@
+id: top-high-cpu
+title: "top 识别高 CPU 进程"
+difficulty: 2
+category: ops
+subcategory: system-monitoring
+tags: [top, ps, cpu, monitoring]
+description: |
+  top 和 ps 是查看系统进程的基本工具。
+
+  请完成以下任务：
+  1. 使用 ps 列出按 CPU 使用率排序的前 10 个进程，保存到 /tmp/top_cpu.txt
+  2. 使用 ps 列出按内存使用率排序的前 10 个进程，保存到 /tmp/top_mem.txt
+  3. 统计当前系统运行的进程总数，写入 /tmp/proc_count.txt
+hints:
+  - level: 1
+    text: "ps aux --sort=-%cpu 按 CPU 排序"
+  - level: 2
+    text: "ps aux --sort=-%mem 按内存排序"
+  - level: 3
+    text: "ps aux | wc -l 统计进程数"

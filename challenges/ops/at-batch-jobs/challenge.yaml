@@ -1,0 +1,20 @@
+id: at-batch-jobs
+title: "at 和 batch 一次性任务"
+difficulty: 3
+category: ops
+subcategory: automation
+tags: [at, batch, scheduling, one-time]
+description: |
+  at 命令用于安排一次性任务，batch 在系统负载低时执行。
+
+  请完成以下任务：
+  1. 查看 at 命令的帮助信息，保存到 /tmp/at_help.txt
+  2. 创建一个 at 任务脚本 /tmp/at_demo.sh，内容是安排一个任务（写入当前时间到 /tmp/at_result.txt）
+  3. 列出当前待执行的 at 任务队列，保存到 /tmp/at_queue.txt
+hints:
+  - level: 1
+    text: "at 允许安排一次性定时任务"
+  - level: 2
+    text: "echo \"command\" | at now + 1 minute"
+  - level: 3
+    text: "atq 列出待执行任务"

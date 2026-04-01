@@ -1,0 +1,18 @@
+id: nginx-access-log-analysis
+title: "Nginx 访问日志分析"
+difficulty: 4
+category: ops
+subcategory: log-analysis
+tags: [nginx, access-log, awk, analysis]
+description: |
+  分析 Nginx 访问日志是 Web 运维的基本功。
+
+  系统中有模拟的 Nginx 访问日志 /var/log/nginx_access_sim.log。请完成以下任务：
+  1. 统计访问量最多的前 5 个 IP，保存到 /tmp/top_ips.txt
+  2. 统计各 HTTP 状态码出现的次数，保存到 /tmp/status_codes.txt
+  3. 找出所有 404 请求的 URL，保存到 /tmp/not_found.txt
+hints:
+  - level: 1
+    text: "awk 提取第一列（IP 地址）"
+  - level: 2
+    text: "awk "\"{print

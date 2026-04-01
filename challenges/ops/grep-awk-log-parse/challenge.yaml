@@ -1,0 +1,20 @@
+id: grep-awk-log-parse
+title: "grep/awk/sed 日志解析实战"
+difficulty: 4
+category: ops
+subcategory: log-analysis
+tags: [grep, awk, sed, log-analysis]
+description: |
+  综合运用 grep、awk、sed 进行日志解析。
+
+  系统中有应用日志 /var/log/app_sim.log。请完成以下任务：
+  1. 提取所有 ERROR 级别的日志行，保存到 /tmp/errors.txt
+  2. 从错误日志中提取时间戳和错误消息（去掉其他字段），保存到 /tmp/error_summary.txt
+  3. 统计每个小时的错误数量，保存到 /tmp/hourly_errors.txt
+hints:
+  - level: 1
+    text: "grep ERROR 过滤错误日志"
+  - level: 2
+    text: "awk 提取特定字段"
+  - level: 3
+    text: "awk 截取时间中的小时部分进行统计"

@@ -1,0 +1,20 @@
+id: systemctl-enable-disable
+title: "systemctl 开机自启管理"
+difficulty: 2
+category: ops
+subcategory: systemd
+tags: [systemctl, systemd, enable, boot]
+description: |
+  systemctl enable/disable 控制服务是否开机自动启动。
+
+  请完成以下任务：
+  1. 查看 cron 服务是否设为开机启动，保存到 /tmp/cron_enabled.txt
+  2. 确保 cron 服务设为开机启动
+  3. 列出所有设为开机启动的服务，保存到 /tmp/enabled_services.txt
+hints:
+  - level: 1
+    text: "systemctl is-enabled cron 检查状态"
+  - level: 2
+    text: "systemctl enable cron 设置自启"
+  - level: 3
+    text: "systemctl list-unit-files --state=enabled"

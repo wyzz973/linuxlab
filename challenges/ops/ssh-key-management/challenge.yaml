@@ -1,0 +1,21 @@
+id: ssh-key-management
+title: "SSH 密钥管理"
+difficulty: 3
+category: ops
+subcategory: security
+tags: [ssh, key, security, authentication]
+description: |
+  SSH 密钥认证比密码更安全。
+
+  请完成以下任务：
+  1. 生成一对 Ed25519 SSH 密钥（无密码短语），保存到 /tmp/test_key 和 /tmp/test_key.pub
+  2. 查看公钥内容，保存到 /tmp/pubkey_content.txt
+  3. 查看当前 SSH 配置（/etc/ssh/sshd_config 或创建一个安全配置），
+     确保禁用 root 密码登录，保存配置到 /tmp/ssh_config.txt
+hints:
+  - level: 1
+    text: "ssh-keygen -t ed25519 生成密钥"
+  - level: 2
+    text: "ssh-keygen -t ed25519 -f /tmp/test_key -N \"\" 无交互生成"
+  - level: 3
+    text: "PermitRootLogin prohibit-password 禁止root密码登录"

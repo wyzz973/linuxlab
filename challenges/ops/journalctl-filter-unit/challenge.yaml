@@ -1,0 +1,20 @@
+id: journalctl-filter-unit
+title: "journalctl 按服务单元过滤日志"
+difficulty: 2
+category: ops
+subcategory: log-analysis
+tags: [journalctl, systemd, logs]
+description: |
+  journalctl 是 systemd 的日志查看工具。
+
+  请完成以下任务：
+  1. 查看系统日志的最后 50 行，保存到 /tmp/recent_logs.txt
+  2. 查看系统启动以来的内核日志（dmesg），保存到 /tmp/kernel_logs.txt
+  3. 列出日志中记录的所有服务单元，保存到 /tmp/units.txt
+hints:
+  - level: 1
+    text: "journalctl -n 50 查看最后 50 行"
+  - level: 2
+    text: "journalctl -k 查看内核日志"
+  - level: 3
+    text: "journalctl -F _SYSTEMD_UNIT 列出单元"

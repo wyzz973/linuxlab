@@ -1,0 +1,20 @@
+id: tcpdump-filter-port
+title: "tcpdump 按端口过滤抓包"
+difficulty: 3
+category: ops
+subcategory: network-troubleshoot
+tags: [tcpdump, network, filter]
+description: |
+  tcpdump 支持丰富的过滤表达式，可以按端口、协议等条件抓包。
+
+  环境中运行着一个 HTTP 服务（端口 8080）。
+  请完成以下任务：
+  1. 使用 tcpdump 只抓取目标端口为 8080 的数据包，捕获 3 个包并保存到 /tmp/port_capture.pcap
+  2. 将结果摘要写入 /tmp/port_summary.txt
+hints:
+  - level: 1
+    text: "使用 tcpdump port 8080 来过滤"
+  - level: 2
+    text: "tcpdump -i any port 8080 -c 3 -w /tmp/port_capture.pcap"
+  - level: 3
+    text: "先后台运行 tcpdump，然后 curl localhost:8080 产生流量"

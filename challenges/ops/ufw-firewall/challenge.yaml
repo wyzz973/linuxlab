@@ -1,0 +1,24 @@
+id: ufw-firewall
+title: "UFW 防火墙管理"
+difficulty: 3
+category: ops
+subcategory: security
+tags: [ufw, firewall, security]
+description: |
+  UFW（Uncomplicated Firewall）是 iptables 的简化前端。
+
+  请完成以下任务：
+  1. 查看 UFW 的当前状态，保存到 /tmp/ufw_status.txt
+  2. 创建一组 UFW 规则脚本 /tmp/ufw_setup.sh，内容包括：
+     - 允许 SSH（22端口）
+     - 允许 HTTP（80端口）
+     - 允许 HTTPS（443端口）
+     - 拒绝所有其他入站流量
+  3. 列出 UFW 应用规则，保存到 /tmp/ufw_apps.txt
+hints:
+  - level: 1
+    text: "ufw status 查看状态"
+  - level: 2
+    text: "ufw allow 22/tcp 允许端口"
+  - level: 3
+    text: "ufw default deny incoming 默认拒绝入站"

@@ -1,0 +1,20 @@
+id: curl-headers-cookies
+title: "curl 高级用法 - 头部和 Cookie"
+difficulty: 4
+category: ops
+subcategory: network-troubleshoot
+tags: [curl, http, cookies, headers]
+description: |
+  curl 支持自定义头部、Cookie 管理和重定向跟随。
+
+  环境中运行着一个 HTTP 服务。请完成以下任务：
+  1. 使用 curl 带自定义 User-Agent 头发送请求，保存到 /tmp/custom_ua.txt
+  2. 使用 curl 保存 Cookie 到 /tmp/cookies.txt（使用 -c 参数）
+  3. 使用 curl 的 -v 选项获取详细的请求/响应信息，保存到 /tmp/verbose.txt
+hints:
+  - level: 1
+    text: "curl -H \"User-Agent: MyAgent\" 设置自定义头"
+  - level: 2
+    text: "curl -c /tmp/cookies.txt 保存 cookie"
+  - level: 3
+    text: "curl -v 2>&1 将详细输出重定向"

@@ -1,0 +1,20 @@
+id: iptables-list-rules
+title: "iptables 查看防火墙规则"
+difficulty: 3
+category: ops
+subcategory: network-troubleshoot
+tags: [iptables, firewall, network]
+description: |
+  iptables 是 Linux 最重要的防火墙工具。
+
+  请完成以下任务：
+  1. 列出所有 iptables 规则（包含行号），保存到 /tmp/iptables_rules.txt
+  2. 列出 nat 表的规则，保存到 /tmp/iptables_nat.txt
+  3. 统计 filter 表中规则的总数，写入 /tmp/rule_count.txt
+hints:
+  - level: 1
+    text: "iptables -L -n --line-numbers 列出规则"
+  - level: 2
+    text: "iptables -t nat -L -n 列出 nat 表"
+  - level: 3
+    text: "iptables -L -n | grep -cE \"^[0-9]\" 统计规则数"
