@@ -1,6 +1,7 @@
 package tui
 
 import (
+	"context"
 	"fmt"
 	"os/exec"
 	"strings"
@@ -9,6 +10,7 @@ import (
 	"github.com/sd3/linuxlab/internal/challenge"
 	"github.com/sd3/linuxlab/internal/progress"
 	"github.com/sd3/linuxlab/internal/reference"
+	"github.com/sd3/linuxlab/internal/sandbox"
 	"github.com/sd3/linuxlab/internal/verify"
 )
 
@@ -240,10 +242,23 @@ func (m AppModel) launchChallenge(msg LaunchChallengeMsg) tea.Cmd {
 		})
 	}
 
-	// Docker challenge - use interactive shell
-	// containerID would be set up elsewhere; for now use a placeholder
-	c := exec.Command("docker", "exec", "-it", "linuxlab-sandbox", "/bin/bash")
+	// Create sandbox via factory (Docker, Compose, or Local fallback)
+	ctx := context.Background()
+	sb, err := sandbox.NewSandbox(ctx, ch)
+	if err != nil {
+		return func() tea.Msg {
+			return ChallengeResultMsg{
+				Passed:    false,
+				Results:   []verify.Result{{Passed: false, Message: fmt.Sprintf("sandbox error: %v", err)}},
+				HintsUsed: hintsUsed,
+			}
+		}
+	}
+
+	args := sb.InteractiveShellArgs()
+	c := exec.Command(args[0], args[1:]...)
 	return tea.ExecProcess(c, func(err error) tea.Msg {
+		defer sb.Destroy(ctx)
 		results := verify.RunAll(ch.Verify)
 		passed := verify.AllPassed(results)
 		return ChallengeResultMsg{Passed: passed, Results: results, HintsUsed: hintsUsed}

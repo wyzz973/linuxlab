@@ -6,6 +6,7 @@ import (
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/sd3/linuxlab/internal/challenge"
+	"github.com/sd3/linuxlab/internal/sandbox"
 )
 
 // LaunchChallengeMsg is sent when the user wants to start a challenge.
@@ -62,6 +63,12 @@ func (m DetailModel) View() string {
 
 	if len(ch.Tags) > 0 {
 		b.WriteString(fmt.Sprintf("标签: %s\n", DimStyle.Render(strings.Join(ch.Tags, ", "))))
+	}
+
+	if ch.RequiresDocker && !sandbox.DockerAvailable() {
+		b.WriteString("\n")
+		b.WriteString(WarningStyle.Render("!! 需要 Docker (当前不可用，将使用本地模式)"))
+		b.WriteString("\n")
 	}
 
 	b.WriteString("\n")
