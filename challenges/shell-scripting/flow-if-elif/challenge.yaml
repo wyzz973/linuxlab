@@ -1,0 +1,43 @@
+id: flow-if-elif
+title: "if/elif/else 多分支判断"
+difficulty: 2
+category: shell-scripting
+subcategory: flow-control
+tags: [if, elif, else, grade]
+description: |
+  使用 if/elif/else 实现成绩等级判断。
+  
+  请编写脚本 /home/learner/solution.sh，读取 /home/learner/scores.txt 中的分数（每行一个），
+  根据分数输出等级：
+  - 90-100: A
+  - 80-89: B
+  - 70-79: C
+  - 60-69: D
+  - 0-59: F
+  
+  输出格式："分数: 等级"
+  
+  scores.txt 内容：
+  95
+  82
+  73
+  61
+  45
+  
+  期望输出：
+  95: A
+  82: B
+  73: C
+  61: D
+  45: F
+hints:
+  - level: 1
+    text: "使用 if/elif/else 多分支，从高到低判断"
+  - level: 2
+    text: "if [ $score -ge 90 ]; then grade=A; elif ..."
+  - level: 3
+    text: "用 while read score 循环读取每行分数"
+verify:
+  - type: command_output
+    command: "bash /home/learner/solution.sh"
+    expect: "95: A\n82: B\n73: C\n61: D\n45: F"

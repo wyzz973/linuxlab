@@ -1,0 +1,39 @@
+id: io-here-document
+title: "Here Document (<<EOF)"
+difficulty: 2
+category: shell-scripting
+subcategory: io-redirect
+tags: [here-document, heredoc, EOF]
+description: |
+  学习 Here Document 的用法。
+  
+  请编写脚本 /home/learner/solution.sh，完成以下任务：
+  1. 使用 Here Document 将多行文本写入 /home/learner/config.txt：
+     [server]
+     host=localhost
+     port=8080
+     debug=true
+  2. 使用 Here Document 和变量替换生成一段问候语，
+     其中 name="World"，输出 "Hello, World! Today is <日期>"
+  3. 使用 <<'EOF'（带引号）输出不进行变量替换的文本：
+     "Price: $100"
+  4. 输出 config.txt 内容
+  
+  期望输出（至少包含）：
+  Hello, World! Today is (日期)
+  Price: $100
+  [server]
+  host=localhost
+  port=8080
+  debug=true
+hints:
+  - level: 1
+    text: "Here Document: command <<EOF ... EOF"
+  - level: 2
+    text: "<<'EOF' （加引号）会禁止变量替换"
+  - level: 3
+    text: "cat <<EOF 可以直接输出多行文本，cat <<EOF > file 可以写入文件"
+verify:
+  - type: command_output
+    command: "bash /home/learner/solution.sh | grep -c '\\(server\\|host=\\|port=\\|Price:\\)'"
+    expect: "4"

@@ -1,0 +1,33 @@
+id: io-file-descriptor
+title: "文件描述符与 exec 重定向"
+difficulty: 4
+category: shell-scripting
+subcategory: io-redirect
+tags: [file-descriptor, exec, redirect]
+description: |
+  学习文件描述符和 exec 重定向的高级用法。
+  
+  请编写脚本 /home/learner/solution.sh，完成以下任务：
+  1. 使用 exec 将文件描述符3关联到 /home/learner/fd_output.txt
+  2. 向文件描述符3写入 "Written via fd 3"
+  3. 关闭文件描述符3
+  4. 输出 fd_output.txt 的内容
+  5. 使用 exec 将 stdin 重定向自 /home/learner/fd_input.txt
+  6. 使用 read 读取一行并输出
+  
+  fd_input.txt 内容由 init.sh 创建，包含 "Hello from file descriptor"
+  
+  期望输出：
+  Written via fd 3
+  Hello from file descriptor
+hints:
+  - level: 1
+    text: "exec 可以打开、关闭和复制文件描述符"
+  - level: 2
+    text: "exec 3>file 打开fd3用于写入，echo 'text' >&3 写入fd3"
+  - level: 3
+    text: "exec 3>&- 关闭fd3"
+verify:
+  - type: command_output
+    command: "bash /home/learner/solution.sh"
+    expect: "Written via fd 3\nHello from file descriptor"

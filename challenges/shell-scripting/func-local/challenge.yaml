@@ -1,0 +1,36 @@
+id: func-local
+title: "函数中的局部变量"
+difficulty: 3
+category: shell-scripting
+subcategory: functions
+tags: [function, local, scope]
+description: |
+  深入理解函数中 local 变量的作用域。
+  
+  请编写脚本 /home/learner/solution.sh，完成以下任务：
+  1. 定义全局变量 count=0
+  2. 定义函数 increment()：
+     - 使用 local 定义 local_count=100
+     - 修改全局变量 count=$((count + 1))
+     - 输出 "Inside: count=$count, local_count=$local_count"
+  3. 调用 increment 三次
+  4. 输出 "Outside: count=$count"
+  5. 输出 "Outside: local_count=$local_count"（应为空）
+  
+  期望输出：
+  Inside: count=1, local_count=100
+  Inside: count=2, local_count=100
+  Inside: count=3, local_count=100
+  Outside: count=3
+  Outside: local_count=
+hints:
+  - level: 1
+    text: "local 变量只在函数内可见，函数返回后消失"
+  - level: 2
+    text: "不使用 local 的变量在函数内修改会影响全局"
+  - level: 3
+    text: "local local_count=100 只在当前函数调用期间存在"
+verify:
+  - type: command_output
+    command: "bash /home/learner/solution.sh"
+    expect: "Inside: count=1, local_count=100\nInside: count=2, local_count=100\nInside: count=3, local_count=100\nOutside: count=3\nOutside: local_count="

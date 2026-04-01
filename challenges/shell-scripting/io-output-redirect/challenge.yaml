@@ -1,0 +1,33 @@
+id: io-output-redirect
+title: "输出重定向 > 和 >>"
+difficulty: 1
+category: shell-scripting
+subcategory: io-redirect
+tags: [redirect, stdout, append]
+description: |
+  学习 Shell 输出重定向的基本用法。
+  
+  请编写脚本 /home/learner/solution.sh，完成以下任务：
+  1. 使用 > 将 "Line 1" 写入 /home/learner/output.txt
+  2. 使用 >> 将 "Line 2" 追加到 /home/learner/output.txt
+  3. 使用 >> 将 "Line 3" 追加到 /home/learner/output.txt
+  4. 使用 > 将 "Overwritten" 覆盖写入 /home/learner/output2.txt
+  5. 输出 output.txt 的内容
+  6. 输出 output2.txt 的内容
+  
+  期望输出：
+  Line 1
+  Line 2
+  Line 3
+  Overwritten
+hints:
+  - level: 1
+    text: "> 会覆盖文件内容，>> 会追加到文件末尾"
+  - level: 2
+    text: "echo 'text' > file 重定向输出到文件"
+  - level: 3
+    text: "cat file 输出文件内容"
+verify:
+  - type: command_output
+    command: "bash /home/learner/solution.sh"
+    expect: "Line 1\nLine 2\nLine 3\nOverwritten"

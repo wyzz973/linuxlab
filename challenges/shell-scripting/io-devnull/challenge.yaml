@@ -1,0 +1,33 @@
+id: io-devnull
+title: "/dev/null 与错误重定向"
+difficulty: 2
+category: shell-scripting
+subcategory: io-redirect
+tags: [devnull, stderr, redirect]
+description: |
+  学习 /dev/null 和标准错误重定向。
+  
+  请编写脚本 /home/learner/solution.sh，完成以下任务：
+  1. 执行 ls /nonexistent，将错误信息重定向到 /dev/null，然后输出 "Error suppressed"
+  2. 执行 ls /home，将标准输出重定向到 /dev/null（不显示），输出 "Output suppressed"
+  3. 执行 ls /nonexistent 2>/home/learner/error.log，将错误保存到文件
+  4. 输出 error.log 的行数
+  5. 执行一个命令，将 stdout 和 stderr 都重定向到 /dev/null
+  6. 输出 "All done"
+  
+  期望输出：
+  Error suppressed
+  Output suppressed
+  1
+  All done
+hints:
+  - level: 1
+    text: "2>/dev/null 重定向标准错误，>/dev/null 重定向标准输出"
+  - level: 2
+    text: ">/dev/null 2>&1 同时重定向标准输出和标准错误"
+  - level: 3
+    text: "/dev/null 是一个特殊文件，写入的所有内容都会被丢弃"
+verify:
+  - type: command_output
+    command: "bash /home/learner/solution.sh"
+    expect: "Error suppressed\nOutput suppressed\n1\nAll done"

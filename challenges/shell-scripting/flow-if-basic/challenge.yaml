@@ -1,0 +1,27 @@
+id: flow-if-basic
+title: "if 条件判断基础"
+difficulty: 1
+category: shell-scripting
+subcategory: flow-control
+tags: [if, condition, test]
+description: |
+  学习 Shell if 条件判断的基本用法。
+  
+  请编写脚本 /home/learner/solution.sh，读取文件 /home/learner/number.txt 中的数字，
+  判断该数字是正数、负数还是零，并输出相应结果。
+  
+  number.txt 内容为：42
+  
+  期望输出：
+  42 is positive
+hints:
+  - level: 1
+    text: "if 语句格式：if [ 条件 ]; then 命令; fi"
+  - level: 2
+    text: "使用 -gt 0 判断正数，-lt 0 判断负数，-eq 0 判断零"
+  - level: 3
+    text: "if [ $num -gt 0 ]; then echo positive; elif ..."
+verify:
+  - type: command_output
+    command: "bash /home/learner/solution.sh"
+    expect: "42 is positive"

@@ -1,0 +1,34 @@
+id: param-star-vs-at
+title: "\$* 与 \$@ 的区别"
+difficulty: 3
+category: shell-scripting
+subcategory: parameters
+tags: [parameters, star, at, difference]
+description: |
+  理解 "$*" 和 "$@" 在双引号中的关键区别。
+  
+  请编写脚本 /home/learner/solution.sh，完成以下任务：
+  1. 定义一个函数 count_with_star()，使用 "$*" 遍历参数，输出遍历到的参数个数
+  2. 定义一个函数 count_with_at()，使用 "$@" 遍历参数，输出遍历到的参数个数
+  3. 调用两个函数，传入参数 "hello world" "foo bar" "test"
+  
+  调用方式：bash solution.sh "hello world" "foo bar" "test"
+  
+  期望输出：
+  Using \$*: 1 iterations
+  Using \$@: 3 iterations
+  
+  说明：
+  - "$*" 将所有参数当作一个字符串
+  - "$@" 保留每个参数的独立性
+hints:
+  - level: 1
+    text: "\"$*\" 把所有参数合并成一个字符串"
+  - level: 2
+    text: "\"$@\" 保留每个参数的边界，含空格的参数不会被拆分"
+  - level: 3
+    text: "for arg in \"$*\" 只循环一次，for arg in \"$@\" 循环实际参数次数"
+verify:
+  - type: command_output
+    command: "bash /home/learner/solution.sh \"hello world\" \"foo bar\" \"test\""
+    expect: "Using $*: 1 iterations\nUsing $@: 3 iterations"

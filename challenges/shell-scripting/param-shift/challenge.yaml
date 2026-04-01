@@ -1,0 +1,30 @@
+id: param-shift
+title: "shift 命令移动参数"
+difficulty: 3
+category: shell-scripting
+subcategory: parameters
+tags: [shift, parameters, processing]
+description: |
+  学习 shift 命令逐个处理参数。
+  
+  请编写脚本 /home/learner/solution.sh，使用 shift 命令逐个处理所有传入的参数。
+  对每个参数，输出当前参数序号和值，以及剩余参数个数。
+  
+  调用方式：bash solution.sh one two three four
+  
+  期望输出：
+  Processing #1: one (3 remaining)
+  Processing #2: two (2 remaining)
+  Processing #3: three (1 remaining)
+  Processing #4: four (0 remaining)
+hints:
+  - level: 1
+    text: "shift 将 $2 变为 $1，$3 变为 $2，同时 $# 减1"
+  - level: 2
+    text: "在 while [ $# -gt 0 ] 循环中使用 shift"
+  - level: 3
+    text: "用计数器记录当前是第几个参数"
+verify:
+  - type: command_output
+    command: "bash /home/learner/solution.sh one two three four"
+    expect: "Processing #1: one (3 remaining)\nProcessing #2: two (2 remaining)\nProcessing #3: three (1 remaining)\nProcessing #4: four (0 remaining)"

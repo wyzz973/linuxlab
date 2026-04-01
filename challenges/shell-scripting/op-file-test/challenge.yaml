@@ -1,0 +1,47 @@
+id: op-file-test
+title: "文件测试运算符"
+difficulty: 2
+category: shell-scripting
+subcategory: operators
+tags: [file, test, operators]
+description: |
+  学习 Shell 文件测试运算符 -f -d -r -w -x -s -e。
+  
+  请编写脚本 /home/learner/solution.sh，检测 /home/learner/testdir 目录下的文件状态。
+  init.sh 会创建以下测试环境：
+  - /home/learner/testdir/regular.txt（普通文件，有内容）
+  - /home/learner/testdir/empty.txt（空文件）
+  - /home/learner/testdir/subdir/（目录）
+  - /home/learner/testdir/script.sh（可执行文件）
+  
+  对 regular.txt 检测并输出：
+  1. "is file" 或 "not file"（-f）
+  2. "is directory" 或 "not directory"（-d）
+  3. "is readable" 或 "not readable"（-r）
+  4. "has content" 或 "is empty"（-s）
+  对 subdir 检测并输出：
+  5. "is directory" 或 "not directory"（-d）
+  对 script.sh 检测并输出：
+  6. "is executable" 或 "not executable"（-x）
+  对 nonexistent 检测并输出：
+  7. "exists" 或 "not exists"（-e）
+  
+  期望输出：
+  is file
+  not directory
+  is readable
+  has content
+  is directory
+  is executable
+  not exists
+hints:
+  - level: 1
+    text: "-f 测试是否为普通文件，-d 测试是否为目录"
+  - level: 2
+    text: "-s 测试文件是否非空，-e 测试文件是否存在"
+  - level: 3
+    text: "[ -f file ] && echo 'is file' || echo 'not file'"
+verify:
+  - type: command_output
+    command: "bash /home/learner/solution.sh"
+    expect: "is file\nnot directory\nis readable\nhas content\nis directory\nis executable\nnot exists"

@@ -1,0 +1,30 @@
+id: flow-nested-loop
+title: "嵌套循环 - 乘法表"
+difficulty: 3
+category: shell-scripting
+subcategory: flow-control
+tags: [nested, loop, multiplication-table]
+description: |
+  使用嵌套循环生成九九乘法表。
+  
+  请编写脚本 /home/learner/solution.sh，生成标准的九九乘法表。
+  格式要求：
+  - 每行从 1 开始乘到当前行号
+  - 使用 "axb=c" 格式，表达式之间用制表符分隔
+  
+  期望输出（前3行示例）：
+  1x1=1
+  1x2=2	2x2=4
+  1x3=3	2x3=6	3x3=9
+  ...
+hints:
+  - level: 1
+    text: "外层循环控制行（1-9），内层循环控制列（1到当前行号）"
+  - level: 2
+    text: "使用 printf 或 echo -n 实现不换行输出"
+  - level: 3
+    text: "for i in {1..9}; do for((j=1;j<=i;j++)); do printf \"%dx%d=%d\\t\" $j $i $((j*i)); done; echo; done"
+verify:
+  - type: command_output
+    command: "bash /home/learner/solution.sh | head -3"
+    expect: "1x1=1\t\n1x2=2\t2x2=4\t\n1x3=3\t2x3=6\t3x3=9\t"

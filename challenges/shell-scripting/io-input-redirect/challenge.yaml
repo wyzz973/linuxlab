@@ -1,0 +1,43 @@
+id: io-input-redirect
+title: "输入重定向与管道"
+difficulty: 2
+category: shell-scripting
+subcategory: io-redirect
+tags: [redirect, stdin, pipe]
+description: |
+  学习输入重定向和管道的用法。
+  
+  请编写脚本 /home/learner/solution.sh，完成以下任务：
+  给定 /home/learner/numbers.txt（每行一个数字）：
+  1. 使用输入重定向 < 统计文件行数（wc -l）
+  2. 使用管道 | 对文件内容排序并输出（sort -n）
+  3. 使用管道组合：排序 -> 取最后一行（最大值）
+  4. 使用管道组合：排序 -> 取第一行（最小值）
+  
+  numbers.txt 内容：
+  42
+  17
+  85
+  3
+  61
+  
+  期望输出：
+  5
+  3
+  17
+  42
+  61
+  85
+  85
+  3
+hints:
+  - level: 1
+    text: "输入重定向：command < file；管道：command1 | command2"
+  - level: 2
+    text: "wc -l < file 统计行数，sort -n file 数值排序"
+  - level: 3
+    text: "sort -n file | tail -1 获取最大值"
+verify:
+  - type: command_output
+    command: "bash /home/learner/solution.sh"
+    expect: "5\n3\n17\n42\n61\n85\n85\n3"

@@ -1,0 +1,34 @@
+id: param-count-all
+title: "参数个数与全部参数 $# $@"
+difficulty: 2
+category: shell-scripting
+subcategory: parameters
+tags: [parameters, count, all-args]
+description: |
+  学习 $# $* $@ 特殊参数的用法。
+  
+  请编写脚本 /home/learner/solution.sh，完成以下任务：
+  1. 输出参数个数
+  2. 使用 $@ 遍历所有参数，每行一个
+  3. 输出所有参数用逗号连接的字符串
+  
+  调用方式：bash solution.sh apple banana cherry date
+  
+  期望输出：
+  Count: 4
+  apple
+  banana
+  cherry
+  date
+  All: apple,banana,cherry,date
+hints:
+  - level: 1
+    text: "$# 是参数个数，$@ 是所有参数列表"
+  - level: 2
+    text: "for arg in \"$@\"; do echo $arg; done"
+  - level: 3
+    text: "使用 IFS=',' 和 echo \"$*\" 可以用逗号连接所有参数"
+verify:
+  - type: command_output
+    command: "bash /home/learner/solution.sh apple banana cherry date"
+    expect: "Count: 4\napple\nbanana\ncherry\ndate\nAll: apple,banana,cherry,date"

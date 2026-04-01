@@ -1,0 +1,34 @@
+id: func-return
+title: "函数返回值与 $?"
+difficulty: 3
+category: shell-scripting
+subcategory: functions
+tags: [function, return, exit-status]
+description: |
+  学习函数返回值和 $? 的用法。
+  
+  请编写脚本 /home/learner/solution.sh，完成以下任务：
+  1. 定义函数 is_even()，接收一个数字参数：
+     - 如果是偶数，return 0（成功）
+     - 如果是奇数，return 1（失败）
+  2. 定义函数 max()，接收两个数字，使用 echo 输出较大值
+     （因为 return 只能返回 0-255）
+  3. 测试 is_even 4，输出结果
+  4. 测试 is_even 7，输出结果
+  5. 调用 max 15 23，用命令替换获取结果并输出
+  
+  期望输出：
+  4 is even
+  7 is odd
+  Max of 15 and 23 is: 23
+hints:
+  - level: 1
+    text: "return 只能返回 0-255 的数字，用 $? 获取"
+  - level: 2
+    text: "要返回大数值或字符串，函数中用 echo，调用时用 $(func)"
+  - level: 3
+    text: "is_even 4 && echo 'even' || echo 'odd'"
+verify:
+  - type: command_output
+    command: "bash /home/learner/solution.sh"
+    expect: "4 is even\n7 is odd\nMax of 15 and 23 is: 23"

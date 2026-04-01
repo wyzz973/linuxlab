@@ -1,0 +1,31 @@
+id: func-parameters
+title: "函数参数传递"
+difficulty: 2
+category: shell-scripting
+subcategory: functions
+tags: [function, parameters, arguments]
+description: |
+  学习函数参数的传递和使用。
+  
+  请编写脚本 /home/learner/solution.sh，完成以下任务：
+  1. 定义函数 user_info()，接收3个参数（姓名、年龄、职业），
+     输出 "Name: 姓名, Age: 年龄, Job: 职业"
+  2. 定义函数 count_args()，输出传入的参数个数和所有参数
+  3. 调用 user_info "Alice" 28 "Engineer"
+  4. 调用 count_args a b c d e
+  
+  期望输出：
+  Name: Alice, Age: 28, Job: Engineer
+  Argument count: 5
+  All arguments: a b c d e
+hints:
+  - level: 1
+    text: "函数内 $1 $2 $3 是函数参数，不是脚本参数"
+  - level: 2
+    text: "$# 是参数个数，$@ 是所有参数"
+  - level: 3
+    text: "注意：函数内的 $1 $2 会覆盖脚本的 $1 $2"
+verify:
+  - type: command_output
+    command: "bash /home/learner/solution.sh"
+    expect: "Name: Alice, Age: 28, Job: Engineer\nArgument count: 5\nAll arguments: a b c d e"

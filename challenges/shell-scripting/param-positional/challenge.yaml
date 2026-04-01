@@ -1,0 +1,30 @@
+id: param-positional
+title: "位置参数 $1-$9"
+difficulty: 1
+category: shell-scripting
+subcategory: parameters
+tags: [parameters, positional, arguments]
+description: |
+  学习 Shell 位置参数的基本用法。
+  
+  请编写脚本 /home/learner/solution.sh，接收三个参数（姓名、年龄、城市），
+  格式化输出用户信息。
+  
+  调用方式：bash solution.sh Alice 25 Beijing
+  
+  期望输出：
+  Name: Alice
+  Age: 25
+  City: Beijing
+  Script: /home/learner/solution.sh
+hints:
+  - level: 1
+    text: "$0 是脚本名，$1 是第一个参数，$2 是第二个，以此类推"
+  - level: 2
+    text: "echo \"Name: $1\""
+  - level: 3
+    text: "$0 包含脚本的完整路径"
+verify:
+  - type: command_output
+    command: "bash /home/learner/solution.sh Alice 25 Beijing"
+    expect: "Name: Alice\nAge: 25\nCity: Beijing\nScript: /home/learner/solution.sh"

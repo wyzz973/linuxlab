@@ -1,0 +1,38 @@
+id: flow-for-list
+title: "for 循环 - 列表遍历"
+difficulty: 1
+category: shell-scripting
+subcategory: flow-control
+tags: [for, loop, list]
+description: |
+  学习 for 循环遍历列表的基本用法。
+  
+  请编写脚本 /home/learner/solution.sh，完成以下任务：
+  1. 使用 for 循环遍历列表 "Linux macOS Windows Android iOS"，每行输出一个系统名称
+  2. 使用 for 循环遍历 /home/learner/items.txt 中的每一行，在前面加上序号输出
+  
+  items.txt 内容：
+  apple
+  banana
+  cherry
+  
+  期望输出：
+  Linux
+  macOS
+  Windows
+  Android
+  iOS
+  1. apple
+  2. banana
+  3. cherry
+hints:
+  - level: 1
+    text: "for var in item1 item2 item3; do ... done"
+  - level: 2
+    text: "使用计数器变量实现序号"
+  - level: 3
+    text: "count=1; for item in $(cat file); do echo \"$count. $item\"; count=$((count+1)); done"
+verify:
+  - type: command_output
+    command: "bash /home/learner/solution.sh"
+    expect: "Linux\nmacOS\nWindows\nAndroid\niOS\n1. apple\n2. banana\n3. cherry"

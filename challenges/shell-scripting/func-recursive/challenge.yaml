@@ -1,0 +1,29 @@
+id: func-recursive
+title: "递归函数"
+difficulty: 4
+category: shell-scripting
+subcategory: functions
+tags: [function, recursion, fibonacci]
+description: |
+  学习 Shell 中递归函数的实现。
+  
+  请编写脚本 /home/learner/solution.sh，完成以下任务：
+  1. 定义递归函数 factorial()，计算阶乘
+  2. 定义递归函数 fibonacci()，计算斐波那契数列第n项
+  3. 输出 factorial 6 的结果
+  4. 输出前10个斐波那契数（空格分隔）
+  
+  期望输出：
+  6! = 720
+  0 1 1 2 3 5 8 13 21 34
+hints:
+  - level: 1
+    text: "递归函数需要一个基础条件（base case）来停止递归"
+  - level: 2
+    text: "阶乘：n! = n * (n-1)!，基础条件 0! = 1"
+  - level: 3
+    text: "使用 echo 输出结果，$(func arg) 捕获递归调用的返回值"
+verify:
+  - type: command_output
+    command: "bash /home/learner/solution.sh"
+    expect: "6! = 720\n0 1 1 2 3 5 8 13 21 34"

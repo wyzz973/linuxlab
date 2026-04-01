@@ -1,0 +1,31 @@
+id: flow-for-cstyle
+title: "C 风格 for 循环"
+difficulty: 2
+category: shell-scripting
+subcategory: flow-control
+tags: [for, c-style, loop]
+description: |
+  学习 Bash 的 C 风格 for 循环语法。
+  
+  请编写脚本 /home/learner/solution.sh，完成以下任务：
+  1. 使用 C 风格 for 循环输出 1 到 5 的平方值，格式 "n^2 = result"
+  2. 使用 C 风格 for 循环输出九九乘法表的第5行
+  
+  期望输出：
+  1^2 = 1
+  2^2 = 4
+  3^2 = 9
+  4^2 = 16
+  5^2 = 25
+  5x1=5 5x2=10 5x3=15 5x4=20 5x5=25
+hints:
+  - level: 1
+    text: "C 风格语法：for((i=1; i<=5; i++))"
+  - level: 2
+    text: "平方计算：$((i * i))"
+  - level: 3
+    text: "使用 printf 或 echo -n 实现不换行输出"
+verify:
+  - type: command_output
+    command: "bash /home/learner/solution.sh"
+    expect: "1^2 = 1\n2^2 = 4\n3^2 = 9\n4^2 = 16\n5^2 = 25\n5x1=5 5x2=10 5x3=15 5x4=20 5x5=25"

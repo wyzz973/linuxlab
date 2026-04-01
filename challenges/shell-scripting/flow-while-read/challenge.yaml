@@ -1,0 +1,33 @@
+id: flow-while-read
+title: "while read 逐行处理"
+difficulty: 2
+category: shell-scripting
+subcategory: flow-control
+tags: [while, read, file-processing]
+description: |
+  学习使用 while read 逐行读取和处理文件。
+  
+  请编写脚本 /home/learner/solution.sh，读取 /home/learner/data.csv，
+  该文件为CSV格式（姓名,年龄,城市），跳过标题行，格式化输出每行信息。
+  
+  data.csv 内容：
+  name,age,city
+  Alice,28,Beijing
+  Bob,35,Shanghai
+  Charlie,22,Guangzhou
+  
+  期望输出：
+  Alice is 28 years old, lives in Beijing
+  Bob is 35 years old, lives in Shanghai
+  Charlie is 22 years old, lives in Guangzhou
+hints:
+  - level: 1
+    text: "使用 IFS=',' 设置分隔符，read 可以一次读取多个变量"
+  - level: 2
+    text: "用一个标志变量或 head/tail 跳过标题行"
+  - level: 3
+    text: "tail -n +2 file | while IFS=',' read name age city; do ..."
+verify:
+  - type: command_output
+    command: "bash /home/learner/solution.sh"
+    expect: "Alice is 28 years old, lives in Beijing\nBob is 35 years old, lives in Shanghai\nCharlie is 22 years old, lives in Guangzhou"

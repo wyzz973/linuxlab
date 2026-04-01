@@ -1,0 +1,36 @@
+id: op-expr-calc
+title: "Shell 计算器 - 运算符综合"
+difficulty: 3
+category: shell-scripting
+subcategory: operators
+tags: [arithmetic, calculator, bc]
+description: |
+  综合运用各种算术运算方式编写一个简单计算器。
+  
+  请编写脚本 /home/learner/solution.sh，读取文件 /home/learner/calculations.txt，
+  每行格式为 "数字 运算符 数字"，计算并输出结果。
+  
+  calculations.txt 内容：
+  10 + 5
+  20 - 8
+  6 * 7
+  100 / 4
+  17 % 3
+  
+  期望输出：
+  10 + 5 = 15
+  20 - 8 = 12
+  6 * 7 = 42
+  100 / 4 = 25
+  17 % 3 = 2
+hints:
+  - level: 1
+    text: "使用 while read 逐行读取，用 $(( )) 计算"
+  - level: 2
+    text: "read a op b 可以将一行读取为三个变量"
+  - level: 3
+    text: "result=$((a ${op} b)) 可以动态使用运算符"
+verify:
+  - type: command_output
+    command: "bash /home/learner/solution.sh"
+    expect: "10 + 5 = 15\n20 - 8 = 12\n6 * 7 = 42\n100 / 4 = 25\n17 % 3 = 2"

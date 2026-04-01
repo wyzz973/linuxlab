@@ -1,0 +1,36 @@
+id: param-getopts
+title: "getopts 解析命令行选项"
+difficulty: 4
+category: shell-scripting
+subcategory: parameters
+tags: [getopts, options, parsing]
+description: |
+  学习使用 getopts 解析命令行选项。
+  
+  请编写脚本 /home/learner/solution.sh，支持以下选项：
+  -n name  : 设置名称
+  -a age   : 设置年龄
+  -v       : 启用详细模式
+  -h       : 显示帮助
+  
+  脚本行为：
+  - 解析选项后，输出收集到的信息
+  - 如果使用 -v，额外输出 "Verbose mode enabled"
+  
+  调用方式：bash solution.sh -n Alice -a 25 -v
+  
+  期望输出：
+  Verbose mode enabled
+  Name: Alice
+  Age: 25
+hints:
+  - level: 1
+    text: "getopts 语法：while getopts 'n:a:vh' opt; do case $opt in ..."
+  - level: 2
+    text: "选项后加冒号表示需要参数值，如 n: 表示 -n 需要一个参数"
+  - level: 3
+    text: "getopts 将选项值存储在 $OPTARG 中"
+verify:
+  - type: command_output
+    command: "bash /home/learner/solution.sh -n Alice -a 25 -v"
+    expect: "Verbose mode enabled\nName: Alice\nAge: 25"

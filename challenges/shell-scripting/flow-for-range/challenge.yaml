@@ -1,0 +1,33 @@
+id: flow-for-range
+title: "for 循环 - 数字范围"
+difficulty: 2
+category: shell-scripting
+subcategory: flow-control
+tags: [for, loop, range, seq]
+description: |
+  学习使用 for 循环遍历数字范围。
+  
+  请编写脚本 /home/learner/solution.sh，完成以下任务：
+  1. 使用 {1..5} 语法输出 1 到 5（空格分隔，一行）
+  2. 使用 seq 命令输出 2 4 6 8 10（偶数，每行一个）
+  3. 计算 1+2+3+...+100 的和并输出
+  
+  期望输出：
+  1 2 3 4 5
+  2
+  4
+  6
+  8
+  10
+  5050
+hints:
+  - level: 1
+    text: "{start..end} 生成数字范围，seq start step end 生成序列"
+  - level: 2
+    text: "使用 seq 2 2 10 生成偶数序列"
+  - level: 3
+    text: "sum=0; for i in $(seq 1 100); do sum=$((sum+i)); done"
+verify:
+  - type: command_output
+    command: "bash /home/learner/solution.sh"
+    expect: "1 2 3 4 5\n2\n4\n6\n8\n10\n5050"

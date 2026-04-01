@@ -1,0 +1,41 @@
+id: flow-until
+title: "until 循环"
+difficulty: 2
+category: shell-scripting
+subcategory: flow-control
+tags: [until, loop]
+description: |
+  学习 until 循环（条件为真时停止）。
+  
+  请编写脚本 /home/learner/solution.sh，使用 until 循环完成：
+  1. 从1开始累加，直到总和超过50，输出最终的总和与累加到的数字
+  2. 从100开始每次减去7，直到小于等于0，输出每次的值
+  
+  期望输出：
+  Sum: 55, stopped at: 10
+  100
+  93
+  86
+  79
+  72
+  65
+  58
+  51
+  44
+  37
+  30
+  23
+  16
+  9
+  2
+hints:
+  - level: 1
+    text: "until 循环在条件为真时停止，与 while 相反"
+  - level: 2
+    text: "until [ $sum -gt 50 ]; do ... done"
+  - level: 3
+    text: "注意 until 的条件是'停止条件'，不是'继续条件'"
+verify:
+  - type: command_output
+    command: "bash /home/learner/solution.sh | head -1"
+    expect: "Sum: 55, stopped at: 10"

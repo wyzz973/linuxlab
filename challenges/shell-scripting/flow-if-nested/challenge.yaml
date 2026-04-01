@@ -1,0 +1,37 @@
+id: flow-if-nested
+title: "嵌套 if 与复合条件"
+difficulty: 3
+category: shell-scripting
+subcategory: flow-control
+tags: [if, nested, compound-condition]
+description: |
+  练习嵌套 if 和复合条件判断。
+  
+  请编写脚本 /home/learner/solution.sh，读取 /home/learner/users.txt 的用户信息，
+  每行格式为 "用户名 年龄 角色"，根据条件输出权限：
+  - 年龄 >= 18 且角色为 admin：输出 "用户名: full access"
+  - 年龄 >= 18 且角色为 user：输出 "用户名: limited access"
+  - 年龄 < 18：输出 "用户名: no access (underage)"
+  
+  users.txt 内容：
+  alice 25 admin
+  bob 17 user
+  charlie 30 user
+  dave 16 admin
+  
+  期望输出：
+  alice: full access
+  bob: no access (underage)
+  charlie: limited access
+  dave: no access (underage)
+hints:
+  - level: 1
+    text: "先判断年龄，再在年龄满足条件的分支中判断角色"
+  - level: 2
+    text: "嵌套 if：if [ age -ge 18 ]; then if [ role = admin ]; then ..."
+  - level: 3
+    text: "也可以使用 [[ ]] 配合 && 简化条件"
+verify:
+  - type: command_output
+    command: "bash /home/learner/solution.sh"
+    expect: "alice: full access\nbob: no access (underage)\ncharlie: limited access\ndave: no access (underage)"

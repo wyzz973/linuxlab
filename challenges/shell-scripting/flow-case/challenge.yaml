@@ -1,0 +1,41 @@
+id: flow-case
+title: "case 语句模式匹配"
+difficulty: 2
+category: shell-scripting
+subcategory: flow-control
+tags: [case, pattern, switch]
+description: |
+  学习 case 语句（类似于 switch）的用法。
+  
+  请编写脚本 /home/learner/solution.sh，读取 /home/learner/files.txt 中的文件名列表，
+  根据文件扩展名分类输出：
+  - .sh -> "脚本文件"
+  - .txt/.md -> "文本文件"
+  - .jpg/.png/.gif -> "图片文件"
+  - .tar.gz/.zip -> "压缩文件"
+  - 其他 -> "未知类型"
+  
+  files.txt 内容：
+  setup.sh
+  readme.md
+  photo.jpg
+  archive.tar.gz
+  data.csv
+  
+  期望输出：
+  setup.sh: 脚本文件
+  readme.md: 文本文件
+  photo.jpg: 图片文件
+  archive.tar.gz: 压缩文件
+  data.csv: 未知类型
+hints:
+  - level: 1
+    text: "case 语法：case $var in pattern1) cmd;; pattern2) cmd;; esac"
+  - level: 2
+    text: "使用 | 分隔多个模式：*.txt|*.md) echo '文本';;"
+  - level: 3
+    text: "使用 * 通配符匹配扩展名，如 *.sh)"
+verify:
+  - type: command_output
+    command: "bash /home/learner/solution.sh"
+    expect: "setup.sh: 脚本文件\nreadme.md: 文本文件\nphoto.jpg: 图片文件\narchive.tar.gz: 压缩文件\ndata.csv: 未知类型"

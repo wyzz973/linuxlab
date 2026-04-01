@@ -1,0 +1,32 @@
+id: flow-while
+title: "while 循环"
+difficulty: 2
+category: shell-scripting
+subcategory: flow-control
+tags: [while, loop, counter]
+description: |
+  学习 while 循环的基本用法。
+  
+  请编写脚本 /home/learner/solution.sh，完成以下任务：
+  1. 使用 while 循环计算阶乘 5!（5的阶乘=120）
+  2. 使用 while 循环实现倒计时从 5 到 1
+  
+  期望输出：
+  5! = 120
+  5
+  4
+  3
+  2
+  1
+  Go!
+hints:
+  - level: 1
+    text: "while [ condition ]; do ... done"
+  - level: 2
+    text: "阶乘：result=1; while [ $n -gt 0 ]; do result=$((result*n)); n=$((n-1)); done"
+  - level: 3
+    text: "倒计时：while [ $count -gt 0 ]; do echo $count; count=$((count-1)); done"
+verify:
+  - type: command_output
+    command: "bash /home/learner/solution.sh"
+    expect: "5! = 120\n5\n4\n3\n2\n1\nGo!"

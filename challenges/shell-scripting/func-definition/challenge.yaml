@@ -1,0 +1,32 @@
+id: func-definition
+title: "函数定义与调用"
+difficulty: 1
+category: shell-scripting
+subcategory: functions
+tags: [function, definition, calling]
+description: |
+  学习 Shell 函数的定义和调用。
+  
+  请编写脚本 /home/learner/solution.sh，完成以下任务：
+  1. 定义函数 greet()，输出 "Hello from function!"
+  2. 定义函数 show_date()，使用 function 关键字，输出当前日期（date +%Y-%m-%d 格式）
+  3. 定义函数 add()，接收两个参数，输出它们的和
+  4. 调用 greet
+  5. 调用 show_date
+  6. 调用 add 10 20
+  
+  期望输出：
+  Hello from function!
+  (当前日期)
+  30
+hints:
+  - level: 1
+    text: "函数定义：func_name() { 命令; } 或 function func_name { 命令; }"
+  - level: 2
+    text: "函数必须先定义后调用"
+  - level: 3
+    text: "函数参数用 $1 $2 访问：add() { echo $(($1 + $2)); }"
+verify:
+  - type: command_output
+    command: "bash /home/learner/solution.sh | sed -n '1p;3p'"
+    expect: "Hello from function!\n30"
