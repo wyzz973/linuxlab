@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
 	"github.com/sd3/linuxlab/internal/challenge"
 	"github.com/sd3/linuxlab/internal/progress"
 )
@@ -106,6 +107,19 @@ func (m ChallengesModel) View() string {
 		b.WriteString("\n")
 	}
 
+	// Calculate max title width for alignment
+	maxTitleW := 0
+	for i := m.offset; i < end; i++ {
+		tw := lipgloss.Width(m.challenges[i].Title)
+		if tw > maxTitleW {
+			maxTitleW = tw
+		}
+	}
+	// Cap to a reasonable width to avoid overly wide layouts
+	if maxTitleW > 40 {
+		maxTitleW = 40
+	}
+
 	for i := m.offset; i < end; i++ {
 		ch := m.challenges[i]
 		cursor := "  "
@@ -125,8 +139,14 @@ func (m ChallengesModel) View() string {
 			}
 		}
 
+		title := style.Render(ch.Title)
+		titleW := lipgloss.Width(ch.Title)
+		pad := ""
+		if maxTitleW > titleW {
+			pad = strings.Repeat(" ", maxTitleW-titleW)
+		}
 		stars := DifficultyStars(ch.Difficulty)
-		b.WriteString(fmt.Sprintf("%s%s %s  %s  %s\n", cursor, icon, style.Render(ch.Title), stars, DimStyle.Render(ch.ID)))
+		b.WriteString(fmt.Sprintf("%s%s  %s%s  %s\n", cursor, icon, title, pad, stars))
 	}
 
 	if end < len(m.challenges) {
@@ -134,7 +154,7 @@ func (m ChallengesModel) View() string {
 		b.WriteString("\n")
 	}
 
-	contentHeight := maxInt(1, m.height-2)
+	contentHeight := maxInt(1, m.height-6)
 	content := fillContent(b.String(), m.width, contentHeight)
 
 	return header + "\n" + content + "\n" + footer

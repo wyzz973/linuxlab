@@ -61,12 +61,16 @@ type AppModel struct {
 
 // NewAppModel creates the root app model.
 func NewAppModel(cats map[string][]*challenge.Challenge, store *progress.Store, refs *reference.ReferenceData) tea.Model {
+	totalChallenges := 0
+	for _, chs := range cats {
+		totalChallenges += len(chs)
+	}
 	return AppModel{
 		screen:     screenMenu,
 		categories: cats,
 		store:      store,
 		refs:       refs,
-		menu:       NewMenuModel(),
+		menu:       NewMenuModelWithStats(totalChallenges, len(cats)),
 	}
 }
 
@@ -383,7 +387,7 @@ func (m AppModel) resultView() string {
 	if m.lastResult == nil {
 		header := headerView("LinuxLab · 检测结果", m.width)
 		footer := footerView("Esc 返回列表 · q 退出", m.width)
-		contentHeight := maxInt(1, m.height-2)
+		contentHeight := maxInt(1, m.height-6)
 		content := fillContent("无结果", m.width, contentHeight)
 		return header + "\n" + content + "\n" + footer
 	}
@@ -412,7 +416,7 @@ func (m AppModel) resultView() string {
 		b.WriteString(fmt.Sprintf("\n使用提示: %d\n", m.lastResult.HintsUsed))
 	}
 
-	contentHeight := maxInt(1, m.height-2)
+	contentHeight := maxInt(1, m.height-6)
 	content := fillContent(b.String(), m.width, contentHeight)
 
 	return header + "\n" + content + "\n" + footer

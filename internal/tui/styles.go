@@ -1,6 +1,7 @@
 package tui
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/charmbracelet/lipgloss"
@@ -56,7 +57,7 @@ func headerView(title string, width int) string {
 			Background(ColorPrimary).
 			Render(strings.Repeat(" ", width-titleWidth))
 	}
-	return titleStr + gap
+	return titleStr + gap + "\n" + dividerView(width)
 }
 
 // footerView renders a full-width footer bar.
@@ -71,7 +72,21 @@ func footerView(help string, width int) string {
 	if width > helpWidth {
 		gap = strings.Repeat(" ", width-helpWidth)
 	}
-	return helpStr + gap
+	return dividerView(width) + "\n" + helpStr + gap
+}
+
+// dividerView renders a full-width horizontal divider line.
+func dividerView(width int) string {
+	line := strings.Repeat("─", maxInt(0, width-2))
+	return DimStyle.Render(" " + line)
+}
+
+// sectionTitle renders a labeled section divider, e.g. " ─ 任务描述 ──────".
+func sectionTitle(title string, width int) string {
+	prefix := fmt.Sprintf(" ─ %s ", title)
+	prefixWidth := lipgloss.Width(prefix)
+	remaining := maxInt(0, width-prefixWidth-1)
+	return DimStyle.Render(prefix + strings.Repeat("─", remaining))
 }
 
 // contentStyle returns a style for the content area with padding.

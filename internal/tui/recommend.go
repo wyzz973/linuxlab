@@ -92,7 +92,7 @@ func (m RecommendModel) View() string {
 		b.WriteString(DimStyle.Render("暂无推荐。完成一些题目后再来看看！"))
 		b.WriteString("\n")
 
-		contentHeight := maxInt(1, m.height-2)
+		contentHeight := maxInt(1, m.height-6)
 		content := fillContent(b.String(), m.width, contentHeight)
 		return header + "\n" + content + "\n" + footer
 	}
@@ -118,7 +118,7 @@ func (m RecommendModel) View() string {
 		}
 		cat := CategoryLabel(ch.Category)
 		stars := DifficultyStars(ch.Difficulty)
-		b.WriteString(fmt.Sprintf("%s%s  %s  %s  %s\n", cursor, style.Render(ch.Title), stars, DimStyle.Render(cat), DimStyle.Render(ch.Subcategory)))
+		b.WriteString(fmt.Sprintf("%s%-24s %s  %s\n", cursor, style.Render(ch.Title), stars, DimStyle.Render(cat)))
 	}
 
 	if end < len(m.challenges) {
@@ -126,7 +126,7 @@ func (m RecommendModel) View() string {
 		b.WriteString("\n")
 	}
 
-	contentHeight := maxInt(1, m.height-2)
+	contentHeight := maxInt(1, m.height-6)
 	content := fillContent(b.String(), m.width, contentHeight)
 
 	return header + "\n" + content + "\n" + footer

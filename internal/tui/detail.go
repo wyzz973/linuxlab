@@ -74,32 +74,38 @@ func (m DetailModel) View() string {
 
 	var b strings.Builder
 
-	b.WriteString(fmt.Sprintf("难度: %s\n", DifficultyStars(ch.Difficulty)))
+	b.WriteString(fmt.Sprintf("  难度  %s\n", DifficultyStars(ch.Difficulty)))
 
 	if len(ch.Tags) > 0 {
-		b.WriteString(fmt.Sprintf("标签: %s\n", DimStyle.Render(strings.Join(ch.Tags, ", "))))
+		b.WriteString(fmt.Sprintf("  标签  %s\n", DimStyle.Render(strings.Join(ch.Tags, ", "))))
 	}
 
 	if ch.RequiresDocker && !m.dockerAvailable {
 		b.WriteString("\n")
-		b.WriteString(WarningStyle.Render("!! 需要 Docker (当前不可用，将使用本地模式)"))
+		b.WriteString(WarningStyle.Render("  !! 需要 Docker (当前不可用，将使用本地模式)"))
 		b.WriteString("\n")
 	}
 
 	b.WriteString("\n")
-	b.WriteString(ch.Description)
+	b.WriteString(sectionTitle("任务描述", m.width))
+	b.WriteString("\n\n")
+	b.WriteString("  " + strings.ReplaceAll(ch.Description, "\n", "\n  "))
 	b.WriteString("\n")
 
+	b.WriteString("\n")
+	b.WriteString(sectionTitle(fmt.Sprintf("提示 (%d/%d)", m.hintLevel, len(ch.Hints)), m.width))
+	b.WriteString("\n\n")
+
 	if m.hintLevel > 0 {
-		b.WriteString("\n")
-		b.WriteString(WarningStyle.Render("提示:"))
-		b.WriteString("\n")
 		for i := 0; i < m.hintLevel && i < len(ch.Hints); i++ {
 			b.WriteString(fmt.Sprintf("  %d. %s\n", i+1, ch.Hints[i].Text))
 		}
+	} else if len(ch.Hints) > 0 {
+		b.WriteString(DimStyle.Render("  按 h 查看提示"))
+		b.WriteString("\n")
 	}
 
-	contentHeight := maxInt(1, m.height-2)
+	contentHeight := maxInt(1, m.height-6)
 	content := fillContent(b.String(), m.width, contentHeight)
 
 	return header + "\n" + content + "\n" + footer

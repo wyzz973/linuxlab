@@ -121,11 +121,15 @@ func (m ModulesModel) View() string {
 		if mod.total > 0 {
 			pct = float64(mod.passed) / float64(mod.total)
 		}
-		bar := ProgressBar(pct, 10)
-		b.WriteString(fmt.Sprintf("%s%-16s  %s  %d/%d\n", cursor, style.Render(mod.label), bar, mod.passed, mod.total))
+		bar := ProgressBar(pct, 20)
+		pctStr := fmt.Sprintf("%3.0f%%", pct*100)
+		b.WriteString(fmt.Sprintf("%s%-18s %s  %d/%-5d %s\n", cursor, style.Render(mod.label), bar, mod.passed, mod.total, DimStyle.Render(pctStr)))
+		if i < len(m.modules)-1 {
+			b.WriteString("\n")
+		}
 	}
 
-	contentHeight := maxInt(1, m.height-2)
+	contentHeight := maxInt(1, m.height-6)
 	content := fillContent(b.String(), m.width, contentHeight)
 
 	return header + "\n" + content + "\n" + footer

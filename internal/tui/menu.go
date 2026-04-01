@@ -19,10 +19,12 @@ type menuItem struct {
 
 // MenuModel is the main menu screen.
 type MenuModel struct {
-	items  []menuItem
-	cursor int
-	width  int
-	height int
+	items          []menuItem
+	cursor         int
+	width          int
+	height         int
+	totalChallenges int
+	totalModules    int
 }
 
 // NewMenuModel creates a new main menu.
@@ -35,6 +37,21 @@ func NewMenuModel() tea.Model {
 			{label: "命令速查", key: "reference"},
 		},
 		cursor: 0,
+	}
+}
+
+// NewMenuModelWithStats creates a menu model with challenge/module counts.
+func NewMenuModelWithStats(totalChallenges, totalModules int) tea.Model {
+	return MenuModel{
+		items: []menuItem{
+			{label: "开始练习", key: "practice"},
+			{label: "能力图谱", key: "skillmap"},
+			{label: "薄弱推荐", key: "recommend"},
+			{label: "命令速查", key: "reference"},
+		},
+		cursor:          0,
+		totalChallenges: totalChallenges,
+		totalModules:    totalModules,
 	}
 }
 
@@ -83,7 +100,16 @@ func (m MenuModel) View() string {
 		b.WriteString(fmt.Sprintf("%s%s\n", cursor, style.Render(item.label)))
 	}
 
-	contentHeight := maxInt(1, m.height-2)
+	// Stats line
+	b.WriteString("\n")
+	if m.totalChallenges > 0 {
+		b.WriteString(DimStyle.Render(fmt.Sprintf("  %d 道挑战 · %d 个模块 · v0.1.0", m.totalChallenges, m.totalModules)))
+	} else {
+		b.WriteString(DimStyle.Render("  v0.1.0"))
+	}
+	b.WriteString("\n")
+
+	contentHeight := maxInt(1, m.height-6)
 	content := fillContent(b.String(), m.width, contentHeight)
 
 	return header + "\n" + content + "\n" + footer

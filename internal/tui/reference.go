@@ -164,7 +164,7 @@ func (m ReferenceModel) listView() string {
 		b.WriteString(DimStyle.Render("未找到匹配的命令") + "\n")
 	}
 
-	contentHeight := maxInt(1, m.height-2)
+	contentHeight := maxInt(1, m.height-6)
 	content := fillContent(b.String(), m.width, contentHeight)
 
 	return header + "\n" + content + "\n" + footer
@@ -181,11 +181,11 @@ func (m ReferenceModel) detailView() string {
 
 	var b strings.Builder
 
-	b.WriteString(cmd.Brief)
+	b.WriteString("  " + cmd.Brief)
 	b.WriteString("\n\n")
 
 	if len(cmd.Examples) > 0 {
-		b.WriteString(SelectedStyle.Render("示例:"))
+		b.WriteString(sectionTitle("示例", m.width))
 		b.WriteString("\n\n")
 		for _, ex := range cmd.Examples {
 			b.WriteString(fmt.Sprintf("  %s %s\n", DimStyle.Render("▸"), ex.Desc))
@@ -194,12 +194,13 @@ func (m ReferenceModel) detailView() string {
 	}
 
 	if len(cmd.RelatedChallenges) > 0 {
-		b.WriteString(SelectedStyle.Render("相关挑战: "))
-		b.WriteString(DimStyle.Render(strings.Join(cmd.RelatedChallenges, ", ")))
+		b.WriteString(sectionTitle("相关挑战", m.width))
+		b.WriteString("\n\n")
+		b.WriteString("  " + DimStyle.Render(strings.Join(cmd.RelatedChallenges, ", ")))
 		b.WriteString("\n")
 	}
 
-	contentHeight := maxInt(1, m.height-2)
+	contentHeight := maxInt(1, m.height-6)
 	content := fillContent(b.String(), m.width, contentHeight)
 
 	return header + "\n" + content + "\n" + footer

@@ -80,10 +80,10 @@ func (m SkillMapModel) View() string {
 	if m.skillMap.TotalCount > 0 {
 		pct := m.skillMap.OverallScore
 		bar := ProgressBar(pct, 20)
-		b.WriteString(fmt.Sprintf("总进度: %s %.0f%%  (%d/%d)\n\n",
+		b.WriteString(fmt.Sprintf("  总进度  %s  %3.0f%%  (%d/%d)\n\n",
 			bar, pct*100, m.skillMap.TotalPassed, m.skillMap.TotalCount))
 	} else {
-		b.WriteString(DimStyle.Render("暂无学习记录"))
+		b.WriteString(DimStyle.Render("  暂无学习记录"))
 		b.WriteString("\n\n")
 	}
 
@@ -102,19 +102,20 @@ func (m SkillMapModel) View() string {
 
 		label := CategoryLabel(cat.Name)
 
-		bar := ProgressBar(cat.Score, 10)
-		b.WriteString(fmt.Sprintf("%s%s %s  %s  %.0f%%\n", cursor, arrow, style.Render(label), bar, cat.Score*100))
+		bar := ProgressBar(cat.Score, 15)
+		b.WriteString(fmt.Sprintf("%s%s %-18s  %s  %3.0f%%\n", cursor, arrow, style.Render(label), bar, cat.Score*100))
 
 		if m.expanded[i] {
 			for _, sub := range cat.Subcategories {
-				subBar := ProgressBar(sub.Score, 8)
-				b.WriteString(fmt.Sprintf("      %s  %s  %d/%d\n",
+				subBar := ProgressBar(sub.Score, 10)
+				b.WriteString(fmt.Sprintf("       %-16s  %s  %d/%d\n",
 					DimStyle.Render(sub.Name), subBar, sub.Passed, sub.Total))
 			}
+			b.WriteString("\n")
 		}
 	}
 
-	contentHeight := maxInt(1, m.height-2)
+	contentHeight := maxInt(1, m.height-6)
 	content := fillContent(b.String(), m.width, contentHeight)
 
 	return header + "\n" + content + "\n" + footer
