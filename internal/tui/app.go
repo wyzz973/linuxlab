@@ -8,6 +8,7 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/sd3/linuxlab/internal/challenge"
 	"github.com/sd3/linuxlab/internal/progress"
+	"github.com/sd3/linuxlab/internal/reference"
 	"github.com/sd3/linuxlab/internal/verify"
 )
 
@@ -20,6 +21,7 @@ const (
 	screenDetail
 	screenSkillMap
 	screenRecommend
+	screenReference
 	screenResult
 )
 
@@ -35,6 +37,7 @@ type AppModel struct {
 	screen         screenID
 	categories     map[string][]*challenge.Challenge
 	store          *progress.Store
+	refs           *reference.ReferenceData
 	currentCat     string
 	currentChallenge *challenge.Challenge
 
@@ -44,16 +47,18 @@ type AppModel struct {
 	detail     tea.Model
 	skillmap   tea.Model
 	recommend  tea.Model
+	refModel   tea.Model
 
 	lastResult *ChallengeResultMsg
 }
 
 // NewAppModel creates the root app model.
-func NewAppModel(cats map[string][]*challenge.Challenge, store *progress.Store) tea.Model {
+func NewAppModel(cats map[string][]*challenge.Challenge, store *progress.Store, refs *reference.ReferenceData) tea.Model {
 	return AppModel{
 		screen:     screenMenu,
 		categories: cats,
 		store:      store,
+		refs:       refs,
 		menu:       NewMenuModel(),
 	}
 }
@@ -87,6 +92,13 @@ func (m AppModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			recs := progress.RecommendMultiple(m.store, all, 5)
 			m.screen = screenRecommend
 			m.recommend = NewRecommendModel(recs)
+			return m, nil
+		case "reference":
+			if m.refs != nil {
+				m.screen = screenReference
+				m.refModel = NewReferenceModel(m.refs)
+				return m, nil
+			}
 			return m, nil
 		}
 		return m, nil
@@ -132,6 +144,8 @@ func (m AppModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.screen = screenMenu
 		case screenRecommend:
 			m.screen = screenMenu
+		case screenReference:
+			m.screen = screenMenu
 		case screenResult:
 			m.screen = screenChallenges
 			if m.currentCat != "" {
@@ -166,6 +180,10 @@ func (m AppModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		if m.recommend != nil {
 			m.recommend, cmd = m.recommend.Update(msg)
 		}
+	case screenReference:
+		if m.refModel != nil {
+			m.refModel, cmd = m.refModel.Update(msg)
+		}
 	}
 	return m, cmd
 }
@@ -193,6 +211,10 @@ func (m AppModel) View() string {
 	case screenRecommend:
 		if m.recommend != nil {
 			return m.recommend.View()
+		}
+	case screenReference:
+		if m.refModel != nil {
+			return m.refModel.View()
 		}
 	case screenResult:
 		return m.resultView()

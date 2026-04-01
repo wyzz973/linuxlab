@@ -81,7 +81,7 @@ func TestE2E_AppModelCreation(t *testing.T) {
 	dir := t.TempDir()
 	store, _ := progress.NewStore(filepath.Join(dir, "progress.json"))
 
-	app := tui.NewAppModel(byCategory, store)
+	app := tui.NewAppModel(byCategory, store, nil)
 	view := app.View()
 	if view == "" {
 		t.Error("app view is empty")

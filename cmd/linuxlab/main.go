@@ -8,6 +8,7 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/sd3/linuxlab/internal/challenge"
 	"github.com/sd3/linuxlab/internal/progress"
+	"github.com/sd3/linuxlab/internal/reference"
 	"github.com/sd3/linuxlab/internal/tui"
 )
 
@@ -50,8 +51,15 @@ func main() {
 		os.Exit(1)
 	}
 
+	// Load command references (optional)
+	var refs *reference.ReferenceData
+	refsPath := "references/commands.yaml"
+	if loadedRefs, err := reference.LoadReferences(refsPath); err == nil {
+		refs = loadedRefs
+	}
+
 	// Start TUI
-	app := tui.NewAppModel(byCategory, store)
+	app := tui.NewAppModel(byCategory, store, refs)
 	p := tea.NewProgram(app, tea.WithAltScreen())
 	if _, err := p.Run(); err != nil {
 		fmt.Fprintf(os.Stderr, "运行失败: %v\n", err)

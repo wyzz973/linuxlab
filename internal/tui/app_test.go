@@ -9,7 +9,7 @@ import (
 func TestAppModel_StartsAtMenu(t *testing.T) {
 	store := tmpStore(t)
 	cats := sampleCategories()
-	m := NewAppModel(cats, store)
+	m := NewAppModel(cats, store, nil)
 	app := m.(AppModel)
 	if app.screen != screenMenu {
 		t.Errorf("expected screenMenu, got %d", app.screen)
@@ -19,7 +19,7 @@ func TestAppModel_StartsAtMenu(t *testing.T) {
 func TestAppModel_MenuToPractice(t *testing.T) {
 	store := tmpStore(t)
 	cats := sampleCategories()
-	m := NewAppModel(cats, store)
+	m := NewAppModel(cats, store, nil)
 	updated, _ := m.Update(MenuChoiceMsg{Choice: "practice"})
 	app := updated.(AppModel)
 	if app.screen != screenModules {
@@ -30,7 +30,7 @@ func TestAppModel_MenuToPractice(t *testing.T) {
 func TestAppModel_MenuToSkillMap(t *testing.T) {
 	store := tmpStore(t)
 	cats := sampleCategories()
-	m := NewAppModel(cats, store)
+	m := NewAppModel(cats, store, nil)
 	updated, _ := m.Update(MenuChoiceMsg{Choice: "skillmap"})
 	app := updated.(AppModel)
 	if app.screen != screenSkillMap {
@@ -41,7 +41,7 @@ func TestAppModel_MenuToSkillMap(t *testing.T) {
 func TestAppModel_GoBack_FromModules(t *testing.T) {
 	store := tmpStore(t)
 	cats := sampleCategories()
-	m := NewAppModel(cats, store)
+	m := NewAppModel(cats, store, nil)
 	// Navigate to modules first
 	m, _ = m.Update(MenuChoiceMsg{Choice: "practice"})
 	// Go back
@@ -55,7 +55,7 @@ func TestAppModel_GoBack_FromModules(t *testing.T) {
 func TestAppModel_GoBack_FromChallenges(t *testing.T) {
 	store := tmpStore(t)
 	cats := sampleCategories()
-	m := NewAppModel(cats, store)
+	m := NewAppModel(cats, store, nil)
 	// Navigate to modules, then challenges
 	m, _ = m.Update(MenuChoiceMsg{Choice: "practice"})
 	m, _ = m.Update(ModuleSelectedMsg{Category: "linux-basics"})
@@ -74,7 +74,7 @@ func TestAppModel_GoBack_FromChallenges(t *testing.T) {
 func TestAppModel_GoBack_FromDetail(t *testing.T) {
 	store := tmpStore(t)
 	cats := sampleCategories()
-	m := NewAppModel(cats, store)
+	m := NewAppModel(cats, store, nil)
 	// Navigate to modules, then challenges, then detail
 	m, _ = m.Update(MenuChoiceMsg{Choice: "practice"})
 	m, _ = m.Update(ModuleSelectedMsg{Category: "linux-basics"})
