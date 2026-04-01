@@ -17,15 +17,17 @@ type LaunchChallengeMsg struct {
 
 // DetailModel is the challenge detail screen with progressive hints.
 type DetailModel struct {
-	challenge *challenge.Challenge
-	hintLevel int
+	challenge       *challenge.Challenge
+	hintLevel       int
+	dockerAvailable bool
 }
 
 // NewDetailModel creates a new challenge detail screen.
 func NewDetailModel(ch *challenge.Challenge) tea.Model {
 	return DetailModel{
-		challenge: ch,
-		hintLevel: 0,
+		challenge:       ch,
+		hintLevel:       0,
+		dockerAvailable: sandbox.DockerAvailable(),
 	}
 }
 
@@ -65,7 +67,7 @@ func (m DetailModel) View() string {
 		b.WriteString(fmt.Sprintf("标签: %s\n", DimStyle.Render(strings.Join(ch.Tags, ", "))))
 	}
 
-	if ch.RequiresDocker && !sandbox.DockerAvailable() {
+	if ch.RequiresDocker && !m.dockerAvailable {
 		b.WriteString("\n")
 		b.WriteString(WarningStyle.Render("!! 需要 Docker (当前不可用，将使用本地模式)"))
 		b.WriteString("\n")

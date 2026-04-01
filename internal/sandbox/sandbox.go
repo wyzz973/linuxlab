@@ -23,10 +23,11 @@ func DockerAvailable() bool {
 // It picks ComposeSandbox if a compose file is specified, DockerSandbox
 // if Docker is available, or LocalSandbox as a degraded-mode fallback.
 func NewSandbox(ctx context.Context, ch *challenge.Challenge) (Sandbox, error) {
-	if ch.ComposeFile != "" && DockerAvailable() {
+	hasDocker := DockerAvailable()
+	if ch.ComposeFile != "" && hasDocker {
 		return NewComposeSandbox(ctx, ch.Dir)
 	}
-	if DockerAvailable() {
+	if hasDocker {
 		return NewDockerSandbox(ctx, "")
 	}
 	return NewLocalSandbox()
