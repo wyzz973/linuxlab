@@ -22,7 +22,7 @@ func TestComposeSandbox_ImplementsSandbox(t *testing.T) {
 
 func TestComposeSandbox_UpAndDown(t *testing.T) {
 	if !composeAvailable() {
-		t.Skip("docker compose not available")
+		t.Skip("docker not available")
 	}
 
 	dir := t.TempDir()
@@ -39,7 +39,7 @@ func TestComposeSandbox_UpAndDown(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
 	defer cancel()
 
-	sb, err := NewComposeSandbox(ctx, dir)
+	sb, err := NewComposeSandbox(ctx, dir, "docker-compose.yaml")
 	if err != nil {
 		t.Fatalf("NewComposeSandbox: %v", err)
 	}
@@ -52,7 +52,7 @@ func TestComposeSandbox_UpAndDown(t *testing.T) {
 
 func TestComposeSandbox_Exec(t *testing.T) {
 	if !composeAvailable() {
-		t.Skip("docker compose not available")
+		t.Skip("docker not available")
 	}
 
 	dir := t.TempDir()
@@ -69,7 +69,7 @@ func TestComposeSandbox_Exec(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
 	defer cancel()
 
-	sb, err := NewComposeSandbox(ctx, dir)
+	sb, err := NewComposeSandbox(ctx, dir, "docker-compose.yaml")
 	if err != nil {
 		t.Fatalf("NewComposeSandbox: %v", err)
 	}

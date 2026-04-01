@@ -12,20 +12,14 @@ func TestLocalSandbox_ImplementsSandbox(t *testing.T) {
 }
 
 func TestLocalSandbox_CreateAndDestroy(t *testing.T) {
-	sb, err := NewLocalSandbox()
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer sb.Destroy(context.Background())
-	// workDir should exist
+	sb := newLocalSandboxWithDir(t.TempDir())
 	if _, err := os.Stat(sb.WorkDir()); err != nil {
 		t.Errorf("workDir doesn't exist: %v", err)
 	}
 }
 
 func TestLocalSandbox_Exec(t *testing.T) {
-	sb, _ := NewLocalSandbox()
-	defer sb.Destroy(context.Background())
+	sb := newLocalSandboxWithDir(t.TempDir())
 	out, code, err := sb.Exec(context.Background(), "echo hello")
 	if err != nil {
 		t.Fatal(err)
@@ -39,8 +33,7 @@ func TestLocalSandbox_Exec(t *testing.T) {
 }
 
 func TestLocalSandbox_ExecInWorkDir(t *testing.T) {
-	sb, _ := NewLocalSandbox()
-	defer sb.Destroy(context.Background())
+	sb := newLocalSandboxWithDir(t.TempDir())
 	sb.Exec(context.Background(), "touch testfile.txt")
 	out, _, _ := sb.Exec(context.Background(), "ls testfile.txt")
 	if strings.TrimSpace(out) != "testfile.txt" {
@@ -49,7 +42,11 @@ func TestLocalSandbox_ExecInWorkDir(t *testing.T) {
 }
 
 func TestLocalSandbox_Destroy(t *testing.T) {
-	sb, _ := NewLocalSandbox()
+	// Use NewLocalSandbox to test the real constructor + Destroy cleanup
+	sb, err := NewLocalSandbox()
+	if err != nil {
+		t.Fatal(err)
+	}
 	dir := sb.WorkDir()
 	sb.Destroy(context.Background())
 	if _, err := os.Stat(dir); !os.IsNotExist(err) {

@@ -33,12 +33,12 @@ func runAndCapture(cmd *exec.Cmd) (string, int, error) {
 }
 
 // NewSandbox creates the appropriate sandbox backend for a challenge.
-// It picks ComposeSandbox if a compose file is specified, DockerSandbox
-// if Docker is available, or LocalSandbox as a degraded-mode fallback.
+// It picks ComposeSandbox if a compose file is specified and Docker is available,
+// DockerSandbox if Docker is available, or LocalSandbox as a degraded-mode fallback.
 func NewSandbox(ctx context.Context, ch *challenge.Challenge) (Sandbox, error) {
 	hasDocker := DockerAvailable()
 	if ch.ComposeFile != "" && hasDocker {
-		return NewComposeSandbox(ctx, ch.Dir)
+		return NewComposeSandbox(ctx, ch.Dir, ch.ComposeFile)
 	}
 	if hasDocker {
 		return NewDockerSandbox(ctx, "")

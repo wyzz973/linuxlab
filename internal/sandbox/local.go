@@ -21,6 +21,11 @@ func NewLocalSandbox() (*LocalSandbox, error) {
 	return &LocalSandbox{workDir: dir}, nil
 }
 
+// newLocalSandboxWithDir creates a local sandbox using the given directory (for testing with t.TempDir).
+func newLocalSandboxWithDir(dir string) *LocalSandbox {
+	return &LocalSandbox{workDir: dir}
+}
+
 // WorkDir returns the temporary working directory path.
 func (s *LocalSandbox) WorkDir() string { return s.workDir }
 

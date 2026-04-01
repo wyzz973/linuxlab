@@ -15,10 +15,13 @@ type ComposeSandbox struct {
 	service     string // primary service name for exec
 }
 
-// NewComposeSandbox starts services defined in a docker-compose.yaml in the given directory.
+// NewComposeSandbox starts services defined in a compose file in the given directory.
 // It auto-detects the first service name for exec commands.
-func NewComposeSandbox(ctx context.Context, dir string) (*ComposeSandbox, error) {
-	composeFile := filepath.Join(dir, "docker-compose.yaml")
+func NewComposeSandbox(ctx context.Context, dir, composeFileName string) (*ComposeSandbox, error) {
+	if composeFileName == "" {
+		composeFileName = "docker-compose.yaml"
+	}
+	composeFile := filepath.Join(dir, composeFileName)
 
 	// Bring up services
 	cmd := exec.CommandContext(ctx, "docker", "compose", "-f", composeFile, "up", "-d")
@@ -33,14 +36,14 @@ func NewComposeSandbox(ctx context.Context, dir string) (*ComposeSandbox, error)
 	svcCmd.Dir = dir
 	svcOut, err := svcCmd.Output()
 	if err != nil {
-		// Clean up on failure
-		exec.CommandContext(ctx, "docker", "compose", "-f", composeFile, "down").Run()
+		// Clean up on failure — use Background context to ensure cleanup runs even if ctx is cancelled
+		exec.Command("docker", "compose", "-f", composeFile, "down").Run()
 		return nil, fmt.Errorf("docker compose config --services: %w", err)
 	}
 
 	services := strings.Split(strings.TrimSpace(string(svcOut)), "\n")
 	if len(services) == 0 || services[0] == "" {
-		exec.CommandContext(ctx, "docker", "compose", "-f", composeFile, "down").Run()
+		exec.Command("docker", "compose", "-f", composeFile, "down").Run()
 		return nil, fmt.Errorf("no services found in compose file")
 	}
 
@@ -67,5 +70,5 @@ func (s *ComposeSandbox) Destroy(ctx context.Context) error {
 
 // InteractiveShellArgs returns arguments to open an interactive shell in the primary service.
 func (s *ComposeSandbox) InteractiveShellArgs() []string {
-	return []string{"docker", "compose", "-f", s.composeFile, "exec", s.service, "/bin/sh"}
+	return []string{"docker", "compose", "-f", s.composeFile, "exec", "-it", s.service, "/bin/sh"}
 }
