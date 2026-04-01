@@ -77,7 +77,7 @@ func (s *DockerSandbox) ContainerID() string { return s.containerID }
 // Exec runs a command inside the container and returns stdout, exit code, and any error.
 func (s *DockerSandbox) Exec(ctx context.Context, command string) (string, int, error) {
 	execCfg := container.ExecOptions{
-		Cmd:          []string{"sh", "-c", command},
+		Cmd:          []string{"bash", "-c", command},
 		AttachStdout: true,
 		AttachStderr: true,
 	}
