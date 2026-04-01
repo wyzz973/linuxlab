@@ -103,16 +103,20 @@ func validateChallenge(ch *challenge.Challenge) validateResult {
 	}
 	defer sb.Destroy(ctx)
 
-	// Run init.sh if exists
+	// Run init.sh if exists (ignore exit code for process-management challenges)
 	initPath := filepath.Join(ch.Dir, "init.sh")
 	if data, err := os.ReadFile(initPath); err == nil {
-		_, code, err := sb.Exec(ctx, string(data))
-		if err != nil {
-			return validateResult{"FAIL", fmt.Sprintf("init.sh 执行错误: %v", err)}
+		sb.Exec(ctx, string(data))
+	}
+
+	// Write setup_files into the container (for Vim challenges)
+	for _, sf := range ch.SetupFiles {
+		dir := filepath.Dir(sf.Path)
+		if dir != "." && dir != "/" {
+			sb.Exec(ctx, "mkdir -p '"+dir+"'")
 		}
-		if code != 0 {
-			return validateResult{"FAIL", fmt.Sprintf("init.sh 退出码: %d", code)}
-		}
+		escaped := strings.ReplaceAll(sf.Content, "'", "'\"'\"'")
+		sb.Exec(ctx, "cat > '"+sf.Path+"' << 'SETUP_EOF'\n"+escaped+"\nSETUP_EOF")
 	}
 
 	// Run solution.sh
@@ -122,14 +126,17 @@ func validateChallenge(ch *challenge.Challenge) validateResult {
 		return validateResult{"SKIP", "无 solution.sh"}
 	}
 
-	_, solCode, err := sb.Exec(ctx, string(solData))
-	if err != nil {
-		return validateResult{"FAIL", fmt.Sprintf("solution.sh 执行错误: %v", err)}
+	// For shell-scripting challenges, copy solution.sh to /home/learner/solution.sh
+	// because check.sh typically runs `bash /home/learner/solution.sh`
+	if ch.Category == "shell-scripting" {
+		sb.Exec(ctx, "mkdir -p /home/learner")
+		escaped := strings.ReplaceAll(string(solData), "'", "'\"'\"'")
+		sb.Exec(ctx, "cat > /home/learner/solution.sh << 'SOL_EOF'\n"+escaped+"\nSOL_EOF")
+		sb.Exec(ctx, "chmod +x /home/learner/solution.sh")
 	}
-	if solCode != 0 {
-		// Some solutions have intentional non-zero exits, don't hard-fail
-		_ = solCode
-	}
+
+	// Run solution.sh
+	sb.Exec(ctx, string(solData)) // ignore exit code — some solutions have intentional non-zero parts
 
 	// Run verification inside the container
 	for i, rule := range ch.Verify {
