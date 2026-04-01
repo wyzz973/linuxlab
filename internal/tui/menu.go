@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
 )
 
 // MenuChoiceMsg is sent when the user selects a menu item.
@@ -21,6 +22,8 @@ type menuItem struct {
 type MenuModel struct {
 	items  []menuItem
 	cursor int
+	width  int
+	height int
 }
 
 // NewMenuModel creates a new main menu.
@@ -40,6 +43,10 @@ func (m MenuModel) Init() tea.Cmd { return nil }
 
 func (m MenuModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
+	case tea.WindowSizeMsg:
+		m.width = msg.Width
+		m.height = msg.Height
+		return m, nil
 	case tea.KeyMsg:
 		switch {
 		case msg.Type == tea.KeyUp || (msg.Type == tea.KeyRunes && string(msg.Runes) == "k"):
@@ -80,5 +87,7 @@ func (m MenuModel) View() string {
 	b.WriteString("\n")
 	b.WriteString(HelpStyle.Render("↑/k 上移 · ↓/j 下移 · Enter 选择 · q 退出"))
 
-	return BoxStyle.Render(b.String())
+	boxWidth := responsiveBoxWidth(m.width)
+	content := BoxStyle.Width(boxWidth).Render(b.String())
+	return lipgloss.Place(m.width, m.height, lipgloss.Center, lipgloss.Center, content)
 }

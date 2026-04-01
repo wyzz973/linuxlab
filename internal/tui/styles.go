@@ -61,6 +61,18 @@ func DifficultyStars(level int) string {
 	return b.String()
 }
 
+// responsiveBoxWidth returns a box width that adapts to terminal width.
+func responsiveBoxWidth(termWidth int) int {
+	w := termWidth - 4
+	if w > 80 {
+		w = 80
+	}
+	if w < 40 {
+		w = 40
+	}
+	return w
+}
+
 // ProgressBar returns a progress bar string of the given width for the given ratio (0.0-1.0).
 func ProgressBar(ratio float64, width int) string {
 	if ratio < 0 {

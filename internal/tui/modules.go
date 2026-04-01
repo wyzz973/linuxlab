@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
 	"github.com/sd3/linuxlab/internal/challenge"
 	"github.com/sd3/linuxlab/internal/progress"
 )
@@ -46,6 +47,8 @@ type ModulesModel struct {
 	modules []moduleEntry
 	cursor  int
 	store   *progress.Store
+	width   int
+	height  int
 }
 
 // NewModulesModel creates a new module selection screen.
@@ -76,6 +79,10 @@ func (m ModulesModel) Init() tea.Cmd { return nil }
 
 func (m ModulesModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
+	case tea.WindowSizeMsg:
+		m.width = msg.Width
+		m.height = msg.Height
+		return m, nil
 	case tea.KeyMsg:
 		switch {
 		case msg.Type == tea.KeyUp || (msg.Type == tea.KeyRunes && string(msg.Runes) == "k"):
@@ -122,5 +129,7 @@ func (m ModulesModel) View() string {
 	b.WriteString("\n")
 	b.WriteString(HelpStyle.Render("↑/k 上移 · ↓/j 下移 · Enter 选择 · Esc 返回"))
 
-	return BoxStyle.Render(b.String())
+	boxWidth := responsiveBoxWidth(m.width)
+	content := BoxStyle.Width(boxWidth).Render(b.String())
+	return lipgloss.Place(m.width, m.height, lipgloss.Center, lipgloss.Center, content)
 }

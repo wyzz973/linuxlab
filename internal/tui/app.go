@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
 	"github.com/sd3/linuxlab/internal/challenge"
 	"github.com/sd3/linuxlab/internal/progress"
 	"github.com/sd3/linuxlab/internal/reference"
@@ -43,6 +44,9 @@ type AppModel struct {
 	currentCat     string
 	currentChallenge *challenge.Challenge
 
+	width  int
+	height int
+
 	menu       tea.Model
 	modules    tea.Model
 	challenges tea.Model
@@ -71,6 +75,41 @@ func (m AppModel) Init() tea.Cmd {
 
 func (m AppModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
+	case tea.WindowSizeMsg:
+		m.width = msg.Width
+		m.height = msg.Height
+		// Pass to active sub-model
+		var cmd tea.Cmd
+		switch m.screen {
+		case screenMenu:
+			m.menu, cmd = m.menu.Update(msg)
+		case screenModules:
+			if m.modules != nil {
+				m.modules, cmd = m.modules.Update(msg)
+			}
+		case screenChallenges:
+			if m.challenges != nil {
+				m.challenges, cmd = m.challenges.Update(msg)
+			}
+		case screenDetail:
+			if m.detail != nil {
+				m.detail, cmd = m.detail.Update(msg)
+			}
+		case screenSkillMap:
+			if m.skillmap != nil {
+				m.skillmap, cmd = m.skillmap.Update(msg)
+			}
+		case screenRecommend:
+			if m.recommend != nil {
+				m.recommend, cmd = m.recommend.Update(msg)
+			}
+		case screenReference:
+			if m.refModel != nil {
+				m.refModel, cmd = m.refModel.Update(msg)
+			}
+		}
+		return m, cmd
+
 	case tea.KeyMsg:
 		if msg.Type == tea.KeyCtrlC {
 			return m, tea.Quit
@@ -294,5 +333,7 @@ func (m AppModel) resultView() string {
 	b.WriteString("\n")
 	b.WriteString(HelpStyle.Render("Esc 返回列表 · q 退出"))
 
-	return BoxStyle.Render(b.String())
+	boxWidth := responsiveBoxWidth(m.width)
+	content := BoxStyle.Width(boxWidth).Render(b.String())
+	return lipgloss.Place(m.width, m.height, lipgloss.Center, lipgloss.Center, content)
 }

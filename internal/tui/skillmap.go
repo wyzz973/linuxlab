@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
 	"github.com/sd3/linuxlab/internal/progress"
 )
 
@@ -14,6 +15,8 @@ type SkillMapModel struct {
 	skillMap *progress.SkillMap
 	cursor   int
 	expanded map[int]bool
+	width    int
+	height   int
 }
 
 // NewSkillMapModel creates a new skill map view.
@@ -31,6 +34,10 @@ func (m SkillMapModel) Init() tea.Cmd { return nil }
 
 func (m SkillMapModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
+	case tea.WindowSizeMsg:
+		m.width = msg.Width
+		m.height = msg.Height
+		return m, nil
 	case tea.KeyMsg:
 		switch {
 		case msg.Type == tea.KeyUp || (msg.Type == tea.KeyRunes && string(msg.Runes) == "k"):
@@ -111,5 +118,7 @@ func (m SkillMapModel) View() string {
 	b.WriteString("\n")
 	b.WriteString(HelpStyle.Render("↑/k 上移 · ↓/j 下移 · Enter 展开/折叠 · Esc 返回"))
 
-	return BoxStyle.Render(b.String())
+	boxWidth := responsiveBoxWidth(m.width)
+	content := BoxStyle.Width(boxWidth).Render(b.String())
+	return lipgloss.Place(m.width, m.height, lipgloss.Center, lipgloss.Center, content)
 }

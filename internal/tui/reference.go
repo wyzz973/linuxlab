@@ -18,6 +18,8 @@ type ReferenceModel struct {
 	cursor      int
 	showDetail  bool
 	detailIndex int
+	width       int
+	height      int
 }
 
 // NewReferenceModel creates a new reference browser model.
@@ -35,6 +37,10 @@ func (m ReferenceModel) Init() tea.Cmd { return nil }
 
 func (m ReferenceModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
+	case tea.WindowSizeMsg:
+		m.width = msg.Width
+		m.height = msg.Height
+		return m, nil
 	case tea.KeyMsg:
 		if m.showDetail {
 			return m.updateDetail(msg)
@@ -157,7 +163,9 @@ func (m ReferenceModel) listView() string {
 	b.WriteString("\n")
 	b.WriteString(HelpStyle.Render("↑/k 上移 · ↓/j 下移 · Enter 查看详情 · Esc 返回"))
 
-	return BoxStyle.Render(b.String())
+	boxWidth := responsiveBoxWidth(m.width)
+	content := BoxStyle.Width(boxWidth).Render(b.String())
+	return lipgloss.Place(m.width, m.height, lipgloss.Center, lipgloss.Center, content)
 }
 
 func (m ReferenceModel) detailView() string {
@@ -191,5 +199,7 @@ func (m ReferenceModel) detailView() string {
 	b.WriteString("\n")
 	b.WriteString(HelpStyle.Render("Esc 返回列表"))
 
-	return BoxStyle.Render(b.String())
+	boxWidth := responsiveBoxWidth(m.width)
+	content := BoxStyle.Width(boxWidth).Render(b.String())
+	return lipgloss.Place(m.width, m.height, lipgloss.Center, lipgloss.Center, content)
 }

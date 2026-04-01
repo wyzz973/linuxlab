@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
 	"github.com/sd3/linuxlab/internal/challenge"
 	"github.com/sd3/linuxlab/internal/sandbox"
 )
@@ -20,6 +21,8 @@ type DetailModel struct {
 	challenge       *challenge.Challenge
 	hintLevel       int
 	dockerAvailable bool
+	width           int
+	height          int
 }
 
 // NewDetailModel creates a new challenge detail screen.
@@ -35,6 +38,10 @@ func (m DetailModel) Init() tea.Cmd { return nil }
 
 func (m DetailModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
+	case tea.WindowSizeMsg:
+		m.width = msg.Width
+		m.height = msg.Height
+		return m, nil
 	case tea.KeyMsg:
 		switch {
 		case msg.Type == tea.KeyEnter:
@@ -95,5 +102,7 @@ func (m DetailModel) View() string {
 	}
 	b.WriteString(HelpStyle.Render("Enter 开始挑战 · Esc 返回" + hintInfo))
 
-	return BoxStyle.Render(b.String())
+	boxWidth := responsiveBoxWidth(m.width)
+	content := BoxStyle.Width(boxWidth).Render(b.String())
+	return lipgloss.Place(m.width, m.height, lipgloss.Center, lipgloss.Center, content)
 }
