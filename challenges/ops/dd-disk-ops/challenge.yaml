@@ -18,3 +18,6 @@ hints:
     text: "dd if=/tmp/random.dat of=/tmp/random_copy.dat"
   - level: 3
     text: "md5sum /tmp/random.dat /tmp/random_copy.dat 对比校验和"
+verify:
+  - type: script
+    path: check.sh

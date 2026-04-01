@@ -18,3 +18,6 @@ hints:
     text: "tcpdump -i any port 8080 -c 3 -w /tmp/port_capture.pcap"
   - level: 3
     text: "先后台运行 tcpdump，然后 curl localhost:8080 产生流量"
+verify:
+  - type: script
+    path: check.sh

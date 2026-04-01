@@ -18,3 +18,6 @@ hints:
     text: "curl -X POST -H \"Content-Type: application/json\" -d 发送数据"
   - level: 3
     text: "curl -I 或 curl -D- 获取响应头"
+verify:
+  - type: script
+    path: check.sh

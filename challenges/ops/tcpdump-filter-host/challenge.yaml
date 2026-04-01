@@ -18,3 +18,6 @@ hints:
     text: "tcpdump -i lo host 127.0.0.1 -c 5 -w /tmp/host_capture.pcap"
   - level: 3
     text: "用 tcpdump -r 读取后 wc -l 计数"
+verify:
+  - type: script
+    path: check.sh

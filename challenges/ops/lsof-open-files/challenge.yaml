@@ -18,3 +18,6 @@ hints:
     text: "lsof -p PID 列出特定进程的文件"
   - level: 3
     text: "lsof +L1 或 lsof | grep deleted"
+verify:
+  - type: script
+    path: check.sh

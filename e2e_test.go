@@ -16,18 +16,22 @@ func TestE2E_LoadChallengesAndCreateApp(t *testing.T) {
 		t.Fatalf("LoadAllByCategory failed: %v", err)
 	}
 
-	if len(byCategory) < 2 {
-		t.Errorf("expected at least 2 categories, got %d", len(byCategory))
+	if len(byCategory) < 4 {
+		t.Errorf("expected at least 4 categories, got %d", len(byCategory))
 	}
 
-	linuxChallenges := byCategory["linux-basics"]
-	if len(linuxChallenges) < 50 {
-		t.Errorf("linux-basics has %d challenges, want >= 50", len(linuxChallenges))
-	}
-
-	vimChallenges := byCategory["vim"]
-	if len(vimChallenges) < 30 {
-		t.Errorf("vim has %d challenges, want >= 30", len(vimChallenges))
+	for _, tc := range []struct {
+		cat string
+		min int
+	}{
+		{"linux-basics", 50},
+		{"vim", 30},
+		{"shell-scripting", 40},
+		{"ops", 40},
+	} {
+		if len(byCategory[tc.cat]) < tc.min {
+			t.Errorf("%s has %d challenges, want >= %d", tc.cat, len(byCategory[tc.cat]), tc.min)
+		}
 	}
 
 	// Verify each challenge has required fields

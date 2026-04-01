@@ -19,3 +19,6 @@ hints:
     text: "journalctl -u broken 查看详细日志"
   - level: 3
     text: "检查 ExecStart 指向的文件是否存在"
+verify:
+  - type: script
+    path: check.sh

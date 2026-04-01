@@ -21,3 +21,6 @@ hints:
     text: "missingok 指令可以忽略不存在的日志"
   - level: 3
     text: "配置文件格式：/path/to/log { daily rotate 7 compress missingok }"
+verify:
+  - type: script
+    path: check.sh

@@ -20,3 +20,6 @@ hints:
     text: "inventory 文件格式：[组名] 下列出主机"
   - level: 3
     text: "playbook 使用 YAML 格式"
+verify:
+  - type: script
+    path: check.sh

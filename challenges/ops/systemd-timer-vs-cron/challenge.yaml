@@ -20,3 +20,6 @@ hints:
     text: "systemd timer 优势：更好的日志、依赖管理、错过执行时可补偿"
   - level: 3
     text: "systemctl list-timers --all 列出所有定时器"
+verify:
+  - type: script
+    path: check.sh

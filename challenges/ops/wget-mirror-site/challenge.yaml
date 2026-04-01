@@ -18,3 +18,6 @@ hints:
     text: "wget -o 指定日志文件"
   - level: 3
     text: "wget --help | grep -A5 recursive"
+verify:
+  - type: script
+    path: check.sh

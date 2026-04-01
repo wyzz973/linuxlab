@@ -18,3 +18,6 @@ hints:
     text: "iptables -t nat -L -n 列出 nat 表"
   - level: 3
     text: "iptables -L -n | grep -cE \"^[0-9]\" 统计规则数"
+verify:
+  - type: script
+    path: check.sh

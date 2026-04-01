@@ -19,3 +19,6 @@ hints:
     text: "ls -la /etc/shadow 查看权限"
   - level: 3
     text: "grep -v nologin /etc/passwd | grep -v /bin/false"
+verify:
+  - type: script
+    path: check.sh

@@ -18,3 +18,6 @@ hints:
     text: "timeout 3 tail -f ... | grep ERROR"
   - level: 3
     text: "wc -l 统计行数"
+verify:
+  - type: script
+    path: check.sh

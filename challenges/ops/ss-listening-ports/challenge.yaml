@@ -17,3 +17,6 @@ hints:
     text: "ss -tlnp | tee /tmp/listening.txt"
   - level: 3
     text: "ss -tlnp | awk 获取端口列"
+verify:
+  - type: script
+    path: check.sh

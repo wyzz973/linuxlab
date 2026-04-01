@@ -18,3 +18,6 @@ hints:
     text: "grep -c 统计匹配行数"
   - level: 3
     text: "awk + sort + uniq -c 找出最多的 IP"
+verify:
+  - type: script
+    path: check.sh

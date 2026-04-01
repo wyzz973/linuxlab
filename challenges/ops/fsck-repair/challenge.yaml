@@ -19,3 +19,6 @@ hints:
     text: "mkfs.ext4 /tmp/test_disk.img 创建文件系统"
   - level: 3
     text: "fsck.ext4 -n 以只读模式检查"
+verify:
+  - type: script
+    path: check.sh

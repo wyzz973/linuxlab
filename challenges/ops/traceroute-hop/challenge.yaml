@@ -17,3 +17,6 @@ hints:
     text: "traceroute -m 3 127.0.0.1"
   - level: 3
     text: "ip route | grep default | awk 获取网关"
+verify:
+  - type: script
+    path: check.sh

@@ -18,3 +18,6 @@ hints:
     text: "openssl x509 -in cert -text -noout 查看证书信息"
   - level: 3
     text: "对比证书和密钥的 modulus MD5 判断是否匹配"
+verify:
+  - type: script
+    path: check.sh

@@ -22,3 +22,6 @@ hints:
     text: "ExecStart=/usr/local/bin/myapp.sh"
   - level: 3
     text: "systemctl daemon-reload 重载配置"
+verify:
+  - type: script
+    path: check.sh

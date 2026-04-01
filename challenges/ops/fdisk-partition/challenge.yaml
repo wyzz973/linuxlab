@@ -18,3 +18,6 @@ hints:
     text: "fdisk -l /tmp/partition_disk.img 查看分区表"
   - level: 3
     text: "lsblk 列出块设备"
+verify:
+  - type: script
+    path: check.sh

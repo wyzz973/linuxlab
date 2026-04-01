@@ -18,3 +18,6 @@ hints:
     text: "journalctl -k 查看内核日志"
   - level: 3
     text: "journalctl -F _SYSTEMD_UNIT 列出单元"
+verify:
+  - type: script
+    path: check.sh

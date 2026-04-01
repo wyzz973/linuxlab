@@ -21,3 +21,6 @@ hints:
     text: "trap 可以在脚本退出时清理锁文件"
   - level: 3
     text: "set -euo pipefail 启用严格模式"
+verify:
+  - type: script
+    path: check.sh

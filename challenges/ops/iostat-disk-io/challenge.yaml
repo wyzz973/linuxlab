@@ -18,3 +18,6 @@ hints:
     text: "cat /proc/diskstats 查看磁盘统计"
   - level: 3
     text: "df -h 查看磁盘使用量"
+verify:
+  - type: script
+    path: check.sh

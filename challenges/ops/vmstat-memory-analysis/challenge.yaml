@@ -18,3 +18,6 @@ hints:
     text: "grep -E \"MemTotal|MemAvailable\" /proc/meminfo"
   - level: 3
     text: "free -h 或 swapon --show 查看 swap"
+verify:
+  - type: script
+    path: check.sh

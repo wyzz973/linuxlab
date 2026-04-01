@@ -16,3 +16,6 @@ hints:
     text: "awk 提取第一列（IP 地址）"
   - level: 2
     text: "awk "\"{print
+verify:
+  - type: script
+    path: check.sh

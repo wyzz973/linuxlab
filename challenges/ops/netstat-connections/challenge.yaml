@@ -17,3 +17,6 @@ hints:
     text: "ss -tan | awk 统计状态"
   - level: 3
     text: "ss -tan | awk "\"{print
+verify:
+  - type: script
+    path: check.sh

@@ -18,3 +18,6 @@ hints:
     text: "systemctl enable cron 设置自启"
   - level: 3
     text: "systemctl list-unit-files --state=enabled"
+verify:
+  - type: script
+    path: check.sh

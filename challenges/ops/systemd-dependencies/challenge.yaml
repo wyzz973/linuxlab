@@ -21,3 +21,6 @@ hints:
     text: "After=mydb.service network.target 设置启动顺序"
   - level: 3
     text: "systemctl list-dependencies webapp"
+verify:
+  - type: script
+    path: check.sh

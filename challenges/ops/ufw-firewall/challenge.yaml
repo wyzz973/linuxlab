@@ -22,3 +22,6 @@ hints:
     text: "ufw allow 22/tcp 允许端口"
   - level: 3
     text: "ufw default deny incoming 默认拒绝入站"
+verify:
+  - type: script
+    path: check.sh

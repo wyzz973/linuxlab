@@ -17,3 +17,6 @@ hints:
     text: "tcpdump -i eth0 -c 5 -w /tmp/capture.pcap"
   - level: 3
     text: "tcpdump -i eth0 -c 5 -w /tmp/capture.pcap && tcpdump -r /tmp/capture.pcap > /tmp/capture_summary.txt 2>&1"
+verify:
+  - type: script
+    path: check.sh

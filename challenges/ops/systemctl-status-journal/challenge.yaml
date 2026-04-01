@@ -18,3 +18,6 @@ hints:
     text: "journalctl -u cron -n 20 最近 20 条"
   - level: 3
     text: "journalctl -p err -b 查看本次启动的错误"
+verify:
+  - type: script
+    path: check.sh

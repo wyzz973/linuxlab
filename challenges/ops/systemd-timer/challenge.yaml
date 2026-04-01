@@ -19,3 +19,6 @@ hints:
     text: "OnCalendar=hourly 每小时运行"
   - level: 3
     text: "systemctl list-timers 列出定时器"
+verify:
+  - type: script
+    path: check.sh

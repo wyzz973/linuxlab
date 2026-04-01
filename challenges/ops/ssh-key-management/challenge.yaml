@@ -19,3 +19,6 @@ hints:
     text: "ssh-keygen -t ed25519 -f /tmp/test_key -N \"\" 无交互生成"
   - level: 3
     text: "PermitRootLogin prohibit-password 禁止root密码登录"
+verify:
+  - type: script
+    path: check.sh

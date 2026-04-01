@@ -18,3 +18,6 @@ hints:
     text: "strace ls / 2> /tmp/strace_ls.txt"
   - level: 3
     text: "strace -c ls / 统计系统调用"
+verify:
+  - type: script
+    path: check.sh
