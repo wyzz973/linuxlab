@@ -20,5 +20,5 @@ hints:
     text: "apt update && apt install -y tree && dpkg -l tree > /tmp/result.txt"
 verify:
   - type: command_output
-    command: "which tree"
-    expect: "tree"
+    command: "dpkg -l tree 2>/dev/null | grep -q '^ii' && echo installed || echo missing"
+    expect: "installed"
