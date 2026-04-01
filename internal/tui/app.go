@@ -19,6 +19,7 @@ const (
 	screenChallenges
 	screenDetail
 	screenSkillMap
+	screenRecommend
 	screenResult
 )
 
@@ -42,6 +43,7 @@ type AppModel struct {
 	challenges tea.Model
 	detail     tea.Model
 	skillmap   tea.Model
+	recommend  tea.Model
 
 	lastResult *ChallengeResultMsg
 }
@@ -78,18 +80,13 @@ func (m AppModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.skillmap = NewSkillMapModel(m.store)
 			return m, nil
 		case "recommend":
-			// Flatten challenges for recommendation
 			var all []*challenge.Challenge
 			for _, chs := range m.categories {
 				all = append(all, chs...)
 			}
-			rec := progress.RecommendWeakest(m.store, all)
-			if rec != nil {
-				m.screen = screenDetail
-				m.currentChallenge = rec
-				m.currentCat = rec.Category
-				m.detail = NewDetailModel(rec)
-			}
+			recs := progress.RecommendMultiple(m.store, all, 5)
+			m.screen = screenRecommend
+			m.recommend = NewRecommendModel(recs)
 			return m, nil
 		}
 		return m, nil
@@ -133,6 +130,8 @@ func (m AppModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 		case screenSkillMap:
 			m.screen = screenMenu
+		case screenRecommend:
+			m.screen = screenMenu
 		case screenResult:
 			m.screen = screenChallenges
 			if m.currentCat != "" {
@@ -163,6 +162,10 @@ func (m AppModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		if m.skillmap != nil {
 			m.skillmap, cmd = m.skillmap.Update(msg)
 		}
+	case screenRecommend:
+		if m.recommend != nil {
+			m.recommend, cmd = m.recommend.Update(msg)
+		}
 	}
 	return m, cmd
 }
@@ -186,6 +189,10 @@ func (m AppModel) View() string {
 	case screenSkillMap:
 		if m.skillmap != nil {
 			return m.skillmap.View()
+		}
+	case screenRecommend:
+		if m.recommend != nil {
+			return m.recommend.View()
 		}
 	case screenResult:
 		return m.resultView()
