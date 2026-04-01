@@ -25,6 +25,7 @@ var registry = map[string]Verifier{
 	"command_output": &CommandOutputVerifier{},
 	"exit_code":      &ExitCodeVerifier{},
 	"permissions":    &PermissionsVerifier{},
+	"script":         &ScriptVerifier{},
 }
 
 // RunAll executes all verification rules and returns their results.
