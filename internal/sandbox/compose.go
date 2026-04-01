@@ -51,14 +51,7 @@ func NewComposeSandbox(ctx context.Context, dir string) (*ComposeSandbox, error)
 func (s *ComposeSandbox) Exec(ctx context.Context, command string) (string, int, error) {
 	cmd := exec.CommandContext(ctx, "docker", "compose", "-f", s.composeFile, "exec", "-T", s.service, "sh", "-c", command)
 	cmd.Dir = s.dir
-	out, err := cmd.CombinedOutput()
-	if err != nil {
-		if exitErr, ok := err.(*exec.ExitError); ok {
-			return string(out), exitErr.ExitCode(), nil
-		}
-		return string(out), -1, err
-	}
-	return string(out), 0, nil
+	return runAndCapture(cmd)
 }
 
 // Destroy tears down all compose services.

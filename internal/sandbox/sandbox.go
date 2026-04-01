@@ -19,6 +19,19 @@ func DockerAvailable() bool {
 	return exec.Command("docker", "info").Run() == nil
 }
 
+// runAndCapture runs a command and returns output, exit code, and error.
+// Shared by LocalSandbox and ComposeSandbox to avoid duplicating ExitError handling.
+func runAndCapture(cmd *exec.Cmd) (string, int, error) {
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		if exitErr, ok := err.(*exec.ExitError); ok {
+			return string(out), exitErr.ExitCode(), nil
+		}
+		return string(out), -1, err
+	}
+	return string(out), 0, nil
+}
+
 // NewSandbox creates the appropriate sandbox backend for a challenge.
 // It picks ComposeSandbox if a compose file is specified, DockerSandbox
 // if Docker is available, or LocalSandbox as a degraded-mode fallback.

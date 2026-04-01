@@ -28,14 +28,7 @@ func (s *LocalSandbox) WorkDir() string { return s.workDir }
 func (s *LocalSandbox) Exec(ctx context.Context, command string) (string, int, error) {
 	cmd := exec.CommandContext(ctx, "sh", "-c", command)
 	cmd.Dir = s.workDir
-	out, err := cmd.CombinedOutput()
-	if err != nil {
-		if exitErr, ok := err.(*exec.ExitError); ok {
-			return string(out), exitErr.ExitCode(), nil
-		}
-		return string(out), -1, err
-	}
-	return string(out), 0, nil
+	return runAndCapture(cmd)
 }
 
 // Destroy removes the temporary working directory.
@@ -45,5 +38,5 @@ func (s *LocalSandbox) Destroy(_ context.Context) error {
 
 // InteractiveShellArgs returns arguments to open an interactive shell in the working directory.
 func (s *LocalSandbox) InteractiveShellArgs() []string {
-	return []string{"bash", "--norc", "-c", "cd " + s.workDir + " && exec bash"}
+	return []string{"bash", "--norc", "-c", "cd '" + s.workDir + "' && exec bash"}
 }
