@@ -14,9 +14,9 @@ hints:
   - level: 1
     text: "netstat -an 或 ss -an 查看所有连接"
   - level: 2
-    text: "ss -tan | awk 统计状态"
+    text: "ss -tan 查看 TCP 连接及状态"
   - level: 3
-    text: "ss -tan | awk "\"{print
+    text: "ss -tan | awk 'NR>1 {print $1}' | sort | uniq -c | sort -rn"
 verify:
   - type: script
     path: check.sh

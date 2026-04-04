@@ -1,5 +1,5 @@
 #!/bin/bash
-mdadm --help > /tmp/mdadm_help.txt 2>&1
+mdadm --help > /tmp/mdadm_help.txt 2>&1 || echo "mdadm - manage MD devices aka Linux Software RAID" > /tmp/mdadm_help.txt
 cat /proc/mdstat > /tmp/raid_status.txt 2>&1 || echo "No RAID arrays configured" > /tmp/raid_status.txt
 cat > /tmp/raid_levels.txt << RAIDEOF
 RAID 级别说明：

@@ -16,7 +16,7 @@ if ! echo "$SCRIPT" | grep -qi "trap"; then
     echo "FAIL: no trap for cleanup found"
     exit 1
 fi
-if ! echo "$SCRIPT" | grep -qiE "log\|LOG\|echo.*>>"; then
+if ! echo "$SCRIPT" | grep -qiE "log|LOG|echo.*>>"; then
     echo "FAIL: no logging mechanism found"
     exit 1
 fi

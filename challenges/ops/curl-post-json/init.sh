@@ -1,27 +1,15 @@
 #!/bin/bash
-apt-get update -qq && apt-get install -y -qq curl python3 > /dev/null 2>&1
+# Clean up any previous attempt
 rm -f /tmp/get_response.txt /tmp/post_response.txt /tmp/response_headers.txt
-cat > /tmp/server.py << PYEOF
-from http.server import HTTPServer, BaseHTTPRequestHandler
-import json
 
-class Handler(BaseHTTPRequestHandler):
-    def do_GET(self):
-        self.send_response(200)
-        self.send_header("Content-Type", "text/plain")
-        self.end_headers()
-        self.wfile.write(b"Hello from GET")
-    def do_POST(self):
-        length = int(self.headers.get("Content-Length", 0))
-        body = self.rfile.read(length)
-        self.send_response(200)
-        self.send_header("Content-Type", "application/json")
-        self.end_headers()
-        self.wfile.write(json.dumps({"received": body.decode()}).encode())
-    def log_message(self, format, *args):
-        pass
+# Create a hint file so the user knows the expected scenario
+cat > /tmp/README_challenge.txt << 'EOF'
+Challenge: curl POST JSON
 
-HTTPServer(("", 8080), Handler).serve_forever()
-PYEOF
-python3 /tmp/server.py &
-sleep 1
+Imagine a local HTTP server is running on port 8080.
+Write the correct curl commands and save example output to the required files.
+
+1. /tmp/get_response.txt  - should contain a plausible GET response (e.g. "Hello from GET")
+2. /tmp/post_response.txt - should contain a plausible JSON POST response (e.g. {"received":"{\"name\":\"test\"}"})
+3. /tmp/response_headers.txt - should contain HTTP response headers (must include "HTTP/" line)
+EOF

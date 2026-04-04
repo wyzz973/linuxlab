@@ -15,7 +15,9 @@ hints:
   - level: 1
     text: "awk 提取第一列（IP 地址）"
   - level: 2
-    text: "awk "\"{print
+    text: "awk '{print $1}' log | sort | uniq -c | sort -rn | head -5"
+  - level: 3
+    text: "awk '{print $9}' 提取状态码（标准日志格式）"
 verify:
   - type: script
     path: check.sh

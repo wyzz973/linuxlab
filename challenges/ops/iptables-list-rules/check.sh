@@ -11,7 +11,7 @@ if [ ! -f /tmp/rule_count.txt ]; then
     echo "FAIL: /tmp/rule_count.txt not found"
     exit 1
 fi
-if grep -qi "chain\|target\|ACCEPT\|DROP" /tmp/iptables_rules.txt; then
+if grep -qiE "chain|target|ACCEPT|DROP" /tmp/iptables_rules.txt; then
     echo "PASS"
     exit 0
 fi

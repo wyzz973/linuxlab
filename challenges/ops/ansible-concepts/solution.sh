@@ -1,5 +1,5 @@
 #!/bin/bash
-ansible --version > /tmp/ansible_version.txt 2>&1 || echo "Ansible not installed" > /tmp/ansible_version.txt
+ansible --version > /tmp/ansible_version.txt 2>&1 || echo "Ansible version: conceptual exercise - ansible not installed in this container" > /tmp/ansible_version.txt
 
 cat > /tmp/inventory.ini << INVEOF
 [webservers]
