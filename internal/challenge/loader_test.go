@@ -1,8 +1,10 @@
 package challenge
 
 import (
+	"io"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 )
 
@@ -164,6 +166,52 @@ verify:
 	}
 	if len(byCategory["vim"]) != 1 {
 		t.Errorf("vim has %d challenges, want 1", len(byCategory["vim"]))
+	}
+}
+
+func TestLoadAllWarnsOnInvalidYAMLAndSkipsMissingSilently(t *testing.T) {
+	root := t.TempDir()
+	writeChallenge(t, filepath.Join(root, "linux-basics", "good"), sampleYAML)
+
+	// Broken challenge.yaml: must be skipped WITH a stderr warning.
+	badDir := filepath.Join(root, "linux-basics", "bad")
+	if err := os.MkdirAll(badDir, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(badDir, "challenge.yaml"), []byte("id: [broken\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	// Directory without challenge.yaml: must be skipped silently.
+	emptyDir := filepath.Join(root, "linux-basics", "empty")
+	if err := os.MkdirAll(emptyDir, 0o755); err != nil {
+		t.Fatal(err)
+	}
+
+	oldStderr := os.Stderr
+	r, w, err := os.Pipe()
+	if err != nil {
+		t.Fatal(err)
+	}
+	os.Stderr = w
+	challenges, loadErr := LoadAll(root)
+	_ = w.Close()
+	os.Stderr = oldStderr
+	captured, _ := io.ReadAll(r)
+
+	if loadErr != nil {
+		t.Fatalf("LoadAll should not fail on a broken challenge.yaml: %v", loadErr)
+	}
+	if len(challenges) != 1 || challenges[0].ID != "test-challenge" {
+		t.Fatalf("LoadAll returned %d challenges, want only the valid one", len(challenges))
+	}
+
+	out := string(captured)
+	if !strings.Contains(out, "警告") || !strings.Contains(out, badDir) {
+		t.Errorf("expected stderr warning mentioning %s, got %q", badDir, out)
+	}
+	if strings.Contains(out, emptyDir) {
+		t.Errorf("directory without challenge.yaml should be skipped silently, got %q", out)
 	}
 }
 

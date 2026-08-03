@@ -4,6 +4,7 @@ import (
 	"math"
 	"sort"
 	"strings"
+	"time"
 
 	"github.com/sd3/linuxlab/internal/challenge"
 )
@@ -40,6 +41,9 @@ func BuildSkillMap(store *Store) *SkillMap {
 	totalCount := 0
 
 	for key, skill := range store.Data.Skills {
+		if skill == nil {
+			continue
+		}
 		parts := strings.SplitN(key, ".", 2)
 		if len(parts) != 2 {
 			continue
@@ -123,7 +127,7 @@ func RecommendWeakest(store *Store, challenges []*challenge.Challenge) *challeng
 			continue
 		}
 		entry, exists := store.Data.Challenges[ch.ID]
-		if !exists || entry.Status != "passed" {
+		if !exists || entry == nil || entry.Status != "passed" {
 			return ch
 		}
 	}
@@ -184,4 +188,47 @@ func RecommendMultiple(store *Store, challenges []*challenge.Challenge, limit in
 // Each hint multiplies the score by 0.8.
 func ScoreWithHints(hintsUsed int) float64 {
 	return math.Pow(0.8, float64(hintsUsed))
+}
+
+// LastAttempted returns the challenge the user worked on most recently, with
+// its progress entry. Ordering prefers the precise LastAttemptAt timestamp and
+// falls back to the day-granular LastAttempt for progress files written before
+// that field existed; ties break on challenge ID so the result is stable.
+func LastAttempted(store *Store, challenges []*challenge.Challenge) (*challenge.Challenge, *ChallengeEntry) {
+	if store == nil {
+		return nil, nil
+	}
+
+	var best *challenge.Challenge
+	var bestEntry *ChallengeEntry
+	var bestAt time.Time
+	var bestDay string
+
+	for _, ch := range challenges {
+		entry, ok := store.Data.Challenges[ch.ID]
+		if !ok || entry == nil || entry.Attempts == 0 {
+			continue
+		}
+		at, _ := time.Parse(time.RFC3339Nano, entry.LastAttemptAt)
+
+		newer := false
+		switch {
+		case best == nil:
+			newer = true
+		case !at.IsZero() && !bestAt.IsZero():
+			newer = at.After(bestAt) || (at.Equal(bestAt) && ch.ID < best.ID)
+		case !at.IsZero():
+			// A timestamped entry always beats one that only has a day.
+			newer = true
+		case !bestAt.IsZero():
+			newer = false
+		default:
+			newer = entry.LastAttempt > bestDay ||
+				(entry.LastAttempt == bestDay && ch.ID < best.ID)
+		}
+		if newer {
+			best, bestEntry, bestAt, bestDay = ch, entry, at, entry.LastAttempt
+		}
+	}
+	return best, bestEntry
 }

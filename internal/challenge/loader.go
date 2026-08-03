@@ -1,6 +1,7 @@
 package challenge
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -49,7 +50,12 @@ func LoadAll(root string) ([]*Challenge, error) {
 			chDir := filepath.Join(catDir, chEntry.Name())
 			c, err := LoadChallenge(chDir)
 			if err != nil {
-				continue // skip directories without valid challenge.yaml
+				if errors.Is(err, os.ErrNotExist) {
+					continue // no challenge.yaml in this directory, skip silently
+				}
+				// Parse/read failures should not vanish silently: warn and skip.
+				fmt.Fprintf(os.Stderr, "警告: 跳过无效题目 %s: %v\n", chDir, err)
+				continue
 			}
 			challenges = append(challenges, c)
 		}
