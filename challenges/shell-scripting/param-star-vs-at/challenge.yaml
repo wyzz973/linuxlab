@@ -1,5 +1,5 @@
 id: param-star-vs-at
-title: "\$* 与 \$@ 的区别"
+title: "$* 与 $@ 的区别"
 difficulty: 3
 category: shell-scripting
 subcategory: parameters
