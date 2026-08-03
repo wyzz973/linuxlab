@@ -5,6 +5,7 @@ import (
 	"path/filepath"
 	"testing"
 
+	tea "github.com/charmbracelet/bubbletea"
 	"github.com/sd3/linuxlab/internal/challenge"
 	"github.com/sd3/linuxlab/internal/progress"
 	"github.com/sd3/linuxlab/internal/tui"
@@ -57,6 +58,30 @@ func TestE2E_LoadChallengesAndCreateApp(t *testing.T) {
 	}
 }
 
+func TestE2E_LoadAllChallengeYAMLFiles(t *testing.T) {
+	var yamlCount int
+	err := filepath.Walk("challenges", func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		if !info.IsDir() && info.Name() == "challenge.yaml" {
+			yamlCount++
+		}
+		return nil
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	challenges, err := challenge.LoadAll("challenges")
+	if err != nil {
+		t.Fatalf("LoadAll failed: %v", err)
+	}
+	if len(challenges) != yamlCount {
+		t.Fatalf("LoadAll loaded %d challenges, want every challenge.yaml file: %d", len(challenges), yamlCount)
+	}
+}
+
 func TestE2E_ProgressRoundTrip(t *testing.T) {
 	dir := t.TempDir()
 	path := filepath.Join(dir, "progress.json")
@@ -87,6 +112,9 @@ func TestE2E_AppModelCreation(t *testing.T) {
 	store, _ := progress.NewStore(filepath.Join(dir, "progress.json"))
 
 	app := tui.NewAppModel(byCategory, store, nil)
+	// The app renders an intentionally empty screen until the first
+	// WindowSizeMsg arrives (ready gate), so provide a terminal size first.
+	app, _ = app.Update(tea.WindowSizeMsg{Width: 100, Height: 30})
 	view := app.View()
 	if view == "" {
 		t.Error("app view is empty")
