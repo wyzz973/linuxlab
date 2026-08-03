@@ -28,10 +28,31 @@ var registry = map[string]Verifier{
 	"script":         &ScriptVerifier{},
 }
 
+// Options configures how verification rules are executed.
+type Options struct {
+	// WorkDir, when non-empty, is used as the working directory for script
+	// rules so that relative paths inside check scripts resolve against it.
+	WorkDir string
+}
+
 // RunAll executes all verification rules and returns their results.
 func RunAll(rules []challenge.VerifyRule) []Result {
+	return RunAllWithOptions(rules, Options{})
+}
+
+// RunAllWithOptions executes all verification rules with the given options.
+// An empty rule set is treated as a challenge configuration error and yields
+// a single failing result, so AllPassed can never silently report success.
+func RunAllWithOptions(rules []challenge.VerifyRule, opts Options) []Result {
+	if len(rules) == 0 {
+		return []Result{{Passed: false, Message: "题目缺少验证规则，无法判定完成情况"}}
+	}
 	results := make([]Result, len(rules))
 	for i, rule := range rules {
+		if rule.Type == "script" && opts.WorkDir != "" {
+			results[i] = (&ScriptVerifier{WorkDir: opts.WorkDir}).Verify(rule)
+			continue
+		}
 		v, ok := registry[rule.Type]
 		if !ok {
 			results[i] = Result{Passed: false, Message: fmt.Sprintf("未知验证类型: %s", rule.Type)}

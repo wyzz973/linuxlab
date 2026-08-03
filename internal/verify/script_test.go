@@ -76,6 +76,34 @@ func TestScriptVerifier_NotExecutable(t *testing.T) {
 	}
 }
 
+func TestScriptVerifier_WorkDirResolvesRelativePaths(t *testing.T) {
+	scriptDir := t.TempDir()
+	workDir := t.TempDir()
+
+	script := filepath.Join(scriptDir, "check.sh")
+	os.WriteFile(script, []byte("#!/bin/bash\ncat data.txt | grep -q expected\n"), 0o755)
+	os.WriteFile(filepath.Join(workDir, "data.txt"), []byte("expected\n"), 0o644)
+
+	rule := challenge.VerifyRule{
+		Type: "script",
+		Path: script,
+	}
+
+	v := &ScriptVerifier{WorkDir: workDir}
+	result := v.Verify(rule)
+	if !result.Passed {
+		t.Errorf("expected pass with WorkDir, got fail: %s", result.Message)
+	}
+
+	// Zero-value verifier keeps the old behavior: relative paths resolve
+	// against the process cwd, so data.txt is not found there.
+	noDir := &ScriptVerifier{}
+	result = noDir.Verify(rule)
+	if result.Passed {
+		t.Error("expected fail without WorkDir")
+	}
+}
+
 func TestScriptVerifier_CapturesOutput(t *testing.T) {
 	dir := t.TempDir()
 	script := filepath.Join(dir, "check.sh")
