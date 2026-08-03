@@ -7,51 +7,73 @@ import (
 	"github.com/charmbracelet/lipgloss"
 )
 
-// Theme colors — semantic, high-contrast palette.
+// Legacy color aliases. New code should use the semantic tokens in theme.go;
+// these names remain so screens can migrate incrementally.
 var (
-	ColorPrimary   = lipgloss.Color("#7aa2f7") // Blue — titles, selected items
-	ColorSecondary = lipgloss.Color("#bb9af7") // Purple — categories
-	ColorGreen     = lipgloss.Color("#9ece6a") // Green — passed, success
-	ColorYellow    = lipgloss.Color("#e0af68") // Yellow — stars, hints, warnings
-	ColorRed       = lipgloss.Color("#f7768e") // Red — failed, errors
-	ColorDim       = lipgloss.Color("#565f89") // Gray — borders, secondary text
-	ColorText      = lipgloss.Color("#c0caf5") // Light — primary text
-	ColorSubtle    = lipgloss.Color("#414868") // Dark gray — very subtle
-	ColorBg        = lipgloss.Color("#1a1b26")
+	ColorPrimary   = currentTheme.Primary
+	ColorSecondary = currentTheme.Secondary
+	ColorGreen     = currentTheme.Success
+	ColorYellow    = currentTheme.Warning
+	ColorRed       = currentTheme.Error
+	ColorDim       = currentTheme.FgSubtle
+	ColorText      = currentTheme.FgBase
+	ColorSubtle    = currentTheme.Border
+	ColorBg        = currentTheme.BgBase
+	ColorPanel     = currentTheme.BgPanel
+	ColorFocusBg   = currentTheme.BgFocus
 )
 
-// Reusable styles.
+// Legacy style aliases pointing at the centralized style set (theme.go).
 var (
-	TitleStyle    = lipgloss.NewStyle().Foreground(ColorPrimary).Bold(true)
-	SelectedStyle = lipgloss.NewStyle().Foreground(ColorPrimary).Bold(true)
-	DimStyle      = lipgloss.NewStyle().Foreground(ColorDim)
-	SubtleStyle   = lipgloss.NewStyle().Foreground(ColorSubtle)
-	TextStyle     = lipgloss.NewStyle().Foreground(ColorText)
-	ErrorStyle    = lipgloss.NewStyle().Foreground(ColorRed)
-	SuccessStyle  = lipgloss.NewStyle().Foreground(ColorGreen)
-	WarningStyle  = lipgloss.NewStyle().Foreground(ColorYellow)
-	HelpStyle     = lipgloss.NewStyle().Foreground(ColorDim)
+	TitleStyle    = S.Title
+	SelectedStyle = S.Selected
+	DimStyle      = S.Dim
+	SubtleStyle   = S.Subtle
+	TextStyle     = S.Text
+	ErrorStyle    = S.Error
+	SuccessStyle  = S.Success
+	WarningStyle  = S.Warning
+	HelpStyle     = S.Help
+	KeyStyle      = S.Key
+	BadgeStyle    = S.Badge
+	MetaStyle     = S.Meta
 )
 
-// Status icons.
+// Status icons (pre-rendered).
 var (
-	PassedIcon  = lipgloss.NewStyle().Foreground(ColorGreen).Render("✓")
-	FailedIcon  = lipgloss.NewStyle().Foreground(ColorRed).Render("✗")
-	CurrentIcon = lipgloss.NewStyle().Foreground(ColorPrimary).Render("›")
-	PendingIcon = lipgloss.NewStyle().Foreground(ColorDim).Render("○")
+	PassedIcon  = S.IconPass
+	FailedIcon  = S.IconFail
+	CurrentIcon = S.IconCursor
+	PendingIcon = S.IconTodo
 )
 
-// Progress bar characters.
+// Progress bar characters (pre-rendered).
 var (
-	ProgressFull  = lipgloss.NewStyle().Foreground(ColorGreen).Render("█")
-	ProgressEmpty = lipgloss.NewStyle().Foreground(ColorSubtle).Render("░")
+	ProgressFull  = S.BarFull
+	ProgressEmpty = S.BarEmpty
 )
 
-// boxWidth calculates the content box width, clamped to [50, 90].
+// minBoxWidth is the safe lower bound for a rendered box: border (2) +
+// padding (4) + at least 2 columns of content. Anything narrower would make
+// strings.Repeat counts negative.
+const minBoxWidth = 8
+
+// boxWidth calculates the content box width. It prefers a readable 50-90 column
+// box, but respects narrow terminals instead of forcing horizontal overflow.
+// The returned width is never smaller than minBoxWidth.
 func boxWidth(termWidth int) int {
+	if termWidth <= 0 {
+		return 80
+	}
 	w := termWidth - 2 // 1 char margin each side
 	if w > 90 {
 		w = 90
+	}
+	if termWidth < 52 {
+		if w < 20 {
+			return maxInt(termWidth, minBoxWidth)
+		}
+		return w
 	}
 	if w < 50 {
 		w = 50
@@ -59,60 +81,77 @@ func boxWidth(termWidth int) int {
 	return w
 }
 
+// truncateToWidth is a legacy alias for truncateWidth (textutil.go).
+func truncateToWidth(s string, maxW int) string {
+	return truncateWidth(s, maxW)
+}
+
 // contentBox renders a rounded-border box with a title in the top border.
-// The title is rendered as a custom top line to avoid ANSI escape code corruption.
+// The title is rendered as a custom top line to avoid ANSI escape code
+// corruption (manual borders per CLAUDE.md convention). Every produced line
+// has the exact display width of the box: overlong titles and body lines are
+// truncated, short body lines padded.
 func contentBox(title string, body string, termWidth, termHeight int, rightLabel string) string {
-	w := boxWidth(termWidth)
-	innerW := w - 6 // border (2) + padding (4)
+	w := maxInt(boxWidth(termWidth), minBoxWidth)
+	innerW := maxInt(w-6, 0) // border (2) + padding (4)
 
 	// Build the top border line manually: ╭─ title ─────── rightLabel ─╮
 	topLeft := DimStyle.Render("╭─")
 	topRight := DimStyle.Render("─╮")
-	titleStr := ""
-	if title != "" {
-		titleStr = " " + TitleStyle.Render(title) + " "
-	}
 	rightStr := ""
 	if rightLabel != "" {
 		rightStr = " " + DimStyle.Render(rightLabel) + " "
 	}
 
-	titleW := lipgloss.Width(titleStr)
-	rightW := lipgloss.Width(rightStr)
 	topLeftW := lipgloss.Width(topLeft)
 	topRightW := lipgloss.Width(topRight)
-	fillW := w - topLeftW - titleW - rightW - topRightW
-	if fillW < 0 {
-		fillW = 0
+	rightW := lipgloss.Width(rightStr)
+
+	// Drop the right label entirely when it alone would overflow the box.
+	if rightStr != "" && topLeftW+rightW+topRightW > w {
+		rightStr = ""
+		rightW = 0
 	}
+
+	// Truncate an overlong title (display-width aware) so the top border line
+	// always renders exactly w columns wide.
+	titleStr := ""
+	if title != "" {
+		availTitle := w - topLeftW - rightW - topRightW - 2 // 2 spaces around title
+		if availTitle >= 1 {
+			titleStr = " " + TitleStyle.Render(truncateWidth(title, availTitle)) + " "
+		}
+	}
+	titleW := lipgloss.Width(titleStr)
+
+	fillW := maxInt(w-topLeftW-titleW-rightW-topRightW, 0)
 
 	topLine := topLeft + titleStr + DimStyle.Render(strings.Repeat("─", fillW)) + rightStr + topRight
 
-	// Build body with side borders
+	// Build body with side borders. Every body line is truncated to the inner
+	// width first so an overlong line can never break through the right border.
 	bodyLines := strings.Split(body, "\n")
 	var middle strings.Builder
 	for _, line := range bodyLines {
+		line = truncateWidth(line, innerW)
 		lineW := lipgloss.Width(line)
-		pad := innerW - lineW
-		if pad < 0 {
-			pad = 0
-		}
+		pad := maxInt(innerW-lineW, 0)
 		middle.WriteString(DimStyle.Render("│") + "  " + line + strings.Repeat(" ", pad) + "  " + DimStyle.Render("│") + "\n")
 	}
 
 	// Empty padding line top and bottom inside box
-	emptyLine := DimStyle.Render("│") + strings.Repeat(" ", innerW+4) + DimStyle.Render("│")
+	emptyLine := DimStyle.Render("│") + strings.Repeat(" ", maxInt(innerW+4, 0)) + DimStyle.Render("│")
 
 	// Bottom border
-	bottomLine := DimStyle.Render("╰" + strings.Repeat("─", w-2) + "╯")
+	bottomLine := DimStyle.Render("╰" + strings.Repeat("─", maxInt(w-2, 0)) + "╯")
 
 	rendered := topLine + "\n" + emptyLine + "\n" + middle.String() + emptyLine + "\n" + bottomLine
 
-	// Horizontal centering
-	renderedWidth := lipgloss.Width(topLine) // use top line as width reference
+	// Horizontal centering — reference the box width, not the rendered top
+	// line, so an anomalous line can never shift the whole box.
 	leftPad := 0
-	if termWidth > renderedWidth {
-		leftPad = (termWidth - renderedWidth) / 2
+	if termWidth > w {
+		leftPad = (termWidth - w) / 2
 	}
 	if leftPad > 0 {
 		padStr := strings.Repeat(" ", leftPad)
@@ -126,46 +165,11 @@ func contentBox(title string, body string, termWidth, termHeight int, rightLabel
 	return rendered
 }
 
-// statusBar renders a bottom bar outside the box: left-aligned context, right-aligned keys.
-func statusBar(left, right string, termWidth int) string {
-	w := boxWidth(termWidth)
-	leftPad := 0
-	if termWidth > w {
-		leftPad = (termWidth - w) / 2
-	}
-
-	leftRendered := DimStyle.Render(left)
-	rightRendered := DimStyle.Render(right)
-
-	leftW := lipgloss.Width(leftRendered)
-	rightW := lipgloss.Width(rightRendered)
-	gap := w - leftW - rightW
-	if gap < 1 {
-		gap = 1
-	}
-
-	padding := ""
-	if leftPad > 0 {
-		padding = strings.Repeat(" ", leftPad)
-	}
-
-	return padding + leftRendered + strings.Repeat(" ", gap) + rightRendered
-}
-
-// verticalCenter wraps the box + status bar in vertical padding to center on screen.
-func verticalCenter(box, status string, termHeight int) string {
-	boxH := lipgloss.Height(box)
-	totalH := boxH + 1 // +1 for status bar
-	topPad := (termHeight - totalH) / 2
-	if topPad < 0 {
-		topPad = 0
-	}
-	return strings.Repeat("\n", topPad) + box + "\n" + status
-}
-
 // sectionTitle renders a labeled section divider: "── 标题 ────────────"
 func sectionTitle(title string, width int) string {
-	inner := boxWidth(width) - 4 // account for padding
+	// Match contentBox's body width: border (2) + padding (4). Overshooting
+	// here made the rule overflow and get truncated with an ellipsis.
+	inner := maxInt(boxWidth(width)-6, 0)
 	prefix := fmt.Sprintf("── %s ", title)
 	prefixW := lipgloss.Width(prefix)
 	remaining := maxInt(0, inner-prefixW)
@@ -180,15 +184,13 @@ func DifficultyStars(level int) string {
 	if level > 5 {
 		level = 5
 	}
-	filled := lipgloss.NewStyle().Foreground(ColorYellow).Render("★")
-	empty := lipgloss.NewStyle().Foreground(ColorDim).Render("☆")
 
 	var b strings.Builder
 	for i := 0; i < level; i++ {
-		b.WriteString(filled)
+		b.WriteString(S.StarOn)
 	}
 	for i := level; i < 5; i++ {
-		b.WriteString(empty)
+		b.WriteString(S.StarOff)
 	}
 	return b.String()
 }
@@ -225,4 +227,65 @@ func maxInt(a, b int) int {
 		return a
 	}
 	return b
+}
+
+// padDisplayWidth is a legacy alias for padRight (textutil.go).
+func padDisplayWidth(s string, width int) string {
+	return padRight(s, width)
+}
+
+// boxLines renders a bordered box at an exact outer width and returns
+// its lines without any horizontal centering — the wide layout needs to place
+// two boxes side by side, which contentBox (terminal-centered, single box)
+// cannot do. Visual language matches contentBox: manual borders, title in the
+// top border, right-aligned label, 2-space inner padding. The design's main
+// box keeps a blank padding row above and below the body (padded=true); the
+// inspector box is content-tight (padded=false).
+func boxLines(title string, body []string, w int, rightLabel string, padded bool) []string {
+	if w < minBoxWidth {
+		w = minBoxWidth
+	}
+	innerW := w - 6
+
+	topLeft := DimStyle.Render("╭─")
+	topRight := DimStyle.Render("─╮")
+	rightStr := ""
+	if rightLabel != "" {
+		rightStr = " " + DimStyle.Render(rightLabel) + " "
+	}
+	topLeftW := lipgloss.Width(topLeft)
+	topRightW := lipgloss.Width(topRight)
+	rightW := lipgloss.Width(rightStr)
+	if rightStr != "" && topLeftW+rightW+topRightW > w {
+		rightStr = ""
+		rightW = 0
+	}
+
+	titleStr := ""
+	if title != "" {
+		availTitle := w - topLeftW - rightW - topRightW - 2
+		if availTitle >= 1 {
+			titleStr = " " + TitleStyle.Render(truncateWidth(title, availTitle)) + " "
+		}
+	}
+	titleW := lipgloss.Width(titleStr)
+	fillW := maxInt(w-topLeftW-titleW-rightW-topRightW, 0)
+
+	lines := make([]string, 0, len(body)+4)
+	lines = append(lines, topLeft+titleStr+DimStyle.Render(strings.Repeat("─", fillW))+rightStr+topRight)
+
+	empty := DimStyle.Render("│") + strings.Repeat(" ", maxInt(innerW+4, 0)) + DimStyle.Render("│")
+	if padded {
+		lines = append(lines, empty)
+	}
+	for _, line := range body {
+		line = truncateWidth(line, innerW)
+		pad := maxInt(innerW-lipgloss.Width(line), 0)
+		lines = append(lines, DimStyle.Render("│")+"  "+line+strings.Repeat(" ", pad)+"  "+DimStyle.Render("│"))
+	}
+	if padded {
+		lines = append(lines, empty)
+	}
+	lines = append(lines, DimStyle.Render("╰"+strings.Repeat("─", maxInt(w-2, 0))+"╯"))
+	return lines
 }

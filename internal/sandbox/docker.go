@@ -3,6 +3,8 @@ package sandbox
 import (
 	"bytes"
 	"context"
+	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 
@@ -18,6 +20,29 @@ const defaultImage = "ubuntu:22.04"
 type DockerSandbox struct {
 	cli         *client.Client
 	containerID string
+}
+
+// drainPullStream consumes the JSON message stream returned by ImagePull and
+// surfaces in-stream failures. Docker reports mid-pull errors (network
+// interruption, disk full, ...) as {"error": ...} messages inside an HTTP
+// 200 stream, so simply discarding the stream would hide them and later
+// produce a misleading "No such image" error at container create time.
+func drainPullStream(r io.Reader) error {
+	dec := json.NewDecoder(r)
+	for {
+		var msg struct {
+			Error string `json:"error"`
+		}
+		if err := dec.Decode(&msg); err != nil {
+			if errors.Is(err, io.EOF) {
+				return nil
+			}
+			return fmt.Errorf("decode pull progress: %w", err)
+		}
+		if msg.Error != "" {
+			return errors.New(msg.Error)
+		}
+	}
 }
 
 // NewDockerSandbox creates and starts a new Docker container.
@@ -39,15 +64,22 @@ func NewDockerSandbox(ctx context.Context, image string) (*DockerSandbox, error)
 			cli.Close()
 			return nil, fmt.Errorf("image pull %s: %w", image, pullErr)
 		}
-		io.Copy(io.Discard, reader)
+		drainErr := drainPullStream(reader)
 		reader.Close()
+		if drainErr != nil {
+			cli.Close()
+			return nil, fmt.Errorf("image pull %s: %w", image, drainErr)
+		}
 	}
 
 	resp, err := cli.ContainerCreate(ctx,
 		&container.Config{
 			Image: image,
-			Cmd:   []string{"sleep", "3600"},
-			Tty:   false,
+			// The container lifetime is owned by Destroy; a finite sleep
+			// would kill long learning sessions (and every exec in them)
+			// after it elapses.
+			Cmd: []string{"sleep", "infinity"},
+			Tty: false,
 		},
 		&container.HostConfig{
 			Resources: container.Resources{
@@ -63,7 +95,11 @@ func NewDockerSandbox(ctx context.Context, image string) (*DockerSandbox, error)
 	}
 
 	if err := cli.ContainerStart(ctx, resp.ID, container.StartOptions{}); err != nil {
-		cli.ContainerRemove(ctx, resp.ID, container.RemoveOptions{Force: true})
+		// Remove the created container on an independent context — ctx may
+		// already be cancelled, which is exactly when cleanup matters most.
+		cleanupCtx, cancel := context.WithTimeout(context.Background(), cleanupTimeout)
+		cli.ContainerRemove(cleanupCtx, resp.ID, container.RemoveOptions{Force: true})
+		cancel()
 		cli.Close()
 		return nil, fmt.Errorf("container start: %w", err)
 	}
@@ -74,7 +110,9 @@ func NewDockerSandbox(ctx context.Context, image string) (*DockerSandbox, error)
 // ContainerID returns the ID of the underlying Docker container.
 func (s *DockerSandbox) ContainerID() string { return s.containerID }
 
-// Exec runs a command inside the container and returns stdout, exit code, and any error.
+// Exec runs a command inside the container and returns its combined
+// stdout+stderr, exit code, and any error. Output is merged to match the
+// CombinedOutput semantics of LocalSandbox and ComposeSandbox.
 func (s *DockerSandbox) Exec(ctx context.Context, command string) (string, int, error) {
 	execCfg := container.ExecOptions{
 		Cmd:          []string{"bash", "-c", command},
@@ -93,23 +131,45 @@ func (s *DockerSandbox) Exec(ctx context.Context, command string) (string, int, 
 	}
 	defer attachResp.Close()
 
-	var stdout, stderr bytes.Buffer
-	_, err = stdcopy.StdCopy(&stdout, &stderr, attachResp.Reader)
-	if err != nil {
-		return "", -1, fmt.Errorf("read output: %w", err)
+	// StdCopy blocks on the hijacked connection, which the docker client
+	// does not tie to ctx — run it in a goroutine and force-close the
+	// connection on cancellation so a blocking command cannot hang us
+	// forever and the goroutine cannot leak.
+	var output bytes.Buffer
+	copyDone := make(chan error, 1)
+	go func() {
+		// Both writers share one buffer: merge stdout and stderr.
+		_, copyErr := stdcopy.StdCopy(&output, &output, attachResp.Reader)
+		copyDone <- copyErr
+	}()
+
+	select {
+	case <-ctx.Done():
+		attachResp.Close() // unblocks StdCopy inside the goroutine
+		<-copyDone
+		return "", -1, ctx.Err()
+	case err = <-copyDone:
+		if err != nil {
+			return "", -1, fmt.Errorf("read output: %w", err)
+		}
 	}
 
 	inspectResp, err := s.cli.ContainerExecInspect(ctx, execResp.ID)
 	if err != nil {
-		return stdout.String(), -1, fmt.Errorf("exec inspect: %w", err)
+		return output.String(), -1, fmt.Errorf("exec inspect: %w", err)
 	}
 
-	return stdout.String(), inspectResp.ExitCode, nil
+	return output.String(), inspectResp.ExitCode, nil
 }
 
 // Destroy stops and removes the container.
-func (s *DockerSandbox) Destroy(ctx context.Context) error {
-	err := s.cli.ContainerRemove(ctx, s.containerID, container.RemoveOptions{Force: true})
+// Cleanup runs on an independent timeout context so it still succeeds when
+// the caller's context has already expired or been cancelled — otherwise a
+// timed-out challenge would leak its container.
+func (s *DockerSandbox) Destroy(_ context.Context) error {
+	cleanupCtx, cancel := context.WithTimeout(context.Background(), cleanupTimeout)
+	defer cancel()
+	err := s.cli.ContainerRemove(cleanupCtx, s.containerID, container.RemoveOptions{Force: true})
 	s.cli.Close()
 	return err
 }

@@ -3,15 +3,17 @@ package tui
 import (
 	"context"
 	"fmt"
-	"os"
-	"os/exec"
-	"path/filepath"
 	"strings"
+	"time"
 
+	"github.com/charmbracelet/bubbles/help"
+	"github.com/charmbracelet/bubbles/key"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
 	"github.com/sd3/linuxlab/internal/challenge"
 	"github.com/sd3/linuxlab/internal/progress"
 	"github.com/sd3/linuxlab/internal/reference"
+	"github.com/sd3/linuxlab/internal/runner"
 	"github.com/sd3/linuxlab/internal/sandbox"
 	"github.com/sd3/linuxlab/internal/verify"
 )
@@ -29,24 +31,69 @@ const (
 	screenResult
 )
 
+const (
+	// ctrlCWindow is how long the first Ctrl+C keeps the quit armed.
+	ctrlCWindow = time.Second
+	// noticeTTL is how long a runtime notice stays in the footer.
+	noticeTTL = 5 * time.Second
+
+	ctrlCNotice = "再按一次 Ctrl+C 退出"
+
+	// menuWeakLimit is how many weak-spot recommendations the recommend screen
+	// shows, and therefore what the menu's "N 项薄弱" counter reports.
+	menuWeakLimit = 5
+)
+
 // ChallengeResultMsg is sent after a challenge attempt completes.
 type ChallengeResultMsg struct {
-	Passed   bool
-	Results  []verify.Result
+	Passed    bool
+	Results   []verify.Result
 	HintsUsed int
 }
 
-// AppModel is the root TUI model that manages screen navigation.
+// noticeExpireMsg clears the footer notice set by the matching armNotice call.
+type noticeExpireMsg struct{ seq int }
+
+// dockerStatusMsg carries the async Docker availability probe result.
+type dockerStatusMsg struct{ ok bool }
+
+// probeDockerCmd checks Docker availability off the event loop (the sandbox
+// package caches the probe, so repeated calls are cheap).
+func probeDockerCmd() tea.Cmd {
+	return func() tea.Msg {
+		return dockerStatusMsg{ok: sandbox.DockerAvailable()}
+	}
+}
+
+// AppModel is the root TUI model: a message router plus the app shell
+// (header / active screen / footer) compositor.
 type AppModel struct {
-	screen         screenID
-	categories     map[string][]*challenge.Challenge
-	store          *progress.Store
-	refs           *reference.ReferenceData
-	currentCat     string
+	screen screenID
+	stack  []screenID // navigation history for GoBackMsg (push on forward nav)
+
+	categories       map[string][]*challenge.Challenge
+	store            *progress.Store
+	refs             *reference.ReferenceData
+	currentCat       string
 	currentChallenge *challenge.Challenge
+	totalChallenges  int
 
 	width  int
 	height int
+	ready  bool // no size-dependent layout before the first WindowSizeMsg
+
+	dockerProbed bool
+	dockerOK     bool
+
+	// showSplash covers the app with the opening screen until the first
+	// keystroke. It is a layer over the menu rather than a screen of its own,
+	// so the navigation state machine starts at screenMenu as before.
+	showSplash bool
+
+	help       help.Model
+	notice     string
+	noticeSeq  int
+	ctrlCArmed bool
 
 	menu       tea.Model
 	modules    tea.Model
@@ -66,12 +113,77 @@ func NewAppModel(cats map[string][]*challenge.Challenge, store *progress.Store, 
 		totalChallenges += len(chs)
 	}
 	return AppModel{
-		screen:     screenMenu,
-		categories: cats,
-		store:      store,
-		refs:       refs,
-		menu:       NewMenuModelWithStats(totalChallenges, len(cats)),
+		screen:          screenMenu,
+		categories:      cats,
+		store:           store,
+		refs:            refs,
+		totalChallenges: totalChallenges,
+		help:            help.New(),
+		menu:            NewMenuModelWithData(computeMenuStats(cats, store, refs)),
+		showSplash:      true,
 	}
+}
+
+// splashInfo snapshots what the cover displays. Counters come from the cached
+// menu model rather than being recomputed, so View stays cheap.
+func (m AppModel) splashInfo() splashInfo {
+	info := splashInfo{dockerProbed: m.dockerProbed, dockerOK: m.dockerOK}
+	if menu, ok := m.menu.(MenuModel); ok {
+		info.stats = menu.stats
+	}
+	return info
+}
+
+// dismissSplash clears the cover. Navigation messages call it too, so a screen
+// reached programmatically is never rendered underneath the cover.
+func (m AppModel) dismissSplash() AppModel {
+	m.showSplash = false
+	return m
+}
+
+// allChallenges flattens the category map. Order is category-map dependent, so
+// callers that render the result must sort or otherwise stabilize it.
+func allChallenges(cats map[string][]*challenge.Challenge) []*challenge.Challenge {
+	var all []*challenge.Challenge
+	for _, chs := range cats {
+		all = append(all, chs...)
+	}
+	return all
+}
+
+// computeMenuStats derives the menu's status-word counters. It walks the whole
+// progress set and builds a skill map, so it is called on menu transitions
+// only — never from View.
+func computeMenuStats(cats map[string][]*challenge.Challenge, store *progress.Store, refs *reference.ReferenceData) MenuStats {
+	all := allChallenges(cats)
+	stats := MenuStats{TotalChallenges: len(all), TotalModules: len(cats)}
+	if store != nil {
+		for _, ch := range all {
+			if entry, ok := store.Data.Challenges[ch.ID]; ok && entry != nil && entry.Status == "passed" {
+				stats.PassedChallenges++
+			}
+		}
+		recs := progress.RecommendMultiple(store, all, menuWeakLimit)
+		stats.WeakCount = len(recs)
+		if len(recs) > 0 {
+			stats.Next = recs[0]
+		}
+		stats.Last, stats.LastEntry = progress.LastAttempted(store, all)
+	}
+	if refs != nil {
+		stats.ReferenceCount = len(refs.Commands)
+	}
+	return stats
+}
+
+// refreshMenuStats recomputes the menu counters in place, keeping the cached
+// menu model (and its cursor) alive.
+func (m *AppModel) refreshMenuStats() {
+	menu, ok := m.menu.(MenuModel)
+	if !ok {
+		return
+	}
+	m.menu = menu.withStats(computeMenuStats(m.categories, m.store, m.refs))
 }
 
 func (m AppModel) Init() tea.Cmd {
@@ -84,71 +196,126 @@ func (m AppModel) sizeModel(sub tea.Model) tea.Model {
 	return sized
 }
 
+// pushScreen records the current screen on the navigation stack and switches
+// to next.
+func (m *AppModel) pushScreen(next screenID) {
+	m.stack = append(m.stack, m.screen)
+	m.screen = next
+}
+
+// armNotice sets the footer notice and returns the command that clears it
+// after ttl (stale timers are ignored via the sequence number).
+func (m *AppModel) armNotice(text string, ttl time.Duration) tea.Cmd {
+	m.notice = text
+	m.noticeSeq++
+	seq := m.noticeSeq
+	return tea.Tick(ttl, func(time.Time) tea.Msg { return noticeExpireMsg{seq: seq} })
+}
+
 func (m AppModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	// Any navigation means the session has started, so the cover comes down
+	// even when a screen is reached programmatically rather than by keystroke.
+	switch msg.(type) {
+	case MenuChoiceMsg, ModuleSelectedMsg, ChallengeSelectedMsg,
+		LaunchChallengeMsg, ChallengeResultMsg, GoBackMsg:
+		m = m.dismissSplash()
+	}
+
 	switch msg := msg.(type) {
 	case tea.WindowSizeMsg:
+		firstSize := !m.ready
+		m.ready = true
 		m.width = msg.Width
 		m.height = msg.Height
-		// Pass to active sub-model
+		m.help.Width = msg.Width
+		// Broadcast to every live sub-model so screens revisited later (e.g.
+		// going back to the menu) render with the current terminal size.
+		// Only the active sub-model's command is kept.
 		var cmd tea.Cmd
-		switch m.screen {
-		case screenMenu:
-			m.menu, cmd = m.menu.Update(msg)
-		case screenModules:
-			if m.modules != nil {
-				m.modules, cmd = m.modules.Update(msg)
+		resize := func(sub tea.Model, active bool) tea.Model {
+			if sub == nil {
+				return nil
 			}
-		case screenChallenges:
-			if m.challenges != nil {
-				m.challenges, cmd = m.challenges.Update(msg)
+			updated, c := sub.Update(msg)
+			if active {
+				cmd = c
 			}
-		case screenDetail:
-			if m.detail != nil {
-				m.detail, cmd = m.detail.Update(msg)
-			}
-		case screenSkillMap:
-			if m.skillmap != nil {
-				m.skillmap, cmd = m.skillmap.Update(msg)
-			}
-		case screenRecommend:
-			if m.recommend != nil {
-				m.recommend, cmd = m.recommend.Update(msg)
-			}
-		case screenReference:
-			if m.refModel != nil {
-				m.refModel, cmd = m.refModel.Update(msg)
-			}
+			return updated
+		}
+		m.menu = resize(m.menu, m.screen == screenMenu)
+		m.modules = resize(m.modules, m.screen == screenModules)
+		m.challenges = resize(m.challenges, m.screen == screenChallenges)
+		m.detail = resize(m.detail, m.screen == screenDetail)
+		m.skillmap = resize(m.skillmap, m.screen == screenSkillMap)
+		m.recommend = resize(m.recommend, m.screen == screenRecommend)
+		m.refModel = resize(m.refModel, m.screen == screenReference)
+		if firstSize {
+			return m, tea.Batch(cmd, probeDockerCmd())
 		}
 		return m, cmd
 
+	case dockerStatusMsg:
+		m.dockerProbed = true
+		m.dockerOK = msg.ok
+		return m, nil
+
+	case noticeExpireMsg:
+		if msg.seq == m.noticeSeq {
+			m.notice = ""
+			m.ctrlCArmed = false
+		}
+		return m, nil
+
 	case tea.KeyMsg:
+		// Ctrl+C requires a double press to quit (the menu's q stays an
+		// immediate, explicit exit).
 		if msg.Type == tea.KeyCtrlC {
-			return m, tea.Quit
+			if m.ctrlCArmed {
+				return m, tea.Quit
+			}
+			m.ctrlCArmed = true
+			return m, m.armNotice(ctrlCNotice, ctrlCWindow)
+		}
+		if m.ctrlCArmed {
+			// Any other key disarms the pending quit.
+			m.ctrlCArmed = false
+			if m.notice == ctrlCNotice {
+				m.notice = ""
+			}
+		}
+		// The cover consumes the first keystroke: q still quits from it, and
+		// anything else simply reveals the menu. It only ever covers the menu,
+		// so a screen entered by other means is never intercepted.
+		if m.showSplash && m.screen == screenMenu {
+			if runeMatches(msg, "q") {
+				return m, tea.Quit
+			}
+			return m.dismissSplash(), nil
+		}
+		if key.Matches(msg, globalKeys.Help) && m.helpToggleAllowed() {
+			m.help.ShowAll = !m.help.ShowAll
+			return m, nil
 		}
 
 	case MenuChoiceMsg:
 		switch msg.Choice {
 		case "practice":
-			m.screen = screenModules
+			m.pushScreen(screenModules)
 			m.modules = m.sizeModel(NewModulesModel(m.categories, m.store))
 			return m, nil
 		case "skillmap":
-			m.screen = screenSkillMap
+			m.pushScreen(screenSkillMap)
 			m.skillmap = m.sizeModel(NewSkillMapModel(m.store))
 			return m, nil
 		case "recommend":
-			var all []*challenge.Challenge
-			for _, chs := range m.categories {
-				all = append(all, chs...)
-			}
-			recs := progress.RecommendMultiple(m.store, all, 5)
-			m.screen = screenRecommend
-			m.recommend = m.sizeModel(NewRecommendModel(recs))
+			recs := progress.RecommendMultiple(m.store, allChallenges(m.categories), menuWeakLimit)
+			m.pushScreen(screenRecommend)
+			m.recommend = m.sizeModel(NewRecommendModelWithStore(recs, m.store))
 			return m, nil
 		case "reference":
 			if m.refs != nil {
-				m.screen = screenReference
-				m.refModel = m.sizeModel(NewReferenceModel(m.refs))
+				m.pushScreen(screenReference)
+				m.refModel = m.sizeModel(NewReferenceModelWithChallenges(m.refs, m.categories, m.store))
 				return m, nil
 			}
 			return m, nil
@@ -156,14 +323,17 @@ func (m AppModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, nil
 
 	case ModuleSelectedMsg:
-		m.screen = screenChallenges
+		m.pushScreen(screenChallenges)
 		m.currentCat = msg.Category
 		m.challenges = m.sizeModel(NewChallengesModel(msg.Category, m.categories[msg.Category], m.store))
 		return m, nil
 
 	case ChallengeSelectedMsg:
-		m.screen = screenDetail
+		m.pushScreen(screenDetail)
 		m.currentChallenge = msg.Challenge
+		if msg.Challenge != nil {
+			m.currentCat = msg.Challenge.Category
+		}
 		m.detail = m.sizeModel(NewDetailModel(msg.Challenge))
 		return m, nil
 
@@ -171,40 +341,10 @@ func (m AppModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, m.launchChallenge(msg)
 
 	case ChallengeResultMsg:
-		m.lastResult = &msg
-		ch := m.currentChallenge
-		if ch != nil {
-			m.store.RecordAttempt(ch.ID, ch.Category, ch.Subcategory, msg.Passed, msg.HintsUsed)
-			m.store.Save() // best-effort persist
-		}
-		m.screen = screenResult
-		return m, nil
+		return m.handleChallengeResult(msg)
 
 	case GoBackMsg:
-		switch m.screen {
-		case screenModules:
-			m.screen = screenMenu
-		case screenChallenges:
-			m.screen = screenModules
-			m.modules = m.sizeModel(NewModulesModel(m.categories, m.store))
-		case screenDetail:
-			m.screen = screenChallenges
-			if m.currentCat != "" {
-				m.challenges = m.sizeModel(NewChallengesModel(m.currentCat, m.categories[m.currentCat], m.store))
-			}
-		case screenSkillMap:
-			m.screen = screenMenu
-		case screenRecommend:
-			m.screen = screenMenu
-		case screenReference:
-			m.screen = screenMenu
-		case screenResult:
-			m.screen = screenChallenges
-			if m.currentCat != "" {
-				m.challenges = m.sizeModel(NewChallengesModel(m.currentCat, m.categories[m.currentCat], m.store))
-			}
-		}
-		return m, nil
+		return m.goBack()
 	}
 
 	// Delegate to active sub-model
@@ -237,18 +377,130 @@ func (m AppModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.refModel, cmd = m.refModel.Update(msg)
 		}
 	case screenResult:
-		// Handle keys directly for result screen (no sub-model)
 		if keyMsg, ok := msg.(tea.KeyMsg); ok {
-			switch {
-			case keyMsg.Type == tea.KeyEsc || (keyMsg.Type == tea.KeyRunes && string(keyMsg.Runes) == "q"):
-				return m, func() tea.Msg { return GoBackMsg{} }
-			}
+			return m.updateResult(keyMsg)
 		}
 	}
 	return m, cmd
 }
 
+// helpToggleAllowed reports whether '?' may toggle the full help on the
+// current screen. On the reference list '?' belongs to the search query
+// (search-first semantics, locked behavior).
+func (m AppModel) helpToggleAllowed() bool {
+	if m.screen == screenReference {
+		if rm, ok := m.refModel.(ReferenceModel); ok && !rm.showDetail {
+			return false
+		}
+	}
+	return true
+}
+
+// handleChallengeResult records the attempt and shows the result screen. The
+// result replaces the detail screen (no push), so going back lands on the
+// list the challenge was opened from. After tea.Exec the terminal may have
+// been resized by the external session, so the size is re-queried and the
+// Docker probe refreshed.
+func (m AppModel) handleChallengeResult(msg ChallengeResultMsg) (tea.Model, tea.Cmd) {
+	m.lastResult = &msg
+	cmds := []tea.Cmd{tea.WindowSize(), probeDockerCmd()}
+	ch := m.currentChallenge
+	if ch != nil {
+		m.store.RecordAttempt(ch.ID, ch.Category, ch.Subcategory, msg.Passed, msg.HintsUsed)
+		m.store.Save() // best-effort persist
+		cmds = append(cmds, m.armNotice("已保存进度", noticeTTL))
+	}
+	m.screen = screenResult
+	return m, tea.Batch(cmds...)
+}
+
+// goBack pops the navigation stack. Sub-model caches are restored so cursor
+// and scroll positions survive (locked behavior id=19).
+func (m AppModel) goBack() (tea.Model, tea.Cmd) {
+	if len(m.stack) == 0 {
+		m.screen = screenMenu
+		m.refreshMenuStats()
+		return m, nil
+	}
+	target := m.stack[len(m.stack)-1]
+	m.stack = m.stack[:len(m.stack)-1]
+
+	switch target {
+	case screenMenu:
+		// Counters (passed / weak spots) may have changed while away.
+		m.refreshMenuStats()
+	case screenModules:
+		// Reuse the existing modules model to keep the cursor position;
+		// progress counts are read live from the store in View.
+		if m.modules == nil {
+			m.modules = m.sizeModel(NewModulesModel(m.categories, m.store))
+		}
+	case screenChallenges:
+		m.challenges = m.restoredChallenges()
+	}
+	m.screen = target
+	return m, nil
+}
+
+// updateResult handles keys on the result screen (no sub-model).
+func (m AppModel) updateResult(keyMsg tea.KeyMsg) (tea.Model, tea.Cmd) {
+	switch {
+	case isBackKey(keyMsg):
+		return m, func() tea.Msg { return GoBackMsg{} }
+	case runeMatches(keyMsg, "r"):
+		if m.currentChallenge != nil {
+			ch := m.currentChallenge
+			// Carry over the hints already unlocked in the previous
+			// attempt so the retry result keeps showing them.
+			hints := 0
+			if m.lastResult != nil {
+				hints = m.lastResult.HintsUsed
+			}
+			return m, func() tea.Msg { return LaunchChallengeMsg{Challenge: ch, HintsUsed: hints} }
+		}
+	case keyMsg.Type == tea.KeyEnter || keyMsg.Type == tea.KeyRight || runeMatches(keyMsg, "n"):
+		if next := m.nextChallenge(); next != nil {
+			// The next detail replaces the current result: the stack top is
+			// still the list screen, so back returns there.
+			m.screen = screenDetail
+			m.currentChallenge = next
+			m.detail = m.sizeModel(NewDetailModel(next))
+			return m, nil
+		}
+		return m, func() tea.Msg { return GoBackMsg{} }
+	}
+	return m, nil
+}
+
+// View composes the app shell: 1-line header, the active screen centered in
+// the main slot, 1-line footer. The output always has exactly m.height lines
+// and every line's display width is at most m.width (iron rules #2/#3).
 func (m AppModel) View() string {
+	if !m.ready || m.width <= 0 || m.height <= 0 {
+		return ""
+	}
+	spec := computeLayout(m.width, m.height)
+	if spec.Mode == ModeUnsupported {
+		return m.unsupportedView()
+	}
+	if m.showSplash && m.screen == screenMenu {
+		cover := renderSplash(m.width, m.height, m.splashInfo())
+		return finalizeFrame(fitToSlot(cover, m.width, m.height), m.width, m.height)
+	}
+
+	header := renderHeader(m.breadcrumbs(), m.headerRight(), m.width)
+	footer := m.footerView()
+	mainH := m.height - lipgloss.Height(header) - lipgloss.Height(footer)
+
+	frame := make([]string, 0, m.height)
+	frame = append(frame, strings.Split(header, "\n")...)
+	frame = append(frame, fitToSlot(m.mainView(), m.width, mainH)...)
+	frame = append(frame, strings.Split(footer, "\n")...)
+	return finalizeFrame(frame, m.width, m.height)
+}
+
+// mainView renders the active screen's content (without shell chrome).
+func (m AppModel) mainView() string {
 	switch m.screen {
 	case screenMenu:
 		return m.menu.View()
@@ -282,281 +534,229 @@ func (m AppModel) View() string {
 	return ""
 }
 
+// breadcrumbs builds the header breadcrumb for the current screen.
+func (m AppModel) breadcrumbs() []string {
+	crumbs := []string{"LinuxLab"}
+	appendCat := func() {
+		if label := CategoryLabel(m.currentCat); m.currentCat != "" && label != "" {
+			crumbs = append(crumbs, label)
+		}
+	}
+	switch m.screen {
+	case screenMenu:
+		crumbs = append(crumbs, "主菜单")
+	case screenModules:
+		crumbs = append(crumbs, "练习")
+	case screenChallenges:
+		crumbs = append(crumbs, "练习")
+		appendCat()
+	case screenDetail:
+		crumbs = append(crumbs, "练习")
+		appendCat()
+		if m.currentChallenge != nil {
+			crumbs = append(crumbs, m.currentChallenge.Title)
+		}
+	case screenSkillMap:
+		crumbs = append(crumbs, "能力图谱")
+	case screenRecommend:
+		crumbs = append(crumbs, "薄弱推荐")
+	case screenReference:
+		crumbs = append(crumbs, "命令速查")
+	case screenResult:
+		crumbs = append(crumbs, "练习")
+		if m.currentChallenge != nil {
+			crumbs = append(crumbs, m.currentChallenge.Title)
+		}
+		crumbs = append(crumbs, "检测结果")
+	}
+	return crumbs
+}
+
+// headerRight builds the right header slot: Docker status + overall progress.
+func (m AppModel) headerRight() string {
+	right := S.Meta.Render(fmt.Sprintf("%d/%d", m.passedTotal(), m.totalChallenges))
+	if m.dockerProbed {
+		icon := S.IconFail
+		if m.dockerOK {
+			icon = S.IconPass
+		}
+		right = S.Meta.Render("Docker ") + icon + S.Meta.Render(" · ") + right
+	}
+	return right
+}
+
+// passedTotal counts passed challenges across all categories (map iteration
+// order does not matter for a count, so the output stays frame-stable).
+func (m AppModel) passedTotal() int {
+	if m.store == nil {
+		return 0
+	}
+	passed := 0
+	for _, chs := range m.categories {
+		for _, ch := range chs {
+			if entry, ok := m.store.Data.Challenges[ch.ID]; ok && entry.Status == "passed" {
+				passed++
+			}
+		}
+	}
+	return passed
+}
+
+// footerView renders the shell footer: notice left, short key help right;
+// with ShowAll toggled the bubbles/help full view replaces the single line.
+func (m AppModel) footerView() string {
+	km := m.currentKeyMap()
+	if m.help.ShowAll {
+		return m.help.View(km)
+	}
+	return renderFooter(m.notice, km, m.width)
+}
+
+// currentKeyMap returns the active screen's keymap for footer help.
+func (m AppModel) currentKeyMap() help.KeyMap {
+	switch m.screen {
+	case screenModules:
+		return modulesKeys
+	case screenChallenges:
+		if cm, ok := m.challenges.(ChallengesModel); ok && cm.filtering {
+			return challengesFilterKeys
+		}
+		return challengesKeys
+	case screenDetail:
+		return detailKeys
+	case screenSkillMap:
+		return skillmapKeys
+	case screenRecommend:
+		return recommendKeys
+	case screenReference:
+		return referenceKeys
+	case screenResult:
+		km := resultKeys
+		km.Next.SetEnabled(m.nextChallenge() != nil)
+		return km
+	default:
+		return menuKeys
+	}
+}
+
+// unsupportedView renders the "terminal too small" screen, still honoring the
+// exact-height/width invariants.
+func (m AppModel) unsupportedView() string {
+	body := fmt.Sprintf("终端窗口太小\n请调整到至少 %d×%d", minTermWidth, minTermHeight)
+	box := contentBox("", body, m.width, m.height, "")
+	return finalizeFrame(fitToSlot(box, m.width, m.height), m.width, m.height)
+}
+
+// fitToSlot vertically centers content inside a slot of exactly `height`
+// lines: taller content is clipped at the bottom, shorter content is padded.
+// Every line is truncated to the given width.
+func fitToSlot(content string, width, height int) []string {
+	if height < 0 {
+		height = 0
+	}
+	lines := strings.Split(content, "\n")
+	for i := range lines {
+		lines[i] = truncateWidth(lines[i], width)
+	}
+	if len(lines) > height {
+		lines = lines[:height]
+	}
+	top := (height - len(lines)) / 2
+	out := make([]string, 0, height)
+	for i := 0; i < top; i++ {
+		out = append(out, "")
+	}
+	out = append(out, lines...)
+	for len(out) < height {
+		out = append(out, "")
+	}
+	return out
+}
+
+// finalizeFrame enforces the frame invariants: exactly `height` lines, every
+// line at most `width` display columns, trailing spaces trimmed (keeps the
+// renderer's line diff small).
+func finalizeFrame(lines []string, width, height int) string {
+	if height < 1 {
+		return ""
+	}
+	if len(lines) > height {
+		lines = lines[:height]
+	}
+	for len(lines) < height {
+		lines = append(lines, "")
+	}
+	for i := range lines {
+		lines[i] = strings.TrimRight(truncateWidth(lines[i], width), " ")
+	}
+	return strings.Join(lines, "\n")
+}
+
+// restoredChallenges returns the challenge list model to show when navigating
+// back from the detail/result screens. The existing model is reused so cursor
+// and scroll position survive (pass/fail status is read live from the store in
+// View); it is only rebuilt when missing or when the category changed (e.g.
+// the detail screen was entered from the recommend list).
+func (m AppModel) restoredChallenges() tea.Model {
+	sub := m.challenges
+	cm, ok := sub.(ChallengesModel)
+	if !ok || (m.currentCat != "" && cm.category != m.currentCat) {
+		if m.currentCat == "" {
+			return sub
+		}
+		sub = m.sizeModel(NewChallengesModel(m.currentCat, m.categories[m.currentCat], m.store))
+		cm, ok = sub.(ChallengesModel)
+	}
+	// Point the cursor at the challenge just visited (it may have advanced via
+	// "next challenge" on the result screen).
+	if ok && m.currentChallenge != nil {
+		sub = cm.focusChallenge(m.currentChallenge.ID)
+	}
+	return sub
+}
+
 func (m AppModel) launchChallenge(msg LaunchChallengeMsg) tea.Cmd {
-	ch := msg.Challenge
-	hintsUsed := msg.HintsUsed
-
-	if ch.Category == "vim" {
-		return m.launchVim(ch, hintsUsed)
+	cmd := &runner.Command{
+		Ctx: context.Background(),
+		Opts: runner.Options{
+			Challenge: msg.Challenge,
+			Refs:      m.refs,
+			HintsUsed: msg.HintsUsed,
+		},
 	}
-	return m.launchSandbox(ch, hintsUsed)
-}
-
-func (m AppModel) launchVim(ch *challenge.Challenge, hintsUsed int) tea.Cmd {
-	if len(ch.SetupFiles) == 0 {
-		return func() tea.Msg {
-			return ChallengeResultMsg{
-				Passed:  false,
-				Results: []verify.Result{{Message: "题目缺少 setup_files 配置"}},
-			}
-		}
-	}
-
-	// Prepare files in temp dir
-	runner := &sandbox.VimRunner{WorkDir: os.TempDir()}
-	paths, err := runner.PrepareFiles(ch.SetupFiles)
-	if err != nil {
-		return func() tea.Msg {
-			return ChallengeResultMsg{Passed: false, Results: []verify.Result{{Message: fmt.Sprintf("准备文件失败: %v", err)}}}
-		}
-	}
-
-	// Build verify rules with absolute paths
-	rules := make([]challenge.VerifyRule, len(ch.Verify))
-	copy(rules, ch.Verify)
-	for i := range rules {
-		if rules[i].Path != "" && len(paths) > 0 {
-			// Map relative path to the prepared file path
-			for _, p := range paths {
-				if strings.HasSuffix(p, rules[i].Path) {
-					rules[i].Path = p
-					break
-				}
-			}
-		}
-	}
-
-	c := exec.Command("vim", paths[0])
-	return tea.ExecProcess(c, func(err error) tea.Msg {
-		results := verify.RunAll(rules)
-		passed := verify.AllPassed(results)
-		return ChallengeResultMsg{Passed: passed, Results: results, HintsUsed: hintsUsed}
-	})
-}
-
-func (m AppModel) launchSandbox(ch *challenge.Challenge, hintsUsed int) tea.Cmd {
-	ctx := context.Background()
-	sb, err := sandbox.NewSandbox(ctx, ch)
-	if err != nil {
-		return func() tea.Msg {
+	return tea.Exec(cmd, func(err error) tea.Msg {
+		if err != nil {
 			return ChallengeResultMsg{
 				Passed:    false,
-				Results:   []verify.Result{{Passed: false, Message: fmt.Sprintf("沙盒创建失败: %v", err)}},
-				HintsUsed: hintsUsed,
+				Results:   []verify.Result{{Passed: false, Message: fmt.Sprintf("挑战执行失败: %v", err)}},
+				HintsUsed: msg.HintsUsed,
 			}
 		}
-	}
-
-	// Run init.sh if it exists
-	initScript := filepath.Join(ch.Dir, "init.sh")
-	if data, err := os.ReadFile(initScript); err == nil {
-		sb.Exec(ctx, string(data))
-	}
-
-	// Escape single quotes in strings for shell embedding
-	escapeShell := func(s string) string {
-		return strings.ReplaceAll(s, "'", "'\"'\"'")
-	}
-
-	// Build hints array for the hint command
-	hintsArray := ""
-	for i, h := range ch.Hints {
-		hintsArray += fmt.Sprintf("_HINTS[%d]='%s'\n", i, escapeShell(h.Text))
-	}
-
-	// Build learn content from reference data matched to challenge tags
-	learnContent := ""
-	if m.refs != nil {
-		tagSet := make(map[string]bool)
-		for _, t := range ch.Tags {
-			tagSet[strings.ToLower(t)] = true
+		return ChallengeResultMsg{
+			Passed:    cmd.Result.Passed,
+			Results:   cmd.Result.Results,
+			HintsUsed: cmd.Result.HintsUsed,
 		}
-		for _, cmd := range m.refs.Commands {
-			if !tagSet[strings.ToLower(cmd.Name)] {
-				continue
-			}
-			learnContent += fmt.Sprintf(`
-  echo ""
-  echo -e "\033[1;36m  ┌─ %s ─────────────────────────────────────\033[0m"
-  echo -e "\033[1;36m  │\033[0m  %s"
-  echo -e "\033[1;36m  │\033[0m"
-`, escapeShell(cmd.Name), escapeShell(cmd.Brief))
-			for _, ex := range cmd.Examples {
-				learnContent += fmt.Sprintf(`  echo -e "\033[1;36m  │\033[0m  \033[2m%s:\033[0m"
-  echo -e "\033[1;36m  │\033[0m    \033[1;32m$ %s\033[0m"
-  echo -e "\033[1;36m  │\033[0m"
-`, escapeShell(ex.Desc), escapeShell(ex.Cmd))
-			}
-			learnContent += `  echo -e "\033[1;36m  └──────────────────────────────────────────\033[0m"` + "\n"
-		}
-	}
-
-	// Inject helper commands (.bashrc) into the sandbox
-	desc := strings.TrimSpace(ch.Description)
-	bashrc := fmt.Sprintf(`
-# LinuxLab challenge helpers
-_TITLE='%s'
-_DESC='%s'
-_HINT_COUNT=%d
-_HINT_SHOWN=0
-%s
-
-task() {
-  echo ""
-  echo -e "\033[1;34m══════════════════════════════════════════════════════\033[0m"
-  echo -e "\033[1;34m  $_TITLE\033[0m"
-  echo -e "\033[1;34m══════════════════════════════════════════════════════\033[0m"
-  echo ""
-  echo -e "  $_DESC" | sed 's/^/  /'
-  echo ""
-  echo -e "\033[2m  learn 命令详解 · hint 提示 · help 帮助 · exit 完成\033[0m"
-  echo -e "\033[1;34m══════════════════════════════════════════════════════\033[0m"
-  echo ""
-}
-
-hint() {
-  if [ $_HINT_COUNT -eq 0 ]; then
-    echo -e "\033[33m  本题没有提示\033[0m"
-    return
-  fi
-  if [ $_HINT_SHOWN -ge $_HINT_COUNT ]; then
-    echo -e "\033[33m  已显示全部提示 ($_HINT_COUNT/$_HINT_COUNT)\033[0m"
-    echo ""
-    for i in $(seq 0 $((_HINT_COUNT-1))); do
-      echo -e "\033[33m  $((i+1)). ${_HINTS[$i]}\033[0m"
-    done
-    return
-  fi
-  echo -e "\033[33m  提示 $((_HINT_SHOWN+1))/$_HINT_COUNT: ${_HINTS[$_HINT_SHOWN]}\033[0m"
-  _HINT_SHOWN=$((_HINT_SHOWN+1))
-}
-
-learn() {
-  echo ""
-  echo -e "\033[1;36m  ═══ 本题涉及的命令详解 ═══\033[0m"
-%s
-  if [ -z "$1" ]; then
-    echo ""
-    echo -e "\033[2m  掌握了吗？输入 task 回顾任务，hint 查看提示\033[0m"
-  fi
-  echo ""
-}
-
-help() {
-  echo ""
-  echo -e "\033[1m  可用命令:\033[0m"
-  echo -e "    \033[1;34mtask\033[0m      查看任务描述"
-  echo -e "    \033[1;36mlearn\033[0m     查看本题涉及的命令详解和示例"
-  echo -e "    \033[1;33mhint\033[0m      查看下一条提示 (共 $_HINT_COUNT 条)"
-  echo -e "    \033[1mhelp\033[0m      显示此帮助"
-  echo -e "    \033[1mexit\033[0m      完成挑战并检测结果"
-  echo ""
-}
-
-# Custom prompt
-export PS1='\[\033[1;34m\][linuxlab]\[\033[0m\] \w\$ '
-
-# Show task on entry
-task
-`,
-		escapeShell(ch.Title),
-		escapeShell(desc),
-		len(ch.Hints),
-		hintsArray,
-		learnContent,
-	)
-
-	// Write .bashrc into the sandbox
-	sb.Exec(ctx, "cat > /tmp/.linuxlab_bashrc << 'LINUXLAB_EOF'\n"+bashrc+"\nLINUXLAB_EOF")
-
-	args := sb.InteractiveShellArgs()
-	c := exec.Command(args[0], args[1:]...)
-	return tea.ExecProcess(c, func(err error) tea.Msg {
-		defer sb.Destroy(ctx)
-
-		// Run verification INSIDE the sandbox, not on the host
-		var results []verify.Result
-		for _, rule := range ch.Verify {
-			switch rule.Type {
-			case "file_content":
-				out, _, execErr := sb.Exec(ctx, "cat '"+rule.Path+"' 2>/dev/null")
-				if execErr != nil {
-					results = append(results, verify.Result{Passed: false, Message: fmt.Sprintf("无法读取文件 %s: %v", rule.Path, execErr)})
-				} else {
-					actual := strings.TrimSpace(out)
-					expected := strings.TrimSpace(rule.Expect)
-					if actual == expected {
-						results = append(results, verify.Result{Passed: true, Message: "文件内容匹配"})
-					} else {
-						results = append(results, verify.Result{Passed: false, Message: fmt.Sprintf("文件内容不匹配\n期望: %s\n实际: %s", expected, actual)})
-					}
-				}
-			case "file_exists":
-				_, code, _ := sb.Exec(ctx, "test -e '"+rule.Path+"'")
-				if code == 0 {
-					results = append(results, verify.Result{Passed: true, Message: fmt.Sprintf("路径存在: %s", rule.Path)})
-				} else {
-					results = append(results, verify.Result{Passed: false, Message: fmt.Sprintf("路径不存在: %s", rule.Path)})
-				}
-			case "command_output":
-				out, _, execErr := sb.Exec(ctx, rule.Command)
-				if execErr != nil {
-					results = append(results, verify.Result{Passed: false, Message: fmt.Sprintf("命令执行失败: %v", execErr)})
-				} else {
-					actual := strings.TrimSpace(out)
-					expected := strings.TrimSpace(rule.Expect)
-					if actual == expected {
-						results = append(results, verify.Result{Passed: true, Message: "命令输出匹配"})
-					} else {
-						results = append(results, verify.Result{Passed: false, Message: fmt.Sprintf("命令输出不匹配\n期望: %s\n实际: %s", expected, actual)})
-					}
-				}
-			case "exit_code":
-				_, code, _ := sb.Exec(ctx, rule.Command)
-				expected := strings.TrimSpace(rule.Expect)
-				if fmt.Sprintf("%d", code) == expected {
-					results = append(results, verify.Result{Passed: true, Message: fmt.Sprintf("退出码匹配: %s", expected)})
-				} else {
-					results = append(results, verify.Result{Passed: false, Message: fmt.Sprintf("退出码不匹配\n期望: %s\n实际: %d", expected, code)})
-				}
-			case "permissions":
-				out, _, _ := sb.Exec(ctx, "stat -c '%a' '"+rule.Path+"' 2>/dev/null || stat -f '%Lp' '"+rule.Path+"' 2>/dev/null")
-				actual := strings.TrimSpace(out)
-				expected := strings.TrimSpace(rule.Expect)
-				if actual == expected {
-					results = append(results, verify.Result{Passed: true, Message: fmt.Sprintf("权限匹配: %s", expected)})
-				} else {
-					results = append(results, verify.Result{Passed: false, Message: fmt.Sprintf("权限不匹配\n期望: %s\n实际: %s", expected, actual)})
-				}
-			case "script":
-				scriptPath := rule.Path
-				if !filepath.IsAbs(scriptPath) {
-					scriptPath = filepath.Join(ch.Dir, scriptPath)
-				}
-				if scriptData, readErr := os.ReadFile(scriptPath); readErr == nil {
-					out, code, _ := sb.Exec(ctx, string(scriptData))
-					if code == 0 {
-						results = append(results, verify.Result{Passed: true, Message: "脚本检测通过"})
-					} else {
-						results = append(results, verify.Result{Passed: false, Message: fmt.Sprintf("脚本检测未通过: %s", strings.TrimSpace(out))})
-					}
-				} else {
-					results = append(results, verify.Result{Passed: false, Message: fmt.Sprintf("无法读取脚本: %v", readErr)})
-				}
-			default:
-				results = append(results, verify.Result{Passed: false, Message: fmt.Sprintf("未知验证类型: %s", rule.Type)})
-			}
-		}
-
-		passed := true
-		for _, r := range results {
-			if !r.Passed {
-				passed = false
-				break
-			}
-		}
-		return ChallengeResultMsg{Passed: passed, Results: results, HintsUsed: hintsUsed}
 	})
+}
+
+func (m AppModel) nextChallenge() *challenge.Challenge {
+	if m.currentCat == "" {
+		return nil
+	}
+	chs := m.categories[m.currentCat]
+	if len(chs) == 0 {
+		return nil
+	}
+	if m.currentChallenge == nil {
+		return chs[0]
+	}
+	for i, ch := range chs {
+		if ch.ID == m.currentChallenge.ID && i+1 < len(chs) {
+			return chs[i+1]
+		}
+	}
+	return nil
 }
 
 func (m AppModel) resultView() string {
@@ -565,10 +765,7 @@ func (m AppModel) resultView() string {
 	if m.lastResult == nil {
 		body.WriteString(DimStyle.Render("无结果"))
 		body.WriteString("\n")
-
-		box := contentBox("检测结果", body.String(), m.width, m.height, "")
-		status := statusBar("", "Esc 返回 · q 退出", m.width)
-		return verticalCenter(box, status, m.height)
+		return contentBox("检测结果", body.String(), m.width, m.height, "")
 	}
 
 	if m.lastResult.Passed {
@@ -590,8 +787,5 @@ func (m AppModel) resultView() string {
 		body.WriteString(fmt.Sprintf("\n%s\n", DimStyle.Render(fmt.Sprintf("使用提示: %d", m.lastResult.HintsUsed))))
 	}
 
-	box := contentBox("检测结果", body.String(), m.width, m.height, "")
-	status := statusBar("", "Esc 返回 · q 退出", m.width)
-
-	return verticalCenter(box, status, m.height)
+	return contentBox("检测结果", body.String(), m.width, m.height, "")
 }

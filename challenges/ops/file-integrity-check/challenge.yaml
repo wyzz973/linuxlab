@@ -17,7 +17,7 @@ hints:
   - level: 2
     text: "md5sum /etc/passwd 计算 MD5"
   - level: 3
-    text: "find /etc -name \"*.conf\" -exec sha256sum {} \;"
+    text: 'find /etc -name "*.conf" -exec sha256sum {} \;'
 verify:
   - type: script
     path: check.sh

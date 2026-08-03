@@ -37,6 +37,34 @@ make build
 make run
 ```
 
+### React TUI 预览
+
+项目同时提供一个新的 React/Ink 显示层，方向参考 Codex、Claude Code、opencode 一类的 agent CLI：紧凑尺寸使用顶部 tabs，标准尺寸使用左侧导航 + 工作区，宽屏额外显示右侧上下文面板。挑战执行仍复用 Go 的 sandbox/Vim/verify 引擎。
+
+```bash
+# 安装 Node 依赖
+npm install
+
+# 构建供 React TUI 调用的 Go 执行边界
+go build -buildvcs=false -o ./linuxlab ./cmd/linuxlab
+
+# 启动 React TUI 显示层
+LINUXLAB_BIN=./linuxlab make react-tui
+
+# React TUI 测试和类型检查
+make test-react
+make typecheck-react
+
+# React + Go 完整验证
+make verify-react-tui
+```
+
+React TUI 默认直接读取题库 YAML；也可以通过 Go 数据边界加载，避免长期出现 TypeScript/YAML 与 Go/YAML 行为差异：
+
+```bash
+LINUXLAB_USE_GO_DATA=1 LINUXLAB_BIN=./linuxlab npm run tui:react
+```
+
 ### 前置要求
 
 - Go 1.22+（仅构建时需要）
@@ -77,6 +105,7 @@ internal/
   progress/                    # 进度存储 + 能力图谱计算
   reference/                   # 命令速查数据和搜索
   tui/                         # Bubbletea TUI 界面（8 个屏幕）
+src/react-tui/                 # React/Ink TUI 显示层
 challenges/                    # YAML 题库（目录制）
   linux-basics/                #   98 题
   vim/                         #   36 题
@@ -171,6 +200,7 @@ make build
 
 - **语言:** Go 1.22+
 - **TUI:** [Bubbletea](https://github.com/charmbracelet/bubbletea) / [Lipgloss](https://github.com/charmbracelet/lipgloss) / [Bubbles](https://github.com/charmbracelet/bubbles)
+- **React TUI:** [Ink](https://github.com/vadimdemedes/ink) / React 19
 - **沙盒:** Docker SDK for Go
 - **数据:** YAML 题库 + 本地 JSON 进度（`~/.linuxlab/progress.json`）
 

@@ -1,0 +1,24 @@
+{
+  "name": "linuxlab",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "tui:react": "tsx src/react-tui/index.tsx",
+    "test:react": "vitest run src/react-tui",
+    "typecheck:react": "tsc -p tsconfig.react.json --noEmit",
+    "typecheck-react": "npm run typecheck:react"
+  },
+  "dependencies": {
+    "ink": "^7.0.2",
+    "react": "^19.2.6",
+    "yaml": "^2.8.4"
+  },
+  "devDependencies": {
+    "@types/node": "^25.0.0",
+    "@types/react": "^19.2.7",
+    "tsx": "^4.21.0",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.5"
+  }
+}

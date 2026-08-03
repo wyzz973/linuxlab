@@ -9,10 +9,17 @@ import (
 )
 
 // ScriptVerifier runs a shell script and checks its exit code (0 = pass).
-type ScriptVerifier struct{}
+type ScriptVerifier struct {
+	// WorkDir, when non-empty, is used as the script's working directory so
+	// that relative paths inside the script resolve against it.
+	WorkDir string
+}
 
 func (v *ScriptVerifier) Verify(rule challenge.VerifyRule) Result {
 	cmd := exec.Command("bash", rule.Path)
+	if v.WorkDir != "" {
+		cmd.Dir = v.WorkDir
+	}
 	output, err := cmd.CombinedOutput()
 
 	msg := strings.TrimSpace(string(output))

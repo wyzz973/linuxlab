@@ -1,70 +1,48 @@
-# LinuxLab
+# CLAUDE.md
 
-Interactive CLI tool for mastering Linux commands, Vim, and ops skills in real terminal environments.
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## Tech Stack
-
-- **Language:** Go 1.22+
-- **TUI:** Bubbletea / Lipgloss / Bubbles / Glamour (Charm ecosystem, v1 API)
-- **Sandbox:** Docker SDK for Go (`github.com/docker/docker/client`)
-- **YAML:** `gopkg.in/yaml.v3`
-- **Data:** Local JSON (`~/.linuxlab/progress.json`)
-
-## Project Structure
-
-```
-cmd/linuxlab/main.go          # Entry point
-internal/
-  challenge/                   # Challenge types and YAML loader
-  verify/                      # Verification engine (file, command, composite)
-  sandbox/                     # Docker sandbox + Vim runner
-  progress/                    # Progress store + skill map calculation
-  tui/                         # Bubbletea screens (menu, modules, challenges, detail, skillmap)
-challenges/                    # YAML challenge directories (linux-basics/, vim/)
-```
-
-## Development
+## Build & Test Commands
 
 ```bash
-# Build
-make build
+make build              # Build binary → ./linuxlab
+make test               # go test ./... -v
+make run                # Build + run
 
-# Run all tests
-make test
-
-# Run specific package tests
+# Single package test
 go test ./internal/challenge/ -v
-go test ./internal/verify/ -v
 go test ./internal/sandbox/ -v -timeout 60s
-go test ./internal/progress/ -v
-go test ./internal/tui/ -v
 
-# Run the app
-make run
+# Batch-validate all challenges in Docker containers
+go run scripts/validate_challenges.go              # all categories
+go run scripts/validate_challenges.go linux-basics  # single category
 ```
 
-## Workflow Rules
+## Architecture
 
-- **TDD:** Always write failing test first, then implement, then verify pass
-- **Commit per feature:** Each completed feature point gets its own git commit
-- **Tests must pass before commit:** Never commit with failing tests
-- **Run `go test ./... -v` before committing** to ensure nothing is broken
+**Flow:** `cmd/linuxlab/main.go` loads challenges + progress + references → creates `AppModel` → Bubbletea event loop.
 
-## Code Conventions
+**TUI (internal/tui/):** Root `AppModel` owns a `screenID` enum and delegates to sub-models (menu, modules, challenges, detail, skillmap, recommend, reference). Screen transitions happen via `Update()` returning new screen state. Terminal handoff to Docker/Vim uses `tea.ExecProcess`.
 
-- Go standard project layout: `cmd/` for entrypoints, `internal/` for private packages
-- Use `t.TempDir()` for test isolation — no hardcoded temp paths
-- Docker tests should call `t.Skip("docker not available")` when Docker is not running
-- Chinese for user-facing strings (TUI labels, error messages, challenge descriptions)
-- English for code identifiers, comments, and commit messages
+**Sandbox (internal/sandbox/):** `Sandbox` interface with three backends: `DockerSandbox` (per-challenge container via Docker SDK), `ComposeSandbox` (multi-service via docker-compose), `LocalSandbox` (degraded fallback). `NewSandbox()` auto-selects based on Docker availability and `compose_file` field. Verification runs INSIDE the container via `sb.Exec()`, not on the host.
 
-## Key Design Decisions
+**Challenge (internal/challenge/):** YAML loader reads `challenges/<category>/<id>/challenge.yaml`. Each challenge dir also has `init.sh`, `check.sh`, `solution.sh`. The `SetupFiles` field injects files into the container before the challenge starts (used by Vim challenges).
 
-- **Directory-per-challenge:** Each challenge is a directory with `challenge.yaml`, `init.sh`, `check.sh`, `solution.sh`
-- **Layered verification:** file_content → file_exists → command_output → exit_code → script
-- **Mixed sandbox:** Docker containers for Linux challenges, real Vim for Vim challenges
-- **tea.ExecProcess:** Used to hand terminal control to `docker exec -it` and `vim`
-- **Screen switching:** Root AppModel delegates to sub-models based on screenID enum
+**Verify (internal/verify/):** Registry pattern — 6 verifier types registered by name. `RunAll()` iterates rules and dispatches. Most challenges use `type: script` pointing to `check.sh`.
+
+**Progress (internal/progress/):** JSON store at `~/.linuxlab/progress.json`. `BuildSkillMap()` aggregates by subcategory. `ScoreWithHints()` penalizes hint usage.
+
+## Key Conventions
+
+- **Language:** Chinese for all user-facing strings (TUI, challenge descriptions, error messages). English for code identifiers and commit messages.
+- **Challenge scripts:** `init.sh` must not run slow `apt-get` unconditionally — use `if ! command -v <tool>` guards. Scripts that use network tools (tcpdump, iptables) must have fallbacks for containers without NET_ADMIN/NET_RAW capabilities.
+- **TUI borders:** `contentBox` in `styles.go` builds border lines manually (not via lipgloss border rendering) to avoid ANSI escape corruption when injecting titles.
+- **Docker tests:** Call `t.Skip("docker not available")` when Docker is not running.
+- **Test isolation:** Use `t.TempDir()`, never hardcoded temp paths.
+
+## Challenge Validation
+
+The validation script (`scripts/validate_challenges.go`) creates a fresh Docker container per challenge, runs init.sh → solution.sh → verify rules. Challenges in the `containers` category are auto-skipped (need Compose). Exit code -1 from check.sh typically means timeout/killed (blocking command or slow apt-get).
 
 ## Docs
 

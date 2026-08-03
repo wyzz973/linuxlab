@@ -101,7 +101,15 @@ func validateChallenge(ch *challenge.Challenge) validateResult {
 	if err != nil {
 		return validateResult{"FAIL", fmt.Sprintf("创建沙盒失败: %v", err)}
 	}
-	defer sb.Destroy(ctx)
+	// Destroy with a fresh context: the challenge ctx may already be expired
+	// (120s timeout), which would make cleanup fail and leak the container.
+	defer func() {
+		dctx, dcancel := context.WithTimeout(context.Background(), 30*time.Second)
+		defer dcancel()
+		if err := sb.Destroy(dctx); err != nil {
+			fmt.Fprintf(os.Stderr, "  清理容器失败 [%s]: %v\n", ch.ID, err)
+		}
+	}()
 
 	// Ensure /home/learner exists before init.sh runs
 	sb.Exec(ctx, "mkdir -p /home/learner")
@@ -143,7 +151,11 @@ func validateChallenge(ch *challenge.Challenge) validateResult {
 	// Run solution.sh
 	sb.Exec(ctx, string(solData)) // ignore exit code — some solutions have intentional non-zero parts
 
-	// Run verification inside the container
+	// Run verification inside the container.
+	// A challenge without any verify rule must not pass silently.
+	if len(ch.Verify) == 0 {
+		return validateResult{"FAIL", "无验证规则: challenge.yaml 没有任何 verify 规则"}
+	}
 	for i, rule := range ch.Verify {
 		var passed bool
 		var msg string

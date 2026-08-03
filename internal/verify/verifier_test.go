@@ -3,6 +3,7 @@ package verify
 import (
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/sd3/linuxlab/internal/challenge"
@@ -57,6 +58,45 @@ func TestRunAll_AllPassed_Helper(t *testing.T) {
 	mixed := []Result{{Passed: true}, {Passed: false}}
 	if AllPassed(mixed) {
 		t.Fatal("AllPassed should return false when one fails")
+	}
+}
+
+func TestRunAll_EmptyRulesFail(t *testing.T) {
+	results := RunAll(nil)
+	if len(results) != 1 {
+		t.Fatalf("expected 1 result for empty rules, got %d", len(results))
+	}
+	if results[0].Passed {
+		t.Fatal("empty rule set should not pass")
+	}
+	if !strings.Contains(results[0].Message, "缺少验证规则") {
+		t.Fatalf("unexpected message: %s", results[0].Message)
+	}
+	if AllPassed(results) {
+		t.Fatal("AllPassed should be false for empty rule set")
+	}
+}
+
+func TestRunAllWithOptions_ScriptWorkDir(t *testing.T) {
+	chDir := t.TempDir()
+	workDir := t.TempDir()
+
+	script := filepath.Join(chDir, "check.sh")
+	os.WriteFile(script, []byte("#!/bin/bash\ngrep -q hello challenge.txt\n"), 0o755)
+	os.WriteFile(filepath.Join(workDir, "challenge.txt"), []byte("hello\n"), 0o644)
+
+	rules := []challenge.VerifyRule{{Type: "script", Path: script}}
+
+	results := RunAllWithOptions(rules, Options{WorkDir: workDir})
+	if !results[0].Passed {
+		t.Fatalf("expected pass with WorkDir set: %s", results[0].Message)
+	}
+
+	// Without WorkDir the relative path in the script resolves against the
+	// process cwd, where challenge.txt does not exist.
+	results = RunAll(rules)
+	if results[0].Passed {
+		t.Fatal("expected fail without WorkDir")
 	}
 }
 
