@@ -1,2 +1,6 @@
 .superpowers/
 /linuxlab
+/validate_challenges
+node_modules/
+.DS_Store
+.claude/scheduled_tasks.lock
