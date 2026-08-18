@@ -20,5 +20,5 @@ hints:
   - level: 3
     text: "curl -sS -o /tmp/result.txt http://localhost 2>&1 || curl -sS http://localhost > /tmp/result.txt 2>&1"
 verify:
-  - type: file_exists
-    path: /tmp/result.txt
+  - type: script
+    path: check.sh

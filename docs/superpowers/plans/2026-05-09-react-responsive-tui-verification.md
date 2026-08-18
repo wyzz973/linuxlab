@@ -54,3 +54,17 @@ Date: 2026-05-10
 
 - Compose 挑战的宿主 shell 依赖本机 docker CLI 可用；`docker compose up -d` 的首次镜像拉取耗时可能超过 shell 移交等待（冒烟脚本 30s 上限内完成）。
 - React TUI 仍是预览层，默认入口保持 Go/Bubble Tea TUI。
+
+## 2026-08-17 全量批量验证 (278/278)
+
+`scripts/validate_challenges.go` 扩展为覆盖全部 5 个类别：
+
+- **containers 类别（41 题）**：新增宿主验证模式（与 runner 的 LocalSandbox/ComposeSandbox 语义一致），init/solution/check 在宿主的题目目录执行，验证后自动清理新增容器。顺带修复：
+  - `dockerfile-workdir` solution 生成的 app.sh 缺 shebang（`exec format error`）
+  - `network-ls-create` 子网 172.28.0.0/16 与本机已有网络冲突 → 改用 192.168.100.0/24
+  - compose 挑战 init/solution 以文件方式执行（修复 `sh -c` 下 `$0=/bin/sh` 导致 `cd "$(dirname "$0")"` 落到 /bin）
+- **ops 类别（50 题）**：修复 4 个 init.sh 无条件 apt（dns-dig-query / ssh-key-management / systemctl-start-stop / iostat-disk-io 加 guard，traceroute-hop 合并两次 apt）；验证单题超时 120s → 300s。
+- **验证稳定性**：新增预构建沙盒镜像 `linuxlab/sandbox:22.04`（`Dockerfile.sandbox` 预装全部 init 工具并保留 apt lists），apt 在验证容器内变为 no-op，消除镜像延迟导致的间歇性超时。
+- **curl-download**：YAML verify 规则与 check.sh 不一致（check.sh 接受 page.html 或 result.txt）→ 改用 `type: script`。
+
+最终结果：**278/278 通过，0 失败，0 跳过**（此前 containers 类别从未纳入批量验证）。

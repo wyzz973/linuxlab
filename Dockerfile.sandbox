@@ -1,3 +1,12 @@
+# Base image for LinuxLab challenge sandboxes and batch validation.
+# Build once locally (validation and runtime auto-pull it when missing):
+#   docker build -t linuxlab/sandbox:22.04 -f Dockerfile.sandbox .
+#
+# The tool set is the union of everything challenge init.sh scripts install,
+# so init runs become no-ops (guarded) or instant (unguarded) inside it.
+# tree is intentionally NOT included: apt-basics requires the learner to
+# install it themselves. Apt lists are kept (no rm -rf) so the incremental
+# `apt-get update` inside containers stays fast.
 FROM ubuntu:22.04
 RUN apt-get update && apt-get install -y --no-install-recommends \
     coreutils findutils grep sed gawk \
@@ -6,6 +15,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     vim-tiny \
     man-db less \
     bc jq \
-    && rm -rf /var/lib/apt/lists/*
+    at cron dnsutils e2fsprogs fdisk iptables logrotate lsof \
+    openssh-client openssl strace sysstat tcpdump traceroute ufw \
+    systemd \
+    python3 netcat-openbsd file sudo
 RUN useradd -m -s /bin/bash learner
 WORKDIR /home/learner

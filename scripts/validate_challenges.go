@@ -110,12 +110,26 @@ type validateResult struct {
 // The docker-backed and host-backed validation paths share it.
 type execFunc func(ctx context.Context, command string) (string, int, error)
 
+// challengeTimeout bounds one challenge's init → solution → verify sequence.
+// 120s was too tight for fresh containers whose init runs apt-get (mirror
+// latency under parallel validation routinely exceeded it, killing the
+// challenge with exit -1); 300s keeps slow-apt challenges green without
+// letting genuinely blocking commands run forever.
+const challengeTimeout = 300 * time.Second
+
+// validationImage pre-warms every tool the challenge init scripts install
+// (see Dockerfile.sandbox), so apt inside validation containers is a no-op
+// and runs are fast and stable regardless of mirror latency. Build it with:
+//
+//	docker build -t linuxlab/sandbox:22.04 -f Dockerfile.sandbox .
+const validationImage = "linuxlab/sandbox:22.04"
+
 func validateChallenge(ch *challenge.Challenge) validateResult {
-	ctx, cancel := context.WithTimeout(context.Background(), 120*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), challengeTimeout)
 	defer cancel()
 
 	// Create a fresh container for each challenge
-	sb, err := sandbox.NewDockerSandbox(ctx, "ubuntu:22.04")
+	sb, err := sandbox.NewDockerSandbox(ctx, validationImage)
 	if err != nil {
 		return validateResult{"FAIL", fmt.Sprintf("创建沙盒失败: %v", err)}
 	}
@@ -178,7 +192,7 @@ func validateChallenge(ch *challenge.Challenge) validateResult {
 // because the sandbox container has neither the docker CLI nor the daemon
 // socket (the exercises themselves are host docker operations).
 func validateHostChallenge(ch *challenge.Challenge) validateResult {
-	ctx, cancel := context.WithTimeout(context.Background(), 120*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), challengeTimeout)
 	defer cancel()
 
 	execFn := func(ctx context.Context, command string) (string, int, error) {
