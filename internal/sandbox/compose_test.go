@@ -149,6 +149,35 @@ func TestComposeSandbox_UpAndDown(t *testing.T) {
 	}
 }
 
+func TestComposeSandbox_RelativeDirDoesNotDoublePath(t *testing.T) {
+	if !composeAvailable() {
+		t.Skip("docker not available")
+	}
+
+	dir, name := writeComposeFile(t, `services:
+  web:
+    image: alpine:3.18
+    command: ["sleep", "300"]
+`)
+
+	// Regression: production challenge dirs are relative
+	// (challenges/<category>/<id>). `docker compose -f <relative>` runs with
+	// cmd.Dir = dir, which used to re-resolve the relative compose path and
+	// double the directory prefix, failing every compose challenge.
+	t.Chdir(dir)
+	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
+	defer cancel()
+
+	sb, err := NewComposeSandbox(ctx, ".", name)
+	if err != nil {
+		t.Fatalf("NewComposeSandbox with relative dir: %v", err)
+	}
+	defer sb.Destroy(ctx)
+	if !filepath.IsAbs(sb.composeFile) {
+		t.Errorf("composeFile = %q, want absolute path", sb.composeFile)
+	}
+}
+
 func TestComposeSandbox_Exec(t *testing.T) {
 	if !composeAvailable() {
 		t.Skip("docker not available")

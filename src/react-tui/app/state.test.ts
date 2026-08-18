@@ -76,4 +76,47 @@ describe('app state reducer', () => {
 		expect(next.screen).toBe('result');
 		expect(next.history).toEqual(['detail']);
 	});
+
+	it('reveals hints progressively and caps at the hint count', () => {
+		let state = createInitialState({initialScreen: 'detail'});
+		expect(state.hintLevel).toBe(0);
+		state = reduceAppState(state, {type: 'revealHint', max: 3});
+		state = reduceAppState(state, {type: 'revealHint', max: 3});
+		expect(state.hintLevel).toBe(2);
+		state = reduceAppState(state, {type: 'revealHint', max: 3});
+		state = reduceAppState(state, {type: 'revealHint', max: 3});
+		expect(state.hintLevel).toBe(3);
+	});
+
+	it('resets hint level when selecting another challenge', () => {
+		const state = {...createInitialState({initialScreen: 'detail'}), hintLevel: 2};
+		const next = reduceAppState(state, {type: 'selectChallenge', challengeID: 'grep-basic'});
+		expect(next.selectedChallengeID).toBe('grep-basic');
+		expect(next.hintLevel).toBe(0);
+	});
+
+	it('restores hint level for retry from result', () => {
+		const state = {...createInitialState({initialScreen: 'result'}), hintLevel: 0};
+		const next = reduceAppState(state, {type: 'setHintLevel', level: 2});
+		expect(next.hintLevel).toBe(2);
+		expect(reduceAppState(next, {type: 'setHintLevel', level: -1}).hintLevel).toBe(0);
+	});
+
+	it('keeps hint level when starting and finishing a challenge', () => {
+		const state = {...createInitialState({initialScreen: 'detail'}), hintLevel: 2};
+		const started = reduceAppState(state, {type: 'startChallenge', challengeID: 'ls-basic'});
+		expect(started.runningChallengeID).toBe('ls-basic');
+		expect(started.hintLevel).toBe(2);
+		const finished = reduceAppState(started, {
+			type: 'finishChallenge',
+			result: {
+				challengeID: 'ls-basic',
+				passed: true,
+				hintsUsed: 2,
+				results: [],
+				events: [],
+			},
+		});
+		expect(finished.hintLevel).toBe(2);
+	});
 });

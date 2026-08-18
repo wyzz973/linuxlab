@@ -149,6 +149,29 @@ func TestMissingChallengeIDReturnsNonZero(t *testing.T) {
 	}
 }
 
+func TestHintsFromArgs(t *testing.T) {
+	cases := []struct {
+		name string
+		args []string
+		want int
+	}{
+		{name: "no flag", args: []string{"--json"}, want: 0},
+		{name: "with hints", args: []string{"--json", "--hints", "2"}, want: 2},
+		{name: "hints first", args: []string{"--hints", "1", "--json"}, want: 1},
+		{name: "negative ignored", args: []string{"--hints", "-1"}, want: 0},
+		{name: "non-numeric ignored", args: []string{"--hints", "abc"}, want: 0},
+		{name: "missing value ignored", args: []string{"--hints"}, want: 0},
+		{name: "zero hints", args: []string{"--hints", "0"}, want: 0},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			if got := hintsFromArgs(tc.args); got != tc.want {
+				t.Fatalf("hintsFromArgs(%v) = %d, want %d", tc.args, got, tc.want)
+			}
+		})
+	}
+}
+
 func TestDataDumpJSON(t *testing.T) {
 	root := t.TempDir()
 	writeChallenge(t, root, "linux-basics", "ls-basic")

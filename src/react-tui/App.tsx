@@ -1,4 +1,4 @@
-import React, {useEffect, useMemo, useReducer} from 'react';
+import React, {useCallback, useEffect, useMemo, useReducer, useState} from 'react';
 import {Box, Text, useApp, useInput} from 'ink';
 import {createLayoutSpec} from './app/breakpoints.js';
 import {filterCommands} from './app/commands.js';
@@ -11,6 +11,7 @@ import {
 	recommendChallenges,
 	summarizeCategories,
 } from './domain/selectors.js';
+import {applyRunResultToData} from './domain/progress.js';
 import {AppShell} from './components/shell/AppShell.js';
 import {navItems} from './components/shell/Navigation.js';
 import {HelpOverlay} from './components/modals/HelpOverlay.js';
@@ -26,6 +27,7 @@ import {SkillMapScreen} from './components/screens/SkillMapScreen.js';
 import {theme} from './theme/theme.js';
 import {fitText} from './utils/text.js';
 import {runChallenge} from './runtime/goExecutor.js';
+import {loadLinuxLabDataFromGo} from './data/goData.js';
 import {useTerminalSize} from './runtime/terminal.js';
 import type {Category, Challenge, CommandRef, LinuxLabData, ScreenID, TerminalSize} from './types.js';
 
@@ -34,16 +36,28 @@ type AppProps = {
 	initialScreen?: ScreenID;
 	initialQuery?: string;
 	terminalSize?: TerminalSize;
+	backendStatus?: string;
 };
 
-export function App({data, initialScreen = 'menu', initialQuery = '', terminalSize}: AppProps) {
+export function App({data: initialData, initialScreen = 'menu', initialQuery = '', terminalSize, backendStatus}: AppProps) {
 	const {exit} = useApp();
 	const detectedSize = useTerminalSize();
 	const layout = createLayoutSpec(terminalSize ?? detectedSize);
+	const [data, setData] = useState(initialData);
 	const [state, dispatch] = useReducer(
 		reduceAppState,
 		createInitialState({initialScreen, initialQuery}),
 	);
+
+	// 挑战结束后用 Go 引擎的权威数据（data dump）做后台对账，
+	// 与乐观更新互补：skills 图谱、其他会话的进度都会一并刷新。
+	const refreshData = useCallback(() => {
+		loadLinuxLabDataFromGo()
+			.then(setData)
+			.catch(() => {
+				// 二进制缺失或数据损坏时保持当前视图可用。
+			});
+	}, []);
 
 	const totals = useMemo(() => summarizeCategories(data.categories), [data.categories]);
 	const filteredCategories = useMemo(
@@ -89,15 +103,24 @@ export function App({data, initialScreen = 'menu', initialQuery = '', terminalSi
 
 		let cancelled = false;
 		const timer = setTimeout(() => {
-			void runChallenge({challengeID: challenge.id})
+			void runChallenge({challengeID: challenge.id, hints: state.hintLevel})
 				.then(result => {
 					if (!cancelled) {
+						setData(current => applyRunResultToData(current, result));
 						dispatch({type: 'finishChallenge', result});
 					}
 				})
 				.catch(error => {
 					if (!cancelled) {
 						const message = error instanceof Error ? error.message : String(error);
+						const failed = {
+							challengeID: challenge.id,
+							passed: false,
+							hintsUsed: state.hintLevel,
+							results: [{passed: false, message}],
+							events: [{type: 'error' as const, message}],
+						};
+						setData(current => applyRunResultToData(current, failed));
 						dispatch({type: 'failChallenge', challengeID: challenge.id, message});
 					}
 				});
@@ -107,7 +130,13 @@ export function App({data, initialScreen = 'menu', initialQuery = '', terminalSi
 			cancelled = true;
 			clearTimeout(timer);
 		};
-	}, [data.categories, state.runningChallengeID]);
+	}, [data.categories, state.runningChallengeID, state.hintLevel]);
+
+	useEffect(() => {
+		if (state.lastResult) {
+			refreshData();
+		}
+	}, [state.lastResult, refreshData]);
 
 	useInput((input, key) => {
 		if (key.ctrl && input === 'c') {
@@ -207,12 +236,18 @@ export function App({data, initialScreen = 'menu', initialQuery = '', terminalSi
 				handleListInput(input, key, data.categories.length, state.moduleCursor, 'moduleCursor', Math.max(1, layout.mainHeight - 4), () => {});
 				break;
 			case 'detail':
+				if (input === 'h' && selectedChallenge && !state.runningChallengeID) {
+					dispatch({type: 'revealHint', max: selectedChallenge.hints.length});
+					return;
+				}
 				if (key.return && selectedChallenge && !state.runningChallengeID) {
 					dispatch({type: 'startChallenge', challengeID: selectedChallenge.id});
 				}
 				break;
 			case 'result':
 				if (input === 'r' && selectedChallenge) {
+					// 与 Go TUI 语义一致：重试保留已解锁的提示（影响得分）。
+					dispatch({type: 'setHintLevel', level: state.lastResult?.hintsUsed ?? 0});
 					dispatch({type: 'startChallenge', challengeID: selectedChallenge.id});
 				}
 				if ((input === 'n' || key.return) && selectedCategory && selectedChallenge) {
@@ -345,6 +380,7 @@ export function App({data, initialScreen = 'menu', initialQuery = '', terminalSi
 	const inspector = renderInspector(
 		state.screen === 'detail' ? selectedChallenge : undefined,
 		state.screen === 'reference' ? selectedRef : undefined,
+		state.hintLevel,
 	);
 	const modal = state.modal === 'help'
 		? <HelpOverlay layout={layout} screen={state.screen} />
@@ -359,7 +395,7 @@ export function App({data, initialScreen = 'menu', initialQuery = '', terminalSi
 			title="LinuxLab"
 			progressText={`${totals.passed}/${totals.total}`}
 			notice={state.notice || statusText(state.screen)}
-			statusText="React preview"
+			statusText={backendStatus ?? 'React preview'}
 			inspector={inspector}
 			modal={modal}
 		>
@@ -404,7 +440,7 @@ function renderScreen({
 				: <Text color={theme.dim}>暂无模块</Text>;
 		case 'detail':
 			return selectedChallenge
-				? <ChallengeDetailScreen challenge={selectedChallenge} relatedCommands={relatedCommands} progress={data.progress.challenges} layout={layout} running={state.runningChallengeID === selectedChallenge.id} />
+				? <ChallengeDetailScreen challenge={selectedChallenge} relatedCommands={relatedCommands} progress={data.progress.challenges} layout={layout} running={state.runningChallengeID === selectedChallenge.id} hintLevel={state.hintLevel} />
 				: <Text color={theme.dim}>暂无题目</Text>;
 		case 'reference':
 			return <ReferenceScreen commands={filteredRefs} selected={selectedRef} cursor={state.referenceCursor} query={state.query} searchActive={state.searchActive} layout={layout} />;
@@ -417,12 +453,12 @@ function renderScreen({
 	}
 }
 
-function renderInspector(challenge?: Challenge, command?: CommandRef) {
+function renderInspector(challenge?: Challenge, command?: CommandRef, hintLevel = 0) {
 	if (challenge) {
 		return (
 			<Box flexDirection="column">
 				<Text color={theme.dim}>{fitText(`标签: ${challenge.tags.join(', ') || '无'}`, 34)}</Text>
-				<Text color={theme.dim}>提示: {challenge.hints.length}</Text>
+				<Text color={theme.dim}>提示: {challenge.hints.length} 条 · 已用 {Math.min(hintLevel, challenge.hints.length)}/{challenge.hints.length}</Text>
 				<Text color={theme.dim}>检查: {challenge.verify.length}</Text>
 				<Text color={theme.dim}>{fitText(`ID: ${challenge.id}`, 34)}</Text>
 			</Box>
@@ -447,7 +483,7 @@ function statusText(screen: ScreenID) {
 		return '/ 搜索 · ↑↓/j/k 选择 · Esc 清空/返回';
 	}
 	if (screen === 'detail') {
-		return 'Enter 开始挑战 · ? 帮助 · q 返回';
+		return 'Enter 开始挑战 · h 提示 · ? 帮助 · q 返回';
 	}
 	if (screen === 'result') {
 		return 'r 重试 · n 下一题 · q 返回';

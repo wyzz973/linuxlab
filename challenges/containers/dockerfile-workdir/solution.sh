@@ -1,6 +1,6 @@
 #!/bin/bash
 mkdir -p /tmp/workdir-app
-echo 'echo "app is running"' > /tmp/workdir-app/app.sh
+printf '#!/bin/sh\necho "app is running"\n' > /tmp/workdir-app/app.sh
 cat > /tmp/workdir-app/Dockerfile << 'EOF'
 FROM alpine
 WORKDIR /app

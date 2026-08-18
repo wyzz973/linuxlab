@@ -16,7 +16,10 @@ export const fixtureData: LinuxLabData = {
 					subcategory: 'files',
 					tags: ['ls'],
 					description: '使用 ls 查看当前目录内容，并理解隐藏文件和详细列表。这个描述故意稍长，用来检查终端换行和裁剪是否稳定。',
-					hints: [{level: 1, text: '先运行 ls'}],
+					hints: [
+						{level: 1, text: '先运行 ls'},
+						{level: 2, text: '尝试 ls -la 查看隐藏文件'},
+					],
 					verify: [{type: 'script', path: 'check.sh'}],
 				},
 				{

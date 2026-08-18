@@ -11,6 +11,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 	"time"
@@ -49,10 +50,23 @@ func main() {
 		fmt.Printf("\n══════ %s (%d 题) ══════\n", cat, len(challenges))
 
 		for _, ch := range challenges {
-			// Skip container challenges (need compose or special setup)
+			// containers 类别在宿主上操作 docker（LocalSandbox/ComposeSandbox
+			// 语义，与 runner 一致）：init/solution/check 都在宿主的题目目录
+			// 执行，因为沙盒容器里没有 docker CLI。
 			if ch.Category == "containers" {
-				fmt.Printf("  ⊘ %-40s SKIP (container challenge)\n", ch.Title)
-				totalSkip++
+				result := validateHostChallenge(ch)
+				switch result.status {
+				case "PASS":
+					fmt.Printf("  ✓ %-40s PASS\n", ch.Title)
+					totalPass++
+				case "FAIL":
+					fmt.Printf("  ✗ %-40s FAIL: %s\n", ch.Title, result.message)
+					totalFail++
+					failures = append(failures, fmt.Sprintf("[%s] %s: %s", ch.Category, ch.Title, result.message))
+				case "SKIP":
+					fmt.Printf("  ⊘ %-40s SKIP: %s\n", ch.Title, result.message)
+					totalSkip++
+				}
 				continue
 			}
 
@@ -91,6 +105,10 @@ type validateResult struct {
 	status  string // PASS, FAIL, SKIP
 	message string
 }
+
+// execFunc runs a command string and returns output, exit code, and error.
+// The docker-backed and host-backed validation paths share it.
+type execFunc func(ctx context.Context, command string) (string, int, error)
 
 func validateChallenge(ch *challenge.Challenge) validateResult {
 	ctx, cancel := context.WithTimeout(context.Background(), 120*time.Second)
@@ -151,7 +169,107 @@ func validateChallenge(ch *challenge.Challenge) validateResult {
 	// Run solution.sh
 	sb.Exec(ctx, string(solData)) // ignore exit code — some solutions have intentional non-zero parts
 
-	// Run verification inside the container.
+	return verifyRules(ch, ctx, sb.Exec)
+}
+
+// validateHostChallenge validates a containers-category challenge on the host,
+// matching the runner's LocalSandbox/ComposeSandbox semantics: init.sh,
+// solution.sh and the verify rules all execute in the challenge directory,
+// because the sandbox container has neither the docker CLI nor the daemon
+// socket (the exercises themselves are host docker operations).
+func validateHostChallenge(ch *challenge.Challenge) validateResult {
+	ctx, cancel := context.WithTimeout(context.Background(), 120*time.Second)
+	defer cancel()
+
+	execFn := func(ctx context.Context, command string) (string, int, error) {
+		cmd := exec.CommandContext(ctx, "/bin/sh", "-c", command)
+		cmd.Dir = ch.Dir
+		out, err := cmd.CombinedOutput()
+		if err != nil {
+			if exitErr, ok := err.(*exec.ExitError); ok {
+				return string(out), exitErr.ExitCode(), nil
+			}
+			return string(out), -1, err
+		}
+		return string(out), 0, nil
+	}
+
+	before := runningContainerIDs()
+
+	// 宿主脚本以文件方式执行（bash <path>，工作目录 = 题目目录），而不是
+	// 把内容传给 sh -c：后者会让 $0 变成 shell 路径（如 /bin/sh），导致
+	// 脚本里 `cd "$(dirname "$0")"` 解析到错误目录。
+	// 路径必须绝对化：ch.Dir 是相对路径，相对路径会被 bash 再相对 cmd.Dir
+	// 解析，导致双重拼接找不到文件。
+	runScript := func(path string) (string, int) {
+		abs, err := filepath.Abs(path)
+		if err != nil {
+			return "", -1
+		}
+		cmd := exec.CommandContext(ctx, "bash", abs)
+		cmd.Dir = ch.Dir
+		out, err := cmd.CombinedOutput()
+		if err != nil {
+			if exitErr, ok := err.(*exec.ExitError); ok {
+				return string(out), exitErr.ExitCode()
+			}
+			return string(out), -1
+		}
+		return string(out), 0
+	}
+
+	if initPath := filepath.Join(ch.Dir, "init.sh"); fileExists(initPath) {
+		runScript(initPath)
+	}
+
+	solutionPath := filepath.Join(ch.Dir, "solution.sh")
+	if !fileExists(solutionPath) {
+		return validateResult{"SKIP", "无 solution.sh"}
+	}
+	runScript(solutionPath) // ignore exit code — some solutions have intentional non-zero parts
+
+	// 清理本挑战启动的资源（compose 项目 down + 新增容器删除），
+	// 避免批量验证在宿主上留下运行中的容器。
+	defer cleanupHostContainers(before, ch)
+
+	return verifyRules(ch, ctx, execFn)
+}
+
+func fileExists(path string) bool {
+	_, err := os.Stat(path)
+	return err == nil
+}
+
+func runningContainerIDs() []string {
+	out, err := exec.Command("docker", "ps", "-aq").Output()
+	if err != nil {
+		return nil
+	}
+	return strings.Fields(string(out))
+}
+
+func cleanupHostContainers(before []string, ch *challenge.Challenge) {
+	// compose 挑战整体下架（同时移除其容器）
+	if ch.ComposeFile != "" {
+		cmd := exec.Command("docker", "compose", "-f", filepath.Join(ch.Dir, ch.ComposeFile), "down")
+		cmd.Dir = ch.Dir
+		_ = cmd.Run()
+	}
+	for _, id := range runningContainerIDs() {
+		found := false
+		for _, old := range before {
+			if id == old {
+				found = true
+				break
+			}
+		}
+		if !found {
+			_ = exec.Command("docker", "rm", "-f", id).Run()
+		}
+	}
+}
+
+func verifyRules(ch *challenge.Challenge, ctx context.Context, execFn execFunc) validateResult {
 	// A challenge without any verify rule must not pass silently.
 	if len(ch.Verify) == 0 {
 		return validateResult{"FAIL", "无验证规则: challenge.yaml 没有任何 verify 规则"}
@@ -162,7 +280,7 @@ func validateChallenge(ch *challenge.Challenge) validateResult {
 
 		switch rule.Type {
 		case "file_content":
-			out, _, _ := sb.Exec(ctx, "cat '"+rule.Path+"' 2>/dev/null")
+			out, _, _ := execFn(ctx, "cat '"+rule.Path+"' 2>/dev/null")
 			actual := strings.TrimSpace(out)
 			expected := strings.TrimSpace(rule.Expect)
 			passed = actual == expected
@@ -171,14 +289,14 @@ func validateChallenge(ch *challenge.Challenge) validateResult {
 			}
 
 		case "file_exists":
-			_, code, _ := sb.Exec(ctx, "test -e '"+rule.Path+"'")
+			_, code, _ := execFn(ctx, "test -e '"+rule.Path+"'")
 			passed = code == 0
 			if !passed {
 				msg = fmt.Sprintf("verify[%d] 路径不存在: %s", i, rule.Path)
 			}
 
 		case "command_output":
-			out, _, execErr := sb.Exec(ctx, rule.Command)
+			out, _, execErr := execFn(ctx, rule.Command)
 			if execErr != nil {
 				return validateResult{"FAIL", fmt.Sprintf("verify[%d] 命令错误: %v", i, execErr)}
 			}
@@ -190,7 +308,7 @@ func validateChallenge(ch *challenge.Challenge) validateResult {
 			}
 
 		case "exit_code":
-			_, code, _ := sb.Exec(ctx, rule.Command)
+			_, code, _ := execFn(ctx, rule.Command)
 			expected := strings.TrimSpace(rule.Expect)
 			passed = fmt.Sprintf("%d", code) == expected
 			if !passed {
@@ -198,7 +316,7 @@ func validateChallenge(ch *challenge.Challenge) validateResult {
 			}
 
 		case "permissions":
-			out, _, _ := sb.Exec(ctx, "stat -c '%a' '"+rule.Path+"' 2>/dev/null")
+			out, _, _ := execFn(ctx, "stat -c '%a' '"+rule.Path+"' 2>/dev/null")
 			actual := strings.TrimSpace(out)
 			expected := strings.TrimSpace(rule.Expect)
 			passed = actual == expected
@@ -212,10 +330,10 @@ func validateChallenge(ch *challenge.Challenge) validateResult {
 				scriptPath = filepath.Join(ch.Dir, scriptPath)
 			}
 			if scriptData, readErr := os.ReadFile(scriptPath); readErr == nil {
-				_, code, _ := sb.Exec(ctx, string(scriptData))
+				out, code, _ := execFn(ctx, string(scriptData))
 				passed = code == 0
 				if !passed {
-					msg = fmt.Sprintf("verify[%d] check.sh 退出码: %d", i, code)
+					msg = fmt.Sprintf("verify[%d] check.sh 退出码: %d\n    %s", i, code, truncate(strings.TrimSpace(out), 300))
 				}
 			} else {
 				return validateResult{"FAIL", fmt.Sprintf("verify[%d] 无法读取脚本: %v", i, readErr)}

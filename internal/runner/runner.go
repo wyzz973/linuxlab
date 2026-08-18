@@ -173,13 +173,31 @@ func runSandbox(ctx context.Context, opts Options) (Result, error) {
 		}
 	}()
 
+	// Compose 挑战操作的是宿主级资源（docker compose up、宿主 docker CLI、
+	// 宿主 /tmp 路径），其 init/check 脚本必须在宿主的题目目录里执行，而
+	// 不是在服务容器内（容器里没有 docker 二进制）。交互 shell 同样是宿主
+	// shell（以题目目录为工作目录），bashrc 注入也落在宿主上。
+	isCompose := false
+	execInChallenge := sb.Exec
+	if _, isCompose = sb.(*sandbox.ComposeSandbox); isCompose {
+		execInChallenge = func(ctx context.Context, command string) (string, int, error) {
+			return runHostShell(ctx, ch.Dir, command)
+		}
+	}
+
 	initScript := filepath.Join(ch.Dir, "init.sh")
 	if data, err := os.ReadFile(initScript); err == nil {
-		sb.Exec(ctx, string(data))
+		if isCompose {
+			// 宿主脚本以文件方式执行：sh -c 会把 $0 置为 shell 路径
+			//（如 /bin/sh），导致脚本内 `cd "$(dirname "$0")"` 解析错误。
+			runHostShellFile(ctx, ch.Dir, initScript)
+		} else {
+			execInChallenge(ctx, string(data))
+		}
 	}
 
 	bashrc := buildBashrc(ch, opts.Refs)
-	sb.Exec(ctx, "cat > /tmp/.linuxlab_bashrc << 'LINUXLAB_EOF'\n"+bashrc+"\nLINUXLAB_EOF")
+	execInChallenge(ctx, "cat > /tmp/.linuxlab_bashrc << 'LINUXLAB_EOF'\n"+bashrc+"\nLINUXLAB_EOF")
 
 	mode := sandboxMode(sb)
 	emit(opts, Event{Type: "handoff", Mode: mode, Message: "进入挑战环境，退出后自动检测"})
@@ -188,6 +206,9 @@ func runSandbox(ctx context.Context, opts Options) (Result, error) {
 	cmd.Stdin = stdin(opts)
 	cmd.Stdout = stdout(opts)
 	cmd.Stderr = stderr(opts)
+	if isCompose {
+		cmd.Dir = ch.Dir
+	}
 	if err := cmd.Run(); err != nil {
 		// 交互 shell 的非零退出码（如最后一条命令失败后 exit）不算致命
 		// 错误，仍继续执行验证；只有无法启动等非 ExitError 才向上返回。
@@ -197,14 +218,53 @@ func runSandbox(ctx context.Context, opts Options) (Result, error) {
 		}
 	}
 
-	results := verifyInSandbox(ctx, ch, sb)
+	results := verifyInSandbox(ctx, ch, execInChallenge)
 	passed := verify.AllPassed(results)
 	result := Result{Passed: passed, Results: results, HintsUsed: opts.HintsUsed}
 	emit(opts, Event{Type: "result", Passed: &passed, HintsUsed: opts.HintsUsed, Results: results})
 	return result, nil
 }
 
-func verifyInSandbox(ctx context.Context, ch *challenge.Challenge, sb sandbox.Sandbox) []verify.Result {
+// runHostShell executes a script on the host with the given working directory.
+// Used for ComposeSandbox init/check scripts, which manage host-level docker
+// resources and files.
+func runHostShell(ctx context.Context, dir, script string) (string, int, error) {
+	cmd := exec.CommandContext(ctx, "/bin/sh", "-c", script)
+	cmd.Dir = dir
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		if exitErr, ok := err.(*exec.ExitError); ok {
+			return string(out), exitErr.ExitCode(), nil
+		}
+		return string(out), -1, err
+	}
+	return string(out), 0, nil
+}
+
+// runHostShellFile executes a script FILE on the host with the given working
+// directory, so $0 resolves to the script path and `cd "$(dirname "$0")"`
+// works as intended (unlike `sh -c`, where $0 is the shell path). The path is
+// absolutized because a relative path would be re-resolved against cmd.Dir
+// (which is itself relative, e.g. challenges/<category>/<id>) and double the
+// directory prefix.
+func runHostShellFile(ctx context.Context, dir, scriptPath string) (string, int, error) {
+	abs, err := filepath.Abs(scriptPath)
+	if err != nil {
+		return "", -1, err
+	}
+	cmd := exec.CommandContext(ctx, "bash", abs)
+	cmd.Dir = dir
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		if exitErr, ok := err.(*exec.ExitError); ok {
+			return string(out), exitErr.ExitCode(), nil
+		}
+		return string(out), -1, err
+	}
+	return string(out), 0, nil
+}
+
+func verifyInSandbox(ctx context.Context, ch *challenge.Challenge, execFn func(ctx context.Context, command string) (string, int, error)) []verify.Result {
 	// 空规则集视为题目配置错误，避免什么都没验证就判过。
 	if len(ch.Verify) == 0 {
 		return []verify.Result{{Passed: false, Message: "题目缺少验证规则，无法判定完成情况"}}
@@ -213,7 +273,7 @@ func verifyInSandbox(ctx context.Context, ch *challenge.Challenge, sb sandbox.Sa
 	for _, rule := range ch.Verify {
 		switch rule.Type {
 		case "file_content":
-			out, _, execErr := sb.Exec(ctx, "cat '"+rule.Path+"' 2>/dev/null")
+			out, _, execErr := execFn(ctx, "cat '"+rule.Path+"' 2>/dev/null")
 			if execErr != nil {
 				results = append(results, verify.Result{Passed: false, Message: fmt.Sprintf("无法读取文件 %s: %v", rule.Path, execErr)})
 				continue
@@ -226,14 +286,14 @@ func verifyInSandbox(ctx context.Context, ch *challenge.Challenge, sb sandbox.Sa
 				results = append(results, verify.Result{Passed: false, Message: fmt.Sprintf("文件内容不匹配\n期望: %s\n实际: %s", expected, actual)})
 			}
 		case "file_exists":
-			_, code, _ := sb.Exec(ctx, "test -e '"+rule.Path+"'")
+			_, code, _ := execFn(ctx, "test -e '"+rule.Path+"'")
 			if code == 0 {
 				results = append(results, verify.Result{Passed: true, Message: fmt.Sprintf("路径存在: %s", rule.Path)})
 			} else {
 				results = append(results, verify.Result{Passed: false, Message: fmt.Sprintf("路径不存在: %s", rule.Path)})
 			}
 		case "command_output":
-			out, _, execErr := sb.Exec(ctx, rule.Command)
+			out, _, execErr := execFn(ctx, rule.Command)
 			if execErr != nil {
 				results = append(results, verify.Result{Passed: false, Message: fmt.Sprintf("命令执行失败: %v", execErr)})
 				continue
@@ -246,7 +306,7 @@ func verifyInSandbox(ctx context.Context, ch *challenge.Challenge, sb sandbox.Sa
 				results = append(results, verify.Result{Passed: false, Message: fmt.Sprintf("命令输出不匹配\n期望: %s\n实际: %s", expected, actual)})
 			}
 		case "exit_code":
-			_, code, _ := sb.Exec(ctx, rule.Command)
+			_, code, _ := execFn(ctx, rule.Command)
 			expected := strings.TrimSpace(rule.Expect)
 			if fmt.Sprintf("%d", code) == expected {
 				results = append(results, verify.Result{Passed: true, Message: fmt.Sprintf("退出码匹配: %s", expected)})
@@ -254,7 +314,7 @@ func verifyInSandbox(ctx context.Context, ch *challenge.Challenge, sb sandbox.Sa
 				results = append(results, verify.Result{Passed: false, Message: fmt.Sprintf("退出码不匹配\n期望: %s\n实际: %d", expected, code)})
 			}
 		case "permissions":
-			out, _, _ := sb.Exec(ctx, "stat -c '%a' '"+rule.Path+"' 2>/dev/null || stat -f '%Lp' '"+rule.Path+"' 2>/dev/null")
+			out, _, _ := execFn(ctx, "stat -c '%a' '"+rule.Path+"' 2>/dev/null || stat -f '%Lp' '"+rule.Path+"' 2>/dev/null")
 			actual := strings.TrimSpace(out)
 			expected := strings.TrimSpace(rule.Expect)
 			if actual == expected {
@@ -268,7 +328,7 @@ func verifyInSandbox(ctx context.Context, ch *challenge.Challenge, sb sandbox.Sa
 				scriptPath = filepath.Join(ch.Dir, scriptPath)
 			}
 			if scriptData, readErr := os.ReadFile(scriptPath); readErr == nil {
-				out, code, _ := sb.Exec(ctx, string(scriptData))
+				out, code, _ := execFn(ctx, string(scriptData))
 				if code == 0 {
 					results = append(results, verify.Result{Passed: true, Message: "脚本检测通过"})
 				} else {

@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"strconv"
 
 	"github.com/sd3/linuxlab/internal/challenge"
 	"github.com/sd3/linuxlab/internal/progress"
@@ -18,7 +19,7 @@ const exitVerifyFailed = 2
 
 func runChallenge(ctx context.Context, env Env) int {
 	if len(env.Args) < 2 || env.Args[1] != "run" {
-		return writeError(env.Stderr, "用法: linuxlab challenge run <challenge-id> [--json]")
+		return writeError(env.Stderr, "用法: linuxlab challenge run <challenge-id> [--json] [--hints N]")
 	}
 	if len(env.Args) < 3 {
 		return writeError(env.Stderr, "缺少题目 ID")
@@ -29,6 +30,13 @@ func runChallenge(ctx context.Context, env Env) int {
 	ch, err := findChallenge(env.ChallengesDir, challengeID)
 	if err != nil {
 		return writeError(env.Stderr, err.Error())
+	}
+
+	// 提示使用次数与 Go TUI 的渐进式提示语义一致：已在详情页解锁的
+	// 提示数透传到执行层，记入进度并影响得分（ScoreWithHints）。
+	hints := hintsFromArgs(env.Args[3:])
+	if hints > len(ch.Hints) {
+		hints = len(ch.Hints)
 	}
 
 	refs := loadRefs(env.RefsPath)
@@ -48,6 +56,7 @@ func runChallenge(ctx context.Context, env Env) int {
 	result, err := runner.RunInteractive(ctx, runner.Options{
 		Challenge: ch,
 		Refs:      refs,
+		HintsUsed: hints,
 		Emit:      emit,
 		Stdin:     env.Stdin,
 		Stdout:    runStdout,
@@ -104,6 +113,19 @@ func findChallenge(challengesDir, id string) (*challenge.Challenge, error) {
 		}
 	}
 	return nil, fmt.Errorf("未找到题目: %s", id)
+}
+
+// hintsFromArgs extracts the --hints N flag value. Malformed or missing
+// values yield 0; the caller clamps the result to the challenge's hint count.
+func hintsFromArgs(args []string) int {
+	for i, arg := range args {
+		if arg == "--hints" && i+1 < len(args) {
+			if n, err := strconv.Atoi(args[i+1]); err == nil && n >= 0 {
+				return n
+			}
+		}
+	}
+	return 0
 }
 
 func loadRefs(path string) *reference.ReferenceData {

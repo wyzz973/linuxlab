@@ -8,8 +8,8 @@ if ! docker network ls --format '{{.Name}}' | grep -q '^isolated-net$'; then
     exit 1
 fi
 SUBNET=$(docker network inspect isolated-net --format '{{range .IPAM.Config}}{{.Subnet}}{{end}}')
-if [ "$SUBNET" != "172.28.0.0/16" ]; then
-    echo "FAIL: isolated-net 子网不正确，期望 172.28.0.0/16"
+if [ "$SUBNET" != "192.168.100.0/24" ]; then
+    echo "FAIL: isolated-net 子网不正确，期望 192.168.100.0/24"
     exit 1
 fi
 if [ ! -f /tmp/network-list.txt ] || [ ! -f /tmp/network-list-after.txt ]; then

@@ -11,7 +11,7 @@ description: |
   请完成以下任务：
   1. 列出所有 Docker 网络，保存到 /tmp/network-list.txt
   2. 创建一个名为 my-network 的桥接网络
-  3. 创建一个名为 isolated-net 的桥接网络，指定子网 172.28.0.0/16
+  3. 创建一个名为 isolated-net 的桥接网络，指定子网 192.168.100.0/24
   4. 再次列出网络，保存到 /tmp/network-list-after.txt
 requires_docker: true
 hints:
@@ -20,7 +20,7 @@ hints:
   - level: 2
     text: "docker network create 网络名 创建网络"
   - level: 3
-    text: "docker network create --subnet=172.28.0.0/16 isolated-net"
+    text: "docker network create --subnet=192.168.100.0/24 isolated-net"
 verify:
   - type: script
     path: check.sh

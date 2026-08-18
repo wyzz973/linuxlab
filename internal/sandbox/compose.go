@@ -57,7 +57,15 @@ func NewComposeSandbox(ctx context.Context, dir, composeFileName string) (*Compo
 	if composeFileName == "" {
 		composeFileName = "docker-compose.yaml"
 	}
-	composeFile := filepath.Join(dir, composeFileName)
+	// Resolve to an absolute path: the compose file is consumed both by this
+	// process (firstDeclaredService) and by `docker compose -f ...`, which
+	// runs with cmd.Dir = dir. A relative path would be resolved a second
+	// time against cmd.Dir and double the directory prefix (challenges/<cat>/<id>
+	// would become challenges/<cat>/<id>/challenges/<cat>/<id>/docker-compose.yaml).
+	composeFile, err := filepath.Abs(filepath.Join(dir, composeFileName))
+	if err != nil {
+		return nil, fmt.Errorf("resolve compose file path: %w", err)
+	}
 
 	// Detect the primary service before starting anything, so a bad compose
 	// file fails fast with nothing to clean up.
@@ -100,11 +108,15 @@ func (s *ComposeSandbox) Destroy(_ context.Context) error {
 	return nil
 }
 
-// InteractiveShellArgs returns arguments to open an interactive shell in the primary service.
-// bash is preferred, but images without it (e.g. alpine-based ones) fall back to sh.
+// InteractiveShellArgs returns arguments for a HOST shell rooted in the
+// compose project directory. Compose challenges manage host-level resources
+// (docker compose up/ps/logs, /tmp files), so the terminal session must have
+// the host docker CLI available — entering the service container would leave
+// the user without docker and the checks without their files. The caller
+// (runner) sets the working directory to the challenge dir.
+// bash is preferred, but hosts without it (minimal containers) fall back to sh.
 func (s *ComposeSandbox) InteractiveShellArgs() []string {
 	return []string{
-		"docker", "compose", "-f", s.composeFile, "exec", "-it", s.service,
 		"sh", "-c", "command -v bash >/dev/null 2>&1 && exec bash --rcfile /tmp/.linuxlab_bashrc || exec sh",
 	}
 }

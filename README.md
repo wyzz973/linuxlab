@@ -65,6 +65,19 @@ React TUI 默认直接读取题库 YAML；也可以通过 Go 数据边界加载�
 LINUXLAB_USE_GO_DATA=1 LINUXLAB_BIN=./linuxlab npm run tui:react
 ```
 
+React TUI 已完整接入 Go 引擎：详情页按 `h` 渐进式解锁提示（影响得分，与 Go TUI 语义一致），`Enter` 移交真实挑战环境（Docker/Vim/Compose 宿主 shell），结束自动检测并即时刷新进度（乐观更新 + Go data dump 后台对账），Header 显示 `doctor` 后端状态徽标。
+
+> **默认入口决策（2026-08-17）：** React TUI 的 parity 已通过 PTY 全链路冒烟验证，但 `linuxlab` 默认入口仍保留 Go/Bubble Tea TUI——它支持无 Node 依赖的单二进制分发（4.9MB），这是产品的核心承诺。React TUI 作为预览层通过 `npm run tui:react` 启用。若未来需要切换默认入口，改动点为 `cmd/linuxlab/main.go` 的启动分支。
+
+PTY 全链路冒烟测试（真实终端下 菜单 → 详情 → 提示 → 移交 → 检测 → 结果页）：
+
+```bash
+go build -buildvcs=false -o ./linuxlab ./cmd/linuxlab
+python3 scripts/react_tui_smoke.py                 # linux-basics 题目（默认）
+SMOKE_SHELL_CMD="docker compose up -d; exit" \
+  python3 scripts/react_tui_smoke.py               # compose 题目
+```
+
 ### 前置要求
 
 - Go 1.22+（仅构建时需要）

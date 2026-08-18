@@ -18,7 +18,7 @@ export function hintsForScreen(screen: ScreenID, compact: boolean): KeyHint[] {
 		menu: [{keys: '1-5', label: '跳转'}],
 		modules: [{keys: 'Enter', label: '进入模块'}],
 		challenges: [{keys: 'Enter', label: '查看题目'}],
-		detail: [{keys: 'Enter', label: '开始挑战'}],
+		detail: [{keys: 'Enter', label: '开始挑战'}, {keys: 'h', label: '提示'}],
 		reference: [{keys: 'Esc', label: '清空'}],
 		recommend: [{keys: 'Enter', label: '查看推荐'}],
 		skillmap: [{keys: 'g/G', label: '首尾'}],

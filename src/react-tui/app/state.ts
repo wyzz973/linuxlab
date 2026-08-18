@@ -16,6 +16,7 @@ export type AppState = {
 	selectedCategoryID: string;
 	selectedChallengeID: string;
 	notice: string;
+	hintLevel: number;
 	runningChallengeID?: string;
 	lastResult?: ChallengeRunResult;
 };
@@ -33,6 +34,8 @@ export type AppAction =
 	| {type: 'setCursor'; name: CursorName; value: number}
 	| {type: 'selectCategory'; categoryID: string; firstChallengeID: string}
 	| {type: 'selectChallenge'; challengeID: string}
+	| {type: 'revealHint'; max: number}
+	| {type: 'setHintLevel'; level: number}
 	| {type: 'startChallenge'; challengeID: string}
 	| {type: 'finishChallenge'; result: ChallengeRunResult}
 	| {type: 'failChallenge'; challengeID: string; message: string};
@@ -56,6 +59,7 @@ export function createInitialState(options: InitialOptions = {}): AppState {
 		selectedCategoryID: '',
 		selectedChallengeID: '',
 		notice: '',
+		hintLevel: 0,
 	};
 }
 
@@ -109,7 +113,11 @@ export function reduceAppState(state: AppState, action: AppAction): AppState {
 				challengeCursor: 0,
 			};
 		case 'selectChallenge':
-			return {...state, selectedChallengeID: action.challengeID};
+			return {...state, selectedChallengeID: action.challengeID, hintLevel: 0};
+		case 'revealHint':
+			return {...state, hintLevel: Math.min(action.max, state.hintLevel + 1), notice: ''};
+		case 'setHintLevel':
+			return {...state, hintLevel: Math.max(0, action.level)};
 		case 'startChallenge':
 			return {...state, runningChallengeID: action.challengeID, notice: '正在启动挑战...'};
 		case 'finishChallenge':

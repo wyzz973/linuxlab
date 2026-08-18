@@ -42,7 +42,7 @@ go run scripts/validate_challenges.go linux-basics  # single category
 
 ## Challenge Validation
 
-The validation script (`scripts/validate_challenges.go`) creates a fresh Docker container per challenge, runs init.sh → solution.sh → verify rules. Challenges in the `containers` category are auto-skipped (need Compose). Exit code -1 from check.sh typically means timeout/killed (blocking command or slow apt-get).
+The validation script (`scripts/validate_challenges.go`) creates a fresh Docker container per challenge, runs init.sh → solution.sh → verify rules. The `containers` category (41 题) runs in host mode matching runner semantics (LocalSandbox/ComposeSandbox): init/solution/check execute on the host in the challenge dir, and containers started by the solution are removed afterwards. Exit code -1 from check.sh typically means timeout/killed (blocking command or slow apt-get).
 
 ## Docs
 

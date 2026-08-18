@@ -68,6 +68,68 @@ func runOpts(ch *challenge.Challenge) Options {
 	}
 }
 
+// runHostShell must execute scripts on the host in the challenge directory —
+// compose init/check scripts rely on the host docker CLI and host paths.
+func TestRunHostShellUsesChallengeDir(t *testing.T) {
+	out, code, err := runHostShell(context.Background(), "/", "pwd")
+	if err != nil {
+		t.Fatalf("runHostShell: %v", err)
+	}
+	if code != 0 {
+		t.Fatalf("exit code = %d, want 0", code)
+	}
+	if strings.TrimSpace(out) != "/" {
+		t.Errorf("pwd = %q, want %q", strings.TrimSpace(out), "/")
+	}
+
+	if _, code, _ := runHostShell(context.Background(), "/", "exit 7"); code != 7 {
+		t.Errorf("exit code = %d, want 7 (ExitError must carry the status)", code)
+	}
+}
+
+// Compose challenges are verified on the host (docker compose resources live
+// there), so verifyInSandbox must drive its execFn with the challenge dir.
+func TestVerifyInSandboxScriptRuleUsesExecFn(t *testing.T) {
+	chDir := t.TempDir()
+	checkPath := filepath.Join(chDir, "check.sh")
+	if err := os.WriteFile(checkPath, []byte("#!/bin/sh\ntest -f host-marker.txt\n"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(chDir, "host-marker.txt"), []byte("x"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	// A fake execFn that runs the script on the host inside chDir — the same
+	// wiring runSandbox uses for ComposeSandbox.
+	execFn := func(ctx context.Context, command string) (string, int, error) {
+		return runHostShell(ctx, chDir, command)
+	}
+
+	ch := &challenge.Challenge{Dir: chDir, Verify: []challenge.VerifyRule{{Type: "script", Path: "check.sh"}}}
+	results := verifyInSandbox(context.Background(), ch, execFn)
+	if !results[0].Passed {
+		t.Fatalf("expected host-context check to pass, got: %+v", results)
+	}
+}
+
+// A script rule that fails must surface its output, not vanish.
+func TestVerifyInSandboxScriptRuleFailureMessage(t *testing.T) {
+	chDir := t.TempDir()
+	if err := os.WriteFile(filepath.Join(chDir, "check.sh"), []byte("#!/bin/sh\necho 未完成\nexit 1\n"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	ch := &challenge.Challenge{Dir: chDir, Verify: []challenge.VerifyRule{{Type: "script", Path: "check.sh"}}}
+	results := verifyInSandbox(context.Background(), ch, func(ctx context.Context, command string) (string, int, error) {
+		return runHostShell(ctx, chDir, command)
+	})
+	if results[0].Passed {
+		t.Fatal("expected failure")
+	}
+	if !strings.Contains(results[0].Message, "未完成") {
+		t.Fatalf("failure message must include script output, got: %q", results[0].Message)
+	}
+}
+
 // Regression for id=22: a script rule with a relative path (check.sh) must
 // resolve against the challenge dir, and the script must run inside the vim
 // work dir so its relative paths (cat challenge.txt) see the edited file.

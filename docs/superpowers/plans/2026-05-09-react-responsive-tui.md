@@ -4,6 +4,8 @@
 
 **Goal:** Rebuild LinuxLab's experimental React/Ink TUI into a responsive, Codex/opencode/Hermes-style terminal interface that adapts to terminal size and delegates challenge execution to the existing Go engine.
 
+> **状态（2026-08-17）：** 本计划的 15 个任务已全部实现并验证（见 `2026-05-09-react-responsive-tui-verification.md`）。接入收尾补充：详情页渐进式提示（`h` 解锁、`--hints N` 透传、重试保留）、挑战结束后的进度即时刷新（乐观更新 + Go data dump 对账）、Header 后端状态徽标（doctor），并修复了 Compose 挑战的宿主执行语义（绝对 compose 路径、宿主 init/check/交互 shell）。
+
 **Architecture:** React/Ink owns rendering, navigation, responsive layout, search, modals, and result presentation. Go remains the source of truth for challenge loading, Docker/Compose/LocalSandbox/Vim handoff, verification, and progress persistence, exposed through a small CLI boundary. Shared behavior is organized around app state, layout slots, semantic theme tokens, width-aware text utilities, keymaps, and screen-specific selectors.
 
 **Tech Stack:** React 19, Ink 7, TypeScript, Vitest, Node `child_process`, Go, Bubble Tea-compatible runner extraction, existing `internal/challenge`, `internal/sandbox`, `internal/verify`, `internal/progress`, `internal/reference`.
@@ -1979,20 +1981,20 @@ Rules for parallel work:
 
 ## Final Acceptance Checklist
 
-- [ ] No `width={96}` or equivalent fixed root width remains in React TUI.
-- [ ] `createLayoutSpec()` covers unsupported, compact, standard, and wide modes.
-- [ ] Header, navigation, main, inspector, footer, and modal layer are shared shell slots.
-- [ ] Sidebar collapses to tabs on compact terminals.
-- [ ] Footer remains visible in every tested screen.
-- [ ] Lists are height-bounded and cursor-visible.
-- [ ] Challenge details wrap long descriptions.
-- [ ] Reference search never grows beyond its container.
-- [ ] Help and command palette render as modals.
-- [ ] React TUI can launch at least one real challenge through Go.
-- [ ] Result screen displays real verification results.
-- [ ] Go/Bubble Tea TUI still launches with no args.
-- [ ] `npm run test:react` passes.
-- [ ] `npm run typecheck-react` passes.
-- [ ] `go test ./... -v` passes.
-- [ ] `go build -buildvcs=false -o /tmp/linuxlab-build-check ./cmd/linuxlab` passes.
-- [ ] Manual checks cover `60x20`, `80x24`, `100x30`, and `140x40`.
+- [x] No `width={96}` or equivalent fixed root width remains in React TUI.
+- [x] `createLayoutSpec()` covers unsupported, compact, standard, and wide modes.
+- [x] Header, navigation, main, inspector, footer, and modal layer are shared shell slots.
+- [x] Sidebar collapses to tabs on compact terminals.
+- [x] Footer remains visible in every tested screen.
+- [x] Lists are height-bounded and cursor-visible.
+- [x] Challenge details wrap long descriptions.
+- [x] Reference search never grows beyond its container.
+- [x] Help and command palette render as modals.
+- [x] React TUI can launch at least one real challenge through Go.
+- [x] Result screen displays real verification results.
+- [x] Go/Bubble Tea TUI still launches with no args.
+- [x] `npm run test:react` passes.
+- [x] `npm run typecheck-react` passes.
+- [x] `go test ./... -v` passes.
+- [x] `go build -buildvcs=false -o /tmp/linuxlab-build-check ./cmd/linuxlab` passes.
+- [x] Manual checks cover `60x20`, `80x24`, `100x30`, and `140x40`.

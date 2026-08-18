@@ -4,12 +4,23 @@ import type {ChallengeRunEvent, ChallengeRunResult} from '../types.js';
 export type RunChallengeOptions = {
 	binaryPath?: string;
 	challengeID: string;
+	hints?: number;
 	cwd?: string;
 	onEvent?: (event: ChallengeRunEvent) => void;
 };
 
 export function parseRunEventLine(line: string): ChallengeRunEvent {
 	return JSON.parse(line) as ChallengeRunEvent;
+}
+
+// buildRunArgs assembles the CLI boundary command. Kept pure so tests can
+// assert the exact process contract without spawning a child.
+export function buildRunArgs(challengeID: string, hints = 0): string[] {
+	const args = ['challenge', 'run', challengeID, '--json'];
+	if (hints > 0) {
+		args.push('--hints', String(hints));
+	}
+	return args;
 }
 
 export async function runChallenge(options: RunChallengeOptions): Promise<ChallengeRunResult> {
@@ -22,7 +33,7 @@ export async function runChallenge(options: RunChallengeOptions): Promise<Challe
 	}
 
 	try {
-		const child = spawnSync(binary, ['challenge', 'run', options.challengeID, '--json'], {
+		const child = spawnSync(binary, buildRunArgs(options.challengeID, options.hints ?? 0), {
 			cwd: options.cwd ?? process.cwd(),
 			stdio: ['inherit', 'pipe', 'inherit'],
 			encoding: 'utf8',
